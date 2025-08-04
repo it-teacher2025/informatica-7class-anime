@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Функції</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Violet -->
+    <!-- Application Structure Plan: A tab-based SPA for a structured, non-linear learning experience. The core interactive element is the "Function Simulator" on the Theory tab. This allows students to actively experiment with different functions (SUM, AVERAGE, MAX, etc.) and see immediate results, which is far more effective for understanding than passive reading. The practical work is also interactive, automatically calculating results and reinforcing the lesson's concepts. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata (Goals, Outcomes): Goal: Inform. Method: Styled cards with Unicode icons. Justification: Provides a quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Visually communicates the priority of each learning group.
+        - Function Concepts: Goal: Explore/Understand. Method: "Function Simulator" built with HTML/JS. Interaction: User selects a function from a dropdown, inputs data, and sees the calculated result and correct syntax instantly. Justification: Promotes active learning and makes abstract concepts tangible.
+        - Practical Work (Exercise 24): Goal: Apply. Method: An interactive HTML table with a "Calculate" button. Interaction: Clicking the button calculates and fills in the average/rounded grades and summary statistics (COUNT, COUNTIF). Justification: Focuses on the application and results of functions without tedious manual data entry.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards. Justification: A simple and engaging self-assessment tool.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #7c3aed; background-color: #7c3aed; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 34. (До § 24)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Функції в електронних таблицях</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практика</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+        <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з поняттям та структурою функцій, навчити використовувати основні математичні та статистичні функції.</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне мислення для вибору та застосування функцій, формувати навички розв'язання задач.</li>
+                        <li><b>Виховна:</b> Формувати інтерес до автоматизації розрахунків та відповідальність при виконанні обчислень.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати, що таке функція та її аргументи.</li>
+                        <li>Використовувати функції SUM, AVERAGE, MIN, MAX, COUNT, ROUND, COUNTIF.</li>
+                        <li>Вставляти функції у формули за допомогою Майстра функцій.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення функцій та демонстрації прийомів роботи).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-violet-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (середнє арифметичне, округлення, добуток, сума, відсотки, ділення з остачею).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Від чого залежить правильність обчислень за скопійованими формулами?</li>
+                            <li>Коли посилання у формулах повинні бути абсолютними і чому?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-2 text-center text-violet-600">Симулятор функцій</h3>
+                <p class="text-center text-slate-600 mb-6">Введіть числа через кому, оберіть функцію та подивіться на результат.</p>
+                <div class="max-w-3xl mx-auto p-6 bg-slate-50 rounded-lg border">
+                    <div class="mb-4">
+                        <label for="func-input" class="block text-sm font-medium text-slate-700">Вхідні дані (напр. 10, 8, 12, 7, 9)</label>
+                        <input type="text" id="func-input" value="10, 8, 12, 7, 9" class="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4">
+                           <label for="func-select" class="block text-sm font-medium text-slate-700">Оберіть функцію</label>
+                           <select id="func-select" class="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm">
+                               <option value="SUM">SUM (Сума)</option>
+                               <option value="AVERAGE">AVERAGE (Середнє)</option>
+                               <option value="MAX">MAX (Максимум)</option>
+                               <option value="MIN">MIN (Мінімум)</option>
+                               <option value="COUNT">COUNT (Кількість чисел)</option>
+                               <option value="ROUND">ROUND (Округлення середнього)</option>
+                           </select>
+                    </div>
+                    <div class="bg-white p-4 rounded-md border border-violet-200">
+                        <p class="text-sm text-slate-600">Синтаксис:</p>
+                        <p class="font-mono text-violet-800 bg-violet-50 p-2 rounded" id="func-syntax">=SUM(10; 8; 12; 7; 9)</p>
+                        <p class="text-sm text-slate-600 mt-3">Результат:</p>
+                        <p class="font-bold text-2xl" id="func-result">46</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+               <div class="bg-white p-6 rounded-xl shadow-md">
+                   <h3 class="text-2xl font-bold mb-4 text-violet-600">Практична робота: Вправа 24</h3>
+                   <p class="text-slate-600 mb-6">Завдання: Проаналізувати успішність учнів за допомогою функцій.</p>
+                   <div class="overflow-x-auto">
+                       <table id="grades-table" class="min-w-full border-collapse text-sm text-center">
+                             <thead>
+                                 <tr class="bg-slate-100">
+                                     <th class="border p-2">Прізвище</th>
+                                     <th class="border p-2">Оцінка 1</th>
+                                     <th class="border p-2">Оцінка 2</th>
+                                     <th class="border p-2">Оцінка 3</th>
+                                     <th class="border p-2 font-semibold">Підсумкова</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <!-- Student data will be injected here by JS -->
+                             </tbody>
+                       </table>
+                   </div>
+                   <button id="calculate-grades-btn" class="mt-6 bg-violet-600 text-white py-2 px-4 rounded-md hover:bg-violet-700 transition">Обчислити підсумки</button>
+                   <div id="grades-summary" class="mt-6 bg-slate-50 p-4 rounded-lg border hidden">
+                         <h4 class="font-bold text-lg mb-2">Аналіз результатів:</h4>
+                         <p>Кількість учнів з підсумковою оцінкою від 5 до 8: <b id="countif-result" class="text-violet-700"></b></p>
+                         <p>Загальна кількість поточних оцінок: <b id="count-result" class="text-violet-700"></b></p>
+                   </div>
+               </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-violet-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Що таке функція в електронній таблиці?</div><div class="flip-card-back bg-violet-200">Вбудована формула, що виконує стандартні обчислення (напр., SUM, AVERAGE).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Що таке аргументи функції?</div><div class="flip-card-back bg-violet-200">Дані (числа, посилання, діапазони), які функція використовує для обчислень. Записуються в дужках.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Яка функція знайде найбільше значення?</div><div class="flip-card-back bg-violet-200">MAX. Наприклад, =MAX(A1:A10).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Яка функція порахує кількість клітинок з числами?</div><div class="flip-card-back bg-violet-200">COUNT. Наприклад, =COUNT(B2:D10).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Як округлити число до цілого?</div><div class="flip-card-back bg-violet-200">За допомогою функції ROUND. Наприклад, =ROUND(A1; 0).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-violet-100">Чим відрізняється COUNT від COUNTA?</div><div class="flip-card-back bg-violet-200">COUNT рахує тільки клітинки з числами, а COUNTA - всі непорожні клітинки (з числами і текстом).</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-violet-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 24 (стор. 148-151).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 24 (стор. 151).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/AQ21Of0_ugk?si=JvyOi9XeP0W5DQqO" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/AQ21Of0_ugk</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 24: <a href="https://ua.izzi.digital/DOS/750894/932390.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932390.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-violet-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 24, стор. 148-151)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 24: <a href="https://ua.izzi.digital/DOS/750894/932390.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932390.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Function Simulator Logic
+            const funcInput = document.getElementById('func-input');
+            const funcSelect = document.getElementById('func-select');
+            const funcSyntax = document.getElementById('func-syntax');
+            const funcResult = document.getElementById('func-result');
+
+            /**
+             * Updates the Function Simulator based on user input and selected function type.
+             * Parses the input numbers, calculates the result, and displays the Excel-like syntax.
+             */
+            function updateSimulator() {
+                // Parse input: split by comma, trim spaces, convert to float, and filter out non-numbers.
+                const numbers = funcInput.value.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+                
+                // Handle empty input or no valid numbers
+                if (numbers.length === 0) {
+                    funcSyntax.textContent = 'Введіть коректні числа';
+                    funcResult.textContent = '-';
+                    return;
+                }
+                
+                const selectedFunc = funcSelect.value; // Get the currently selected function
+                let result = 0; // Initialize result
+                let syntax = `=${selectedFunc}(${numbers.join('; ')})`; // Default syntax format
+
+                // Perform calculation based on selected function
+                switch (selectedFunc) {
+                    case 'SUM':
+                        result = numbers.reduce((a, b) => a + b, 0); // Calculate sum
+                        break;
+                    case 'AVERAGE':
+                        result = numbers.reduce((a, b) => a + b, 0) / numbers.length; // Calculate average
+                        break;
+                    case 'MAX':
+                        result = Math.max(...numbers); // Find maximum value
+                        break;
+                    case 'MIN':
+                        result = Math.min(...numbers); // Find minimum value
+                        break;
+                    case 'COUNT':
+                        result = numbers.length; // Count of numbers
+                        break;
+                    case 'ROUND':
+                        // For ROUND, calculate the average first, then round it
+                        const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                        result = Math.round(avg); // Round to nearest integer
+                        syntax = `=ROUND(AVERAGE(${numbers.join('; ')}); 0)`; // Custom syntax for ROUND(AVERAGE())
+                        break;
+                }
+                // Update the UI with the calculated syntax and result
+                funcSyntax.textContent = syntax;
+                funcResult.textContent = result.toLocaleString('uk-UA'); // Format number with Ukrainian locale
+            }
+
+            // Event listeners for input field and select dropdown to trigger simulator updates
+            funcInput.addEventListener('input', updateSimulator);
+            funcSelect.addEventListener('change', updateSimulator);
+            updateSimulator(); // Initial update of the simulator when the page loads
+
+            // Practice Work Logic (Grades Table Calculation)
+            const studentData = [
+                { name: 'Петренко', grades: [10, 9, 11] },
+                { name: 'Сидоренко', grades: [7, 8, 6] },
+                { name: 'Іванов', grades: [12, 11, 12] },
+                { name: 'Ковальчук', grades: [5, 7, 6] }
+            ];
+            const gradesTableBody = document.querySelector('#grades-table tbody');
+
+            // Populate the grades table with initial student data
+            studentData.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border p-2 text-left">${student.name}</td>
+                    <td class="border p-2">${student.grades[0]}</td>
+                    <td class="border p-2">${student.grades[1]}</td>
+                    <td class="border p-2">${student.grades[2]}</td>
+                    <td class="border p-2 font-bold" id="final-grade-${index}"></td>
+                `;
+                gradesTableBody.appendChild(row);
+            });
+
+            const calculateGradesBtn = document.getElementById('calculate-grades-btn');
+
+            // Event listener for the "Calculate Totals" button in the Practice section
+            calculateGradesBtn.addEventListener('click', () => {
+                let finalGrades = []; // To store final grades for COUNTIF calculation
+                let totalGradesCount = 0; // To store total count of all grades
+
+                // Iterate through each student to calculate their final grade
+                studentData.forEach((student, index) => {
+                    const sum = student.grades.reduce((a, b) => a + b, 0); // Calculate sum of grades
+                    const avg = sum / student.grades.length; // Calculate average
+                    const finalGrade = Math.round(avg); // Round to nearest integer for final grade
+                    finalGrades.push(finalGrade); // Add to array for summary
+                    totalGradesCount += student.grades.length; // Add count of current student's grades
+                    
+                    // Display the calculated final grade in the table
+                    document.getElementById(`final-grade-${index}`).textContent = finalGrade;
+                });
+
+                // Calculate COUNTIF-like result (students with final grade between 5 and 8)
+                const countIfResult = finalGrades.filter(g => g >= 5 && g <= 8).length;
+                
+                // Update the summary section with calculated results
+                document.getElementById('countif-result').textContent = countIfResult;
+                document.getElementById('count-result').textContent = totalGradesCount;
+                document.getElementById('grades-summary').classList.remove('hidden'); // Show the summary section
+            });
+
+            // Chart.js for NUШ results visualization (already present and functional)
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2], // Importance levels: 4: Найважливіша, 3: Дуже важлива, 2: Важлива
+                        backgroundColor: ['rgba(124, 58, 237, 0.7)', 'rgba(196, 181, 253, 0.7)', 'rgba(167, 139, 250, 0.7)', 'rgba(196, 181, 253, 0.7)'],
+                        borderColor: ['rgba(124, 58, 237, 1)', 'rgba(196, 181, 253, 1)', 'rgba(167, 139, 250, 1)', 'rgba(196, 181, 253, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

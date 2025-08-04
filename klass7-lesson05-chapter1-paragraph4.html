@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .nav-link.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .card { background-color: #fff; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 9876px; font-weight: 600; text-align: center; transition: all 0.3s; cursor: pointer; border: 1px solid transparent; }
+        .btn-primary { background-color: #2563eb; color: #fff; }
+        .btn-primary:hover { background-color: #1d4ed8; transform: translateY(-2px); }
+        .btn-secondary { background-color: #e0e7ff; color: #3730a3; }
+        .btn-secondary:hover { background-color: #c7d2fe; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 456; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal.visible { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s; }
+        .modal.visible .modal-content { transform: scale(1); }
+        .checklist-item input:checked + label span { text-decoration: line-through; color: #64748b; }
+
+        /* Стилі для Теоретичного блоку */
+
+        /* Стилі для перевірки знань */
+        .height-learn { height: 800px; }
+        .height280 { height: 280px; }
+        .height400 { height: 400px; }
+        
+        .source { padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 1: «Служби Інтернету». Урок № 5. (До § 4)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Особливості електронного листування</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з особливостями роботи з поштовою службою Gmail; навчити працювати з адресною книгою (додавати, редагувати, переглядати контакти); пояснити призначення та навчити створювати списки розсилки (мітки); сформувати навички надсилання електронних листів за списками розсилки.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне мислення при структуруванні контактів та створенні списків розсилки; формувати вміння організовувати інформацію для групової комунікації; розвивати навички роботи з інтерфейсами складних онлайн-сервісів.</li>
+                            <li><b>Виховна:</b> Виховувати відповідальне ставлення до зберігання персональних даних контактів; формувати вміння ефективно взаємодіяти в цифровому середовищі, використовуючи групові інструменти комунікації; заохочувати до оптимізації роботи з електронною поштою.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Виконувати вхід до облікового запису Google.</li>
+                            <li>Переглядати, додавати та редагувати контакти в адресній книзі.</li>
+                            <li>Створювати списки розсилки (мітки) в адресній книзі.</li>
+                            <li>Додавати контакти до списків розсилки.</li>
+                            <li>Надсилати електронні листи всім адресатам зі списку розсилки.</li>
+                            <li>Пояснювати переваги використання адресної книги та списків розсилки для групової комунікації.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (на основі матеріалу з підручника).</li>
+                            <li>Веб-браузери (Google Chrome, Mozilla Firefox, Microsoft Edge тощо).</li>
+                            <li>Власні електронні поштові скриньки учнів (переважно Gmail для цього уроку)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Українська мова (оформлення тексту листа).</li>
+                            <li>Математика (логіка групування)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що називають профілем користувача?</li>
+                            <li>Як додати персональне зображення до профілю користувача?</li>
+                            <li>Як додати до листів автоматичний підпис?</li>
+                            <li>Як перенаправити лист зі скриньки mail.ukr.net до gmail.com?</li>
+                            <li>Як створити в поштовій скриньці папку?</li>
+                            <li>Яка функція фільтра в поштовій скриньці?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema1-4.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 24)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">	
+                    <div class="container mx-auto px-4 flex justify-between items-center py-3">
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">✉️ Ефективне Листування</h1>
+                        <nav class="hidden md:flex space-x-6">
+                            <a href="#contacts" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Адресна книга</a>
+                            <a href="#labels" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Списки розсилки</a>
+                            <a href="#practice" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Практика</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-12">        
+                    <section id="intro" class="text-center mb-20">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Керуйте контактами як професіонал</h2>
+                        <p class="text-lg max-w-3xl mx-auto text-slate-600">Набридло вводити адреси вручну? Давайте навчимося використовувати адресну книгу та списки розсилки, щоб надсилати листи десяткам людей за один клік. Це просто, швидко та дуже зручно!</p>
+                    </section>
+
+                    <div class="grid lg:grid-cols-2 gap-12 items-start">
+                        <div class="space-y-8">
+                            <!-- Contacts Section -->
+                            <section id="contacts" class="scroll-mt-24">
+                                <div class="card">
+                                    <h3 class="text-2xl font-bold mb-1">Крок 1: Адресна книга</h3>
+                                    <p class="text-slate-500 mb-6">Це ваш особистий довідник. Додайте сюди контакти, щоб мати їх завжди під рукою.</p>
+                                    
+                                    <div id="contacts-list" class="space-y-3 mb-4 min-h-[100px]">
+                                        <!-- Contacts will be rendered here by JS -->
+                                    </div>
+
+                                    <button id="add-contact-btn" class="btn btn-primary">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                        Додати контакт
+                                    </button>
+                                </div>
+                            </section>
+                            
+                            <!-- Labels Section -->
+                            <section id="labels" class="scroll-mt-24">
+                                <div class="card">
+                                    <h3 class="text-2xl font-bold mb-1">Крок 2: Списки розсилки (Мітки)</h3>
+                                    <p class="text-slate-500 mb-6">Об'єднуйте контакти в групи за допомогою міток. Виберіть контакти зі списку вище та створіть для них мітку.</p>
+                                    
+                                    <button id="create-label-btn" class="btn btn-secondary" disabled>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                        Створити мітку для обраних
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Email Sender Section -->
+                        <div class="sticky top-24">
+                            <section id="sender" class="scroll-mt-24">
+                                <div class="card">
+                                    <h3 class="text-2xl font-bold mb-1">Крок 3: Надсилання листа групі</h3>
+                                    <p class="text-slate-500 mb-6">Тепер найцікавіше. Введіть назву створеної мітки в поле "Кому", і всі контакти з цієї групи автоматично додадуться!</p>
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="email-to" class="block text-sm font-medium text-slate-700">Кому:</label>
+                                            <input type="text" id="email-to" placeholder="Введіть ім'я контакту або назву мітки..." class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                            <div id="recipient-pills" class="flex flex-wrap gap-2 mt-2"></div>
+                                        </div>
+                                        <div>
+                                            <label for="email-subject" class="block text-sm font-medium text-slate-700">Тема:</label>
+                                            <input type="text" id="email-subject" value="Запрошення на проєкт!" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label for="email-body" class="block text-sm font-medium text-slate-700">Тіло листа:</label>
+                                            <textarea id="email-body" rows="5" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">Привіт! Запрошую долучитися до нашої команди.</textarea>
+                                        </div>
+                                        <button id="send-email-btn" class="btn btn-primary w-full justify-center">
+                                            Надіслати лист
+                                        </button>
+                                        <p id="send-feedback" class="text-center mt-2 text-green-600 font-medium h-5"></p>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-- Practice Section -->
+                    <section id="practice" class="mt-24 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-slate-900 mb-4">Час для практики!</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-slate-600">Тепер виконайте ці кроки у своєму справжньому акаунті Google. Відмічайте пункти, щоб не збитися.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-6">Вправа 4: Створення та використання списку розсилки</h3>
+                            <div id="checklist" class="space-y-3">
+                                <!-- Checklist items will be injected by JS -->
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- Modals -->
+                <div id="add-contact-modal" class="modal">
+                    <div class="modal-content card w-full max-w-md">
+                        <h3 class="text-xl font-bold mb-4">Новий контакт</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="contact-name" class="block text-sm font-medium text-slate-700">Ім'я та прізвище</label>
+                                <input type="text" id="contact-name" class="mt-1 block w-full border-slate-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="contact-email" class="block text-sm font-medium text-slate-700">Електронна пошта</label>
+                                <input type="email" id="contact-email" class="mt-1 block w-full border-slate-300 rounded-md shadow-sm">
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="btn btn-secondary" onclick="toggleModal('add-contact-modal', false)">Скасувати</button>
+                            <button id="save-contact-btn" class="btn btn-primary">Зберегти</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="create-label-modal" class="modal">
+                    <div class="modal-content card w-full max-w-md">
+                        <h3 class="text-xl font-bold mb-4">Нова мітка</h3>
+                        <div>
+                            <label for="label-name" class="block text-sm font-medium text-slate-700">Назва мітки</label>
+                            <input type="text" id="label-name" class="mt-1 block w-full border-slate-300 rounded-md shadow-sm" placeholder="Наприклад, Інформатика, Друзі...">
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="btn btn-secondary" onclick="toggleModal('create-label-modal', false)">Скасувати</button>
+                            <button id="save-label-btn" class="btn btn-primary">Створити</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">1. Як увійти до свого облікового запису?</div><div class="flip-card-back bg-green-200 height280">Для входу до свого облікового запису необхідно:<br>1. Ввести в адресному рядку браузера назву сервера (наприклад, gmail.com) та відкрити сторінку входу.<br>2. Ввести свою поштову адресу або номер телефону, а потім ввести пароль.<br><br>Примітка: якщо з'явиться список із кількох облікових записів, потрібно вибрати потрібний.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">2. Як переглянути адресну книгу; відредагувати контакти?</div><div class="flip-card-back bg-green-200 height280">Щоб переглянути або відредагувати адресну книгу, потрібно:<br>1. Увійти до свого облікового запису.<br>2. У правому верхньому кутку сторінки натиснути значок меню «Додатки Google».<br>3. Вибрати додаток «Контакти».<br><br>Там можна редагувати або вилучати контакти.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">3. Що таке список розсилки (мітки)?</div><div class="flip-card-back bg-green-200">Список розсилки (або мітка) — це засіб електронної пошти, який надає можливість об’єднати певну кількість контактів у єдину групу для спрощення процесу розсилання листів.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">4. Як створити список розсилки (мітки)?</div><div class="flip-card-back bg-green-200 height280">Щоб створити список розсилки, потрібно:<br>1. Увійти до додатка «Контакти».<br>2. Вибрати контакти, які мають належати до певної групи, поставивши прапорець (галочку) на вибраних контактах.<br>3. Натиснути кнопку «Керування мітками».<br>4. Вибрати потрібну назву зі списку міток, який з’явиться, або створити нову.<br>5. Натиснути команду «Застосувати».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height400">5. Які ви знаєте способи надсилання листа за списком розсилки (мітками)?</div><div class="flip-card-back bg-green-200 height400">Надсилати листа за списком розсилки можна двома способами:<br><br>1. З адресної книги:<br>- Відкрити адресну книгу та список контактів.<br>- Виділити потрібні контакти або вибрану мітку.<br>- Натиснути значок «Надіслати лист» і написати та надіслати листа.<br><br>2. З поштової скриньки:<br>- Зайти до поштової скриньки.<br>- Під час написання листа в рядок «Кому» ввести назву списку розсилки (мітки). Усі адреси, що входять до цього списку, з'являться автоматично.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">6. Яке призначення адресної книги?</div><div class="flip-card-back bg-green-200">Адресна книга призначена для зберігання, редагування та використання контактів електронної пошти. Вона допомагає впорядковувати контакти, зберігаючи, наприклад, прізвище, ім'я, телефон та іншу інформацію, що дозволяє користуватися нею для ділового листування або для зручного спілкування.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 28)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 4 (стор. 25-27).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 4 (стор. 28).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/ffloGV9qbB8?si=DFCZPpqiGmsMMkd2" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/ffloGV9qbB8</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 4: <a href="https://ua.izzi.digital/DOS/750894/751739.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751739.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 4, стор. 25-28)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 4: <a href="https://ua.izzi.digital/DOS/750894/751739.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751739.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // --- State Management ---
+            let state = {
+                contacts: [
+                    { id: 1, name: 'Іван Франко', email: 'ivan.f@example.com', labels: [] },
+                    { id: 2, name: 'Леся Українка', email: 'lesya.u@example.com', labels: [] }
+                ],
+                labels: {}, // { "Інформатика": [1, 2] }
+                nextContactId: 3
+            };
+
+            // --- DOM Elements ---
+            const contactsListEl = document.getElementById('contacts-list');
+            const createLabelBtn = document.getElementById('create-label-btn');
+            const emailToInput = document.getElementById('email-to');
+            const recipientPillsEl = document.getElementById('recipient-pills');
+            const sendFeedbackEl = document.getElementById('send-feedback');
+
+            // --- Render Functions ---
+            const renderContacts = () => {
+                contactsListEl.innerHTML = '';
+                if(state.contacts.length === 0){
+                    contactsListEl.innerHTML = `<p class="text-slate-400 text-center py-4">Ваша адресна книга порожня.</p>`;
+                    return;
+                }
+                state.contacts.forEach(contact => {
+                    const contactEl = document.createElement('div');
+                    contactEl.className = 'flex items-center gap-3 p-3 bg-slate-50 rounded-lg';
+                    contactEl.innerHTML = `
+                        <input type="checkbox" data-id="${contact.id}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center font-bold">${contact.name.charAt(0)}</div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-slate-800">${contact.name}</p>
+                            <p class="text-sm text-slate-500">${contact.email}</p>
+                        </div>
+                        <div class="flex gap-1 flex-wrap justify-end">${contact.labels.map(label => `<span class="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${label}</span>`).join('')}</div>
+                    `;
+                    contactsListEl.appendChild(contactEl);
+                });
+                
+                contactsListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', updateCreateLabelButtonState);
+                });
+            };
+
+            const updateCreateLabelButtonState = () => {
+                const selected = contactsListEl.querySelectorAll('input[type="checkbox"]:checked');
+                createLabelBtn.disabled = selected.length === 0;
+            };
+            
+            // --- Modals ---
+            window.toggleModal = (modalId, show) => {
+                const modal = document.getElementById(modalId);
+                if (show) {
+                    modal.classList.add('visible');
+                } else {
+                    modal.classList.remove('visible');
+                }
+            };
+            
+            // Add Contact Logic
+            document.getElementById('add-contact-btn').addEventListener('click', () => {
+                document.getElementById('contact-name').value = '';
+                document.getElementById('contact-email').value = '';
+                toggleModal('add-contact-modal', true);
+            });
+            document.getElementById('save-contact-btn').addEventListener('click', () => {
+                const name = document.getElementById('contact-name').value.trim();
+                const email = document.getElementById('contact-email').value.trim();
+                if (name && email) {
+                    state.contacts.push({ id: state.nextContactId++, name, email, labels: [] });
+                    renderContacts();
+                    toggleModal('add-contact-modal', false);
+                }
+            });
+
+            // Create Label Logic
+            createLabelBtn.addEventListener('click', () => {
+                 if (createLabelBtn.disabled) return;
+                 document.getElementById('label-name').value = '';
+                 toggleModal('create-label-modal', true);
+            });
+            document.getElementById('save-label-btn').addEventListener('click', () => {
+                const labelName = document.getElementById('label-name').value.trim();
+                const selectedIds = Array.from(contactsListEl.querySelectorAll('input[type="checkbox"]:checked')).map(cb => parseInt(cb.dataset.id));
+                if(labelName && selectedIds.length > 0) {
+                    state.labels[labelName] = [...new Set([...(state.labels[labelName] || []), ...selectedIds])];
+                    state.contacts.forEach(contact => {
+                        if(selectedIds.includes(contact.id) && !contact.labels.includes(labelName)){
+                            contact.labels.push(labelName);
+                        }
+                    });
+                    renderContacts();
+                    toggleModal('create-label-modal', false);
+                }
+            });
+
+            // Email Sender Logic
+            emailToInput.addEventListener('input', () => {
+                const inputVal = emailToInput.value.trim();
+                if (state.labels[inputVal]) {
+                    recipientPillsEl.innerHTML = '';
+                    const contactsInLabel = state.contacts.filter(c => c.labels.includes(inputVal));
+                    contactsInLabel.forEach(c => {
+                         const pill = document.createElement('span');
+                         pill.className = 'inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-blue-100 text-blue-800';
+                         pill.textContent = c.name;
+                         recipientPillsEl.appendChild(pill);
+                    });
+                } else {
+                    recipientPillsEl.innerHTML = '';
+                }
+            });
+            
+            document.getElementById('send-email-btn').addEventListener('click', () => {
+                sendFeedbackEl.textContent = 'Лист успішно надіслано!';
+                setTimeout(() => { sendFeedbackEl.textContent = ''; }, 3000);
+            });
+
+
+            // --- Checklist ---
+            const checklistContainer = document.getElementById('checklist');
+            const checklistItems = [
+                "Запустити браузер. Увійти до свого облікового запису Google.",
+                "Відкрити Адресну книгу (додаток \"Контакти\").",
+                "Додати до списку \"Контакти\" три контакти: вчителя/вчительки та двох однокласників (кнопка \"Створити контакт\").",
+                "Створити мітку \"Інформатика\" та позначити нею щойно створені контакти.",
+                "Відкрити поштову скриньку (Gmail).",
+                "Написати текст листа з поясненням, навіщо потрібні списки розсилки.",
+                "Надіслати листа групі, скориставшись списком розсилки (міткою \"Інформатика\")."
+            ];
+            checklistItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="check-${index}" class="hidden">
+                    <label for="check-${index}" class="flex items-start p-4 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+                        <div class="mt-1 flex items-center justify-center w-5 h-5 border-2 border-slate-300 rounded-md transition-all flex-shrink-0">
+                            <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="ml-4 text-slate-800">${item}</span>
+                    </label>
+                `;
+                const input = div.querySelector('input');
+                const labelDiv = div.querySelector('label > div');
+                input.addEventListener('change', () => {
+                    labelDiv.classList.toggle('bg-blue-600', input.checked);
+                    labelDiv.classList.toggle('border-slate-300', !input.checked);
+                    labelDiv.classList.toggle('border-blue-600', input.checked);
+                    labelDiv.querySelector('svg').classList.toggle('hidden', !input.checked);
+                });
+
+                checklistContainer.appendChild(div);
+            });
+
+            // --- Initial Render ---
+            renderContacts();
+        });
+    </script>
+</body>
+</html>

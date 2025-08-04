@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Алгоритми і програми з розгалуженнями</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Accordion content for smooth expand/collapse */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 43. (До § 31)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Алгоритми і програми з розгалуженнями</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з логічними виразами, операціями порівняння, логічними операціями (`and`, `or`, `not`), структурами розгалуження (`if`, `if-else`, `if-elif-else`).</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне та критичне мислення, вміння застосовувати розгалуження для розв'язання задач з умовами.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність, відповідальність, інтерес до програмування як інструменту моделювання.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати логічні вирази та їх значення.</li>
+                        <li>Використовувати операції порівняння та логічні операції.</li>
+                        <li>Розрізняти та використовувати `if`, `if-else`, `if-elif-else`.</li>
+                        <li>Аналізувати програми з розгалуженнями.</li>
+                        <li>Розв'язувати задачі, що вимагають вибору дій за умовами.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення понять та прикладів).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (логіка, нерівності, порівняння).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="review-content" class="tab-content">
+            <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Які два основні числові типи даних є в Python?</li>
+                            <li>Що повертає оператор `/` (ділення) у Python?</li>
+                            <li>Яка функція використовується для визначення типу величини?</li>
+                            <li>Як перетворити рядок "123" на ціле число?</li>
+                            <li>Що робить оператор `**`?</li>
+                            <li>Який результат `7 // 2` та `7 % 2`?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-4.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+                
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивний огляд ключових понять</h3>
+                <div class="space-y-4" id="accordion">
+                    <!-- Accordion Item 1: Logical Expression Evaluator -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>1. Обчислення логічних виразів</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть простий логічний вираз (напр., `5 > 3` або `10 == 10`) та дізнайтеся його значення.</p>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="text" id="logical-expression-input" class="p-2 border rounded w-full sm:w-2/3 font-mono" placeholder="Напр., 5 > 3 або (2*2 == 4) and (3 > 5)">
+                                <button id="evaluate-expression-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Обчислити</button>
+                            </div>
+                            <div id="expression-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">
+                                Результат: <span id="display-expression-result"></span>
+                            </div>
+                            <div id="expression-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 2: Number Classification (if-elif-else) -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>2. Класифікація числа (Додатне, Від'ємне, Нуль)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть число, і програма визначить, чи є воно додатним, від'ємним, або нулем, використовуючи розгалуження.</p>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="number" id="number-classify-input" class="p-2 border rounded w-full sm:w-2/3" placeholder="Введіть число">
+                                <button id="classify-number-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Класифікувати</button>
+                            </div>
+                            <div id="classify-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">
+                                Результат: <span id="display-classify-result"></span>
+                            </div>
+                            <div id="classify-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 3: Water State (if-elif-else) -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>3. Стан води за температурою</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть температуру води (°C), і дізнайтеся її стан (твердий, рідкий, газоподібний).</p>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="number" id="water-temp-input" class="p-2 border rounded w-full sm:w-2/3" placeholder="Введіть температуру (°C)">
+                                <button id="check-water-state-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Перевірити</button>
+                            </div>
+                            <div id="water-state-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">
+                                Стан води: <span id="display-water-state"></span>
+                            </div>
+                            <div id="water-state-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота: Програма "Рік/Років"</h3>
+                <p class="text-slate-600 mb-6">Напишіть програму, яка виводить правильне закінчення слова "рік/років" для заданого числа. Введіть код у поле нижче та натисніть "Виконати".</p>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="python-rok-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                        <textarea id="python-rok-code-input" class="w-full p-3 border rounded font-mono text-sm h-64 bg-slate-100" placeholder="Введіть ваш код тут...">
+# Програма для визначення закінчення слова "рік/років"
+
+k = int(input('Введіть число від 1 до 99: '))
+
+if k >= 11 and k <= 14:
+    print('Мені', k, 'років')
+elif k % 10 == 1:
+    print('Мені', k, 'рік')
+elif k % 10 >= 2 and k % 10 <= 4:
+    print('Мені', k, 'роки')
+else:
+    print('Мені', k, 'років')
+                        </textarea>
+                        <button id="run-rok-python-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати код</button>
+                    </div>
+                    <div>
+                        <div class="block text-sm font-medium text-slate-700 mb-2">Вивід програми:</div>
+                        <pre id="python-rok-output" class="w-full p-3 border rounded font-mono text-sm h-64 bg-slate-800 text-green-300 overflow-auto"></pre>
+                    </div>
+                </div>
+                <div id="python-rok-error" class="mt-4 text-red-600 font-medium"></div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що таке логічний вираз?</div><div class="flip-card-back bg-indigo-200">Вираз, при обчисленні якого одержується `True` або `False`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який оператор перевіряє рівність?</div><div class="flip-card-back bg-indigo-200">`==` (подвійне дорівнює).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Яка логічна операція повертає `True`, якщо хоча б одна умова істинна?</div><div class="flip-card-back bg-indigo-200">`or`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">У чому різниця між `if` та `if-else`?</div><div class="flip-card-back bg-indigo-200">`if` виконує дію лише за умови, `if-else` - одну дію за умови, іншу - інакше.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Для чого використовується `elif`?</div><div class="flip-card-back bg-indigo-200">Для перевірки додаткових умов у багатоваріантному розгалуженні.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що означає відступ у Python після `if` або `else`?</div><div class="flip-card-back bg-indigo-200">Відступ вказує на те, які команди належать до даної гілки розгалуження.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 31 (стор. 185-190).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 31 (стор. 191).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/2vzy9JFVNjY?si=TOykSAaHD-lriMV8" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/2vzy9JFVNjY</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 31: <a href="https://ua.izzi.digital/DOS/750894/932612.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932612.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 31, стор. 185-191)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 31: <a href="https://ua.izzi.digital/DOS/750894/932612.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932612.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Accordion logic
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    // Toggle accordion content visibility
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Close other open accordions before opening the current one
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        // Open the clicked accordion
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Chart.js for NUШ results visualization
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 3, 2], // Importance levels: GR1, GR2 - Most Important (4), GR3 - Very Important (3), GR4 - Important (2)
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива';
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Accordion 1: Logical Expression Evaluator Logic
+            const logicalExpressionInput = document.getElementById('logical-expression-input');
+            const evaluateExpressionBtn = document.getElementById('evaluate-expression-btn');
+            const displayExpressionResult = document.getElementById('display-expression-result');
+            const expressionError = document.getElementById('expression-error');
+
+            evaluateExpressionBtn.addEventListener('click', () => {
+                const expression = logicalExpressionInput.value.trim();
+                expressionError.textContent = '';
+                displayExpressionResult.textContent = '';
+
+                if (expression === '') {
+                    expressionError.textContent = 'Будь ласка, введіть вираз.';
+                    return;
+                }
+
+                try {
+                    // Basic simulation for common Python logical/comparison operators
+                    // This is NOT a full Python interpreter, but covers common cases.
+                    let jsExpression = expression
+                        .replace(/==/g, '===') // Equality
+                        .replace(/!=/g, '!==') // Inequality
+                        .replace(/and/g, '&&') // Logical AND
+                        .replace(/or/g, '||')  // Logical OR
+                        .replace(/not\s+/g, '!'); // Logical NOT
+
+                    // Evaluate the JavaScript expression
+                    const result = eval(jsExpression);
+
+                    if (typeof result === 'boolean') {
+                        displayExpressionResult.textContent = result ? 'True' : 'False';
+                    } else {
+                        expressionError.textContent = 'Введено не логічний вираз. Спробуйте ще раз.';
+                    }
+                } catch (e) {
+                    expressionError.textContent = `Помилка у виразі: ${e.message}`;
+                }
+            });
+
+            // Accordion 2: Number Classification (if-elif-else) Logic
+            const numberClassifyInput = document.getElementById('number-classify-input');
+            const classifyNumberBtn = document.getElementById('classify-number-btn');
+            const displayClassifyResult = document.getElementById('display-classify-result');
+            const classifyError = document.getElementById('classify-error');
+
+            classifyNumberBtn.addEventListener('click', () => {
+                const num = parseFloat(numberClassifyInput.value);
+                classifyError.textContent = '';
+                displayClassifyResult.textContent = '';
+
+                if (isNaN(num)) {
+                    classifyError.textContent = 'Будь ласка, введіть число.';
+                    return;
+                }
+
+                let resultText = '';
+                if (num > 0) {
+                    resultText = 'Додатне число';
+                } else if (num < 0) {
+                    resultText = 'Від\'ємне число';
+                } else {
+                    resultText = 'Нуль';
+                }
+                displayClassifyResult.textContent = resultText;
+            });
+
+            // Accordion 3: Water State (if-elif-else) Logic
+            const waterTempInput = document.getElementById('water-temp-input');
+            const checkWaterStateBtn = document.getElementById('check-water-state-btn');
+            const displayWaterState = document.getElementById('display-water-state');
+            const waterStateError = document.getElementById('water-state-error');
+
+            checkWaterStateBtn.addEventListener('click', () => {
+                const temp = parseFloat(waterTempInput.value);
+                waterStateError.textContent = '';
+                displayWaterState.textContent = '';
+
+                if (isNaN(temp)) {
+                    waterStateError.textContent = 'Будь ласка, введіть температуру.';
+                    return;
+                }
+
+                let stateText = '';
+                if (temp <= 0) {
+                    stateText = 'Твердий (лід)';
+                } else if (temp < 100) {
+                    stateText = 'Рідкий (вода)';
+                } else {
+                    stateText = 'Газоподібний (пара)';
+                }
+                displayWaterState.textContent = stateText;
+            });
+
+            // Practice work: Rok/Rokiv Python Simulator Logic
+            const pythonRokCodeInput = document.getElementById('python-rok-code-input');
+            const runRokPythonBtn = document.getElementById('run-rok-python-btn');
+            const pythonRokOutput = document.getElementById('python-rok-output');
+            const pythonRokError = document.getElementById('python-rok-error');
+
+            runRokPythonBtn.addEventListener('click', () => {
+                console.log("Запуск Python-симулятора для 'Рік/Років'...");
+                const code = pythonRokCodeInput.value;
+                pythonRokOutput.textContent = '';
+                pythonRokError.textContent = '';
+
+                let k_val = parseInt(prompt("Введіть число від 1 до 99:"));
+
+                if (k_val === null) { // User clicked cancel on prompt
+                    pythonRokError.textContent = 'Операцію скасовано користувачем.';
+                    return;
+                }
+
+                if (isNaN(k_val) || k_val < 1 || k_val > 99) {
+                    pythonRokError.textContent = 'Помилка: Будь ласка, введіть ціле число від 1 до 99.';
+                    return;
+                }
+
+                try {
+                    let output_buffer = [];
+                    const print = (...args) => output_buffer.push(args.join(' '));
+                    const input = (prompt_msg) => String(k_val); // Always return k_val for input()
+                    const int = parseInt;
+
+                    // Simulate the Python code logic for "rok/rokiv"
+                    let resultText = '';
+                    if (k_val >= 11 && k_val <= 14) {
+                        resultText = `Мені ${k_val} років`;
+                    } else if (k_val % 10 === 1) {
+                        resultText = `Мені ${k_val} рік`;
+                    } else if (k_val % 10 >= 2 && k_val % 10 <= 4) {
+                        resultText = `Мені ${k_val} роки`;
+                    } else {
+                        resultText = `Мені ${k_val} років`;
+                    }
+                    output_buffer.push(resultText);
+
+                    pythonRokOutput.textContent = output_buffer.join('\n');
+
+                } catch (e) {
+                    pythonRokError.textContent = `Помилка виконання: ${e.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-align: center; transition: all 0.2s; cursor: pointer; }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+             background-color: #334155; /* slate-700 */
+             color: #e2e8f0; /* slate-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #475569; /* slate-600 */
+        }
+        .timeline-frame { width: 40px; height: 40px; border: 2px solid #475569; background-color: #334155; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; flex-shrink: 0; }
+        .timeline-frame.keyframe { background-color: #4f46e5;  border-color: #a5b4fc; color: white; }
+
+        /* Стилі для Теоретичного блоку */
+        
+        /* Стилі для перевірки знань */
+        .height-learn { height: 520px; }
+        .height260 { height: 260px; }
+
+        .source { padding: 16px; color: #334155; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 14. (До § 11)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Автоматичне створення анімації</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> ЧОзнайомити учнів з поняттям "метод ключових кадрів" та "автоматичні анімаційні ефекти"; навчити використовувати інструмент "Вибір об'єкта" для керування трансформаціями; показати, як додавати анімацію переміщення вздовж певної траєкторії та анімацію обертання об'єктів у TupiTube; пояснити різницю між неперервним та частковим обертанням.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне мислення при плануванні складних рухів об'єктів; формувати вміння аналізувати вплив параметрів на анімаційний ефект; розвивати креативність та уяву при створенні динамічних сцен.</li>
+                            <li><b>Виховна:</b> Виховувати терпіння та точність у роботі з анімаційними інструментами; формувати інтерес до комп'ютерної анімації як засобу творчого вираження; заохочувати до самостійного експериментування з анімаційними ефектами.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати суть методу ключових кадрів.</li>
+                            <li>Використовувати інструмент "Вибір об'єкта" для трансформації.</li>
+                            <li>Додавати анімацію переміщення вздовж заданої траєкторії.</li>
+                            <li>Додавати анімацію неперервного та часткового обертання.</li>
+                            <li>Змінювати швидкість руху та обертання об'єктів на різних ділянках.</li>
+                            <li>Створювати прості анімації з автоматичними ефектами.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим редактором TupiTube.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням скріншотів з підручника, прикладів анімації з ключовими кадрами та автоматичними ефектами).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика (координати, кути, траєкторії).</li>
+                            <li>Фізика (рух, обертання).</li>
+                            <li>Образотворче мистецтво (композиція рухомих об'єктів).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Чому в анімації з попередніх двох уроків нерухомі об’єкти зникають?</li>
+                            <li>Які види тла підтримує TupiTube?</li>
+                            <li>У чому різниця між статичним і динамічним тлом?</li>
+                            <li>У чому різниця між векторним і растровим тлом?</li>
+                            <li>Як збільшити швидкість руху динамічного тла?</li>
+                            <li>Як приховати один із шарів тла?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema2-4.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 63)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="container mx-auto px-4 py-12">        
+                    <section id="intro" class="text-center mb-24">
+                        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Автоматична Анімація</h1>
+                        <p class="text-lg max-w-3xl mx-auto text-slate-400">Відкрийте секрет плавної анімації! Навчіться створювати рух за допомогою ключових кадрів, дозволяючи комп'ютеру робити всю важку роботу за вас.</p>
+                    </section>
+
+                    <!-- Keyframe Explorer -->
+                    <section id="keyframe-explorer" class="mb-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Що таке ключовий кадр?</h2>
+                            <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Це як задати маршрут для GPS: ви вказуєте лише початкову та кінцеву точки, а комп'ютер сам прокладає шлях між ними. Рухайте повзунок, щоб побачити це в дії.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <div class="relative h-24 bg-slate-900 rounded-lg border border-slate-700 flex items-center">
+                                <div id="kf-ball" class="absolute w-10 h-10 bg-indigo-500 rounded-full" style="left: 10%;"></div>
+                                <div class="absolute w-10 h-10 border-2 border-dashed border-indigo-400 rounded-full" style="left: 10%;"></div>
+                                <div class="absolute w-10 h-10 border-2 border-dashed border-indigo-400 rounded-full" style="right: 10%;"></div>
+                            </div>
+                            <input id="kf-slider" type="range" min="0" max="100" value="0" class="w-full mt-4 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </section>
+
+                    <!-- Animation Workshop -->
+                    <section id="animation-workshop" class="scroll-mt-24 mb-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Анімаційна Майстерня</h2>
+                            <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Створіть свою першу автоматичну анімацію! Керуйте об'єктом, додавайте ключові кадри та дивіться, що вийде.</p>
+                            <p class="text-md max-w-2xl mx-auto text-yellow-400 mt-2"><i><a href="./klass7-lesson14-2-task.html" class="hover:text-yellow-300 transition-colors duration-200">(Натисніть сюди, щоб перейти на сторінку "Анімаційна Майстерня")</a></i></p>
+                        </div>
+                        <!-- <div class="card max-w-6xl mx-auto">
+                            <h3 class="text-2xl font-bold text-indigo-400 mb-6">Симулятор: Створення анімації "Колобок"</h3>
+                            <div class="grid lg:grid-cols-3 gap-8">
+                                
+                                <div class="lg:col-span-2 bg-slate-900 rounded-lg border border-slate-700 aspect-video">
+                                    <canvas id="main-canvas"></canvas>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <h4 class="text-lg font-bold">Панель трансформації</h4>
+                                    <div>
+                                        <label for="rotation-slider" class="block text-sm">Обертання: <span id="rotation-value">0</span>°</label>
+                                        <input id="rotation-slider" type="range" min="0" max="360" value="0" class="w-full">
+                                    </div>
+                                    <div>
+                                        <label for="scale-slider" class="block text-sm">Масштаб: <span id="scale-value">100</span>%</label>
+                                        <input id="scale-slider" type="range" min="20" max="200" value="100" class="w-full">
+                                    </div>
+                                    <div class="pt-4 border-t border-slate-700 space-y-2">
+                                        <button id="add-keyframe-btn" class="btn btn-primary w-full">Додати ключовий кадр</button>
+                                        <button id="play-animation-btn" class="btn btn-secondary w-full">Відтворити</button>
+                                        <button id="reset-animation-btn" class="btn btn-secondary !bg-red-900/50 text-red-300 w-full">Скинути</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h4 class="font-semibold mb-2">Часова шкала (120 кадрів)</h4>
+                                <div id="timeline" class="flex gap-1 overflow-x-auto p-2 bg-slate-900/50 rounded-lg">
+                                    
+                                </div>
+                            </div>
+                        </div> -->
+                    </section>
+
+                    <!-- Final Project -->
+                    <section id="final-project" class="scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                            <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 12: План дій</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">1. Створення об'єкта</h4>
+                                    <p class="text-sm text-slate-400 mt-1">Запустіть TupiTube, створіть новий проєкт та намалюйте простий об'єкт (м'яч, автомобіль, птах).</p>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">2. Анімація переміщення</h4>
+                                    <p class="text-sm text-slate-400 mt-1">Задайте початковий ключовий кадр. Перемістіть об'єкт в інше місце та задайте кінцевий ключовий кадр. Перегляньте результат.</p>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">3. Анімація обертання та масштабування</h4>
+                                    <p class="text-sm text-slate-400 mt-1">Додайте нові ключові кадри, в яких об'єкт змінює свій кут повороту та розмір. Перегляньте, як це впливає на анімацію.</p>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">4. Експеримент</h4>
+                                    <p class="text-sm text-slate-400 mt-1">Спробуйте поєднати всі три типи анімації (рух, обертання, масштаб) в одному плавному русі. Збережіть проєкт.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">1. Чому створення анімації без комп’ютерів потребувало багато часу або одночасної роботи багатьох людей?</div><div class="flip-card-back bg-green-900">Створення анімації вручну без комп'ютерів вимагало великих витрат часу, оскільки для 10-хвилинного фільму потрібно було намалювати близько 15 000 мальованих кадрів (для частоти 24 кадри/с). Ця робота була дуже складною і вимагала залучення великої кількості художників-аніматорів.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">2. Поясніть суть методу ключових кадрів.</div><div class="flip-card-back bg-green-900">Метод ключових кадрів (keyframing) — це спосіб автоматичного створення анімації, при якому розробник задає лише ключові положення об'єкта (форму, колір, тощо) на певних кадрах, а комп'ютер автоматично обчислює всі проміжні кадри між ними.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 height260">3. Яка послідовність додавання до об’єкта автоматичного ані маційного ефекту?</div><div class="flip-card-back bg-green-900 height260">Щоб додати до об’єкта автоматичний анімаційний ефект, необхідно:<br>1. Вибрати потрібний інструмент, перейшовши на панель інструментів.<br>2. Вибрати один або декілька об'єктів.<br>3. На панелі параметрів інструментів задати властивості ефекту.<br>4. Натиснути кнопку «Застосувати» (вигляд галочки).</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 height260">4. Як додати до об’єкта анімацію переміщення вздовж певної траєкторії?</div><div class="flip-card-back bg-green-900 height260">Щоб додати анімацію переміщення вздовж траєкторії:<br>1. Перейти в режим «Динамічного векторного тла» і створити потрібну траєкторію (шлях).<br>2. Перейти в режим «Динамічного векторного тла».<br>3. Задати ключові кадри та форму траєкторії.<br>4. Натиснути на кнопку «Анімація переміщення».<br>5. Внести зміни в параметри, наприклад, напрямок, швидкість і підтвердити їх.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 70)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 11 (стор. 64-68).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати п.1 із вправи № 11 (стор. 70).</li>
+                                    <li>Приклад виконання п.1 із вправи № 11 (Казка): <a href="https://youtu.be/DGkQE4dyUAo?si=81cOuSnuuFpzNonj" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/DGkQE4dyUAo</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 11: <a href="https://ua.izzi.digital/DOS/750894/838211.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838211.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 11, стор. 64-70)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 11: <a href="https://ua.izzi.digital/DOS/750894/838211.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838211.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx2 = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [2, 4, 3, 1],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // --- Keyframe Explorer ---
+            const kfBall = document.getElementById('kf-ball');
+            const kfSlider = document.getElementById('kf-slider');
+            kfSlider.addEventListener('input', () => {
+                const percentage = kfSlider.value;
+                const startPos = 10;
+                const endPos = 80; // 90% width - 10% ball width
+                const newPos = startPos + (endPos - startPos) * (percentage / 100);
+                kfBall.style.left = `${newPos}%`;
+            });
+
+            // --- Animation Workshop ---
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const rotationSlider = document.getElementById('rotation-slider');
+            const scaleSlider = document.getElementById('scale-slider');
+            const rotationValue = document.getElementById('rotation-value');
+            const scaleValue = document.getElementById('scale-value');
+            const addKeyframeBtn = document.getElementById('add-keyframe-btn');
+            const playBtn = document.getElementById('play-animation-btn');
+            const resetBtn = document.getElementById('reset-animation-btn');
+            const timelineEl = document.getElementById('timeline');
+
+            let keyframes = [];
+            let obj = { x: 100, y: 240, rotation: 0, scale: 1, radius: 40 };
+            let isDragging = false;
+            let animationId;
+            const totalFrames = 120;
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                draw();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw ground
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+                
+                // Draw object (Kolobok)
+                ctx.save();
+                ctx.translate(obj.x, obj.y);
+                ctx.rotate(obj.rotation * Math.PI / 180);
+                ctx.scale(obj.scale, obj.scale);
+                
+                ctx.beginPath();
+                ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#facc15'; // yellow-400
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(-15, -10, 5, 0, Math.PI * 2);
+                ctx.arc(15, -10, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Smile
+                ctx.beginPath();
+                ctx.arc(0, 5, 20, 0, Math.PI);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function updateControls() {
+                rotationSlider.value = obj.rotation;
+                rotationValue.textContent = Math.round(obj.rotation);
+                scaleSlider.value = obj.scale * 100;
+                scaleValue.textContent = Math.round(obj.scale * 100);
+            }
+
+            function renderTimeline() {
+                timelineEl.innerHTML = '';
+                for (let i = 0; i < totalFrames; i++) {
+                    const frameEl = document.createElement('div');
+                    frameEl.className = 'timeline-frame';
+                    if (keyframes.find(kf => kf.frame === i)) {
+                        frameEl.classList.add('keyframe');
+                        frameEl.textContent = 'K';
+                    }
+                    timelineEl.appendChild(frameEl);
+                }
+            }
+
+            rotationSlider.addEventListener('input', () => { obj.rotation = parseInt(rotationSlider.value); updateControls(); draw(); });
+            scaleSlider.addEventListener('input', () => { obj.scale = parseInt(scaleSlider.value) / 100; updateControls(); draw(); });
+
+            addKeyframeBtn.addEventListener('click', () => {
+                const currentFrame = Math.round((keyframes.length / (keyframes.length + 1)) * totalFrames) || 0;
+                 // Find a better frame position logic later
+                const newFrameIndex = keyframes.length > 0 ? keyframes[keyframes.length-1].frame + 30 : 0;
+                if (newFrameIndex >= totalFrames) return;
+                
+                keyframes.push({ frame: newFrameIndex, state: { ...obj } });
+                keyframes.sort((a, b) => a.frame - b.frame);
+                renderTimeline();
+            });
+
+            resetBtn.addEventListener('click', () => {
+                cancelAnimationFrame(animationId);
+                keyframes = [];
+                obj = { x: 100, y: canvas.height - 50 - obj.radius, rotation: 0, scale: 1, radius: 40 };
+                updateControls();
+                renderTimeline();
+                draw();
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (keyframes.length < 2) return;
+                let currentFrame = 0;
+                
+                function animate() {
+                    if (currentFrame >= totalFrames) {
+                        resetBtn.click(); // Reset to start
+                        return;
+                    }
+                    
+                    let startKf = keyframes.filter(kf => kf.frame <= currentFrame).pop() || keyframes[0];
+                    let endKf = keyframes.find(kf => kf.frame > currentFrame) || keyframes[keyframes.length - 1];
+                    
+                    if (startKf === endKf) {
+                        obj = {...startKf.state};
+                    } else {
+                        const duration = endKf.frame - startKf.frame;
+                        const progress = (currentFrame - startKf.frame) / duration;
+
+                        // Linear interpolation (lerp)
+                        const lerp = (a, b, t) => a + (b - a) * t;
+                        
+                        obj.x = lerp(startKf.state.x, endKf.state.x, progress);
+                        obj.y = lerp(startKf.state.y, endKf.state.y, progress);
+                        obj.rotation = lerp(startKf.state.rotation, endKf.state.rotation, progress);
+                        obj.scale = lerp(startKf.state.scale, endKf.state.scale, progress);
+                    }
+                    
+                    draw();
+                    updateControls();
+                    currentFrame++;
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            });
+
+            // Dragging logic
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const distance = Math.sqrt((mouseX - obj.x)**2 + (mouseY - obj.y)**2);
+                if (distance < obj.radius * obj.scale) {
+                    isDragging = true;
+                }
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if(isDragging) {
+                    const rect = canvas.getBoundingClientRect();
+                    obj.x = e.clientX - rect.left;
+                    obj.y = e.clientY - rect.top;
+                    draw();
+                }
+            });
+             canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            resetBtn.click();
+        });
+    </script>
+</body>
+</html>

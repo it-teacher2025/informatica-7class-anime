@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Математичне моделювання</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Tech Green -->
+    <!-- Application Structure Plan: A tab-based SPA to guide the student through the concept of modeling. The structure (About, Simulator, Experiments, Self-Check) provides a clear workflow. The core of the application is the "Simulator" tab, which is an interactive version of the car movement problem. It allows students to input parameters and run a simulation, which dynamically populates a results table and a line chart. This is more engaging and educational than manually creating a spreadsheet. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata: Goal: Inform. Method: Styled cards with Unicode icons. Justification: Quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Justification: Visually represents the priority of each learning group.
+        - Movement Model: Goal: Explore/Understand/Synthesize. Method: An interactive "Movement Simulator" with input fields, a results table, and a line chart. Interaction: User changes input values (distance, speeds, time step) and clicks "Run". The JS calculates the step-by-step movement, updates the table, and redraws the chart showing the distance between the cars decreasing over time. Justification: This transforms a static math problem into a dynamic experiment, making the concept of modeling tangible. The chart provides a powerful visual summary of the simulation.
+        - Experiments (Practical Work): Goal: Apply. Method: A set of guided instructions that prompt the user to use the simulator with different parameters and observe the outcomes. Justification: Encourages a scientific approach to using the model.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards. Justification: A simple and effective self-assessment tool.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #16a34a; background-color: #16a34a; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 38. (До § 27)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Математичне моделювання в ЕТ</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                <button data-tab="simulator" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Симулятор моделі</button>
+                <button data-tab="experiments" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Експерименти</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-green-700">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з поняттями "моделювання" та "математична модель", навчити будувати моделі руху та проводити експерименти.</li>
+                        <li><b>Розвивальна:</b> Розвивати аналітичне мислення, вміння переводити задачі в математичну форму, досліджувати результати.</li>
+                        <li><b>Виховна:</b> Формувати інтерес до застосування інформатики для розв'язання задач з інших предметів.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-green-700">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати, що таке математична модель.</li>
+                        <li>Називати етапи моделювання.</li>
+                        <li>Будувати прості математичні моделі в ЕТ.</li>
+                        <li>Проводити експерименти з моделями.</li>
+                        <li>Інтерпретувати результати.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-green-700">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-green-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-green-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення понять моделювання, демонстрації етапів та прикладів).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-green-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (формули руху, обчислення).</li>
+                        <li>Фізика (рівномірний рух, відстань, швидкість, час).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Які функції використовують для розрахунків у цій роботі?</li>
+                            <li>Яка з використаних функцій має найбільше аргументів?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+        <div id="simulator-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-green-700">Симулятор руху автомобілів</h3>
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-slate-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-4">Вхідні дані</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="distance-l" class="block text-sm font-medium text-slate-700">Відстань між містами, км (L)</label>
+                                <input type="number" id="distance-l" value="150" class="mt-1 w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label for="speed-v1" class="block text-sm font-medium text-slate-700">Швидкість авто 1, км/год (v1)</label>
+                                <input type="number" id="speed-v1" value="80" class="mt-1 w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label for="speed-v2" class="block text-sm font-medium text-slate-700">Швидкість авто 2, км/год (v2)</label>
+                                <input type="number" id="speed-v2" value="75" class="mt-1 w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label for="time-step" class="block text-sm font-medium text-slate-700">Крок часу, хв</label>
+                                <input type="number" id="time-step" value="6" class="mt-1 w-full p-2 border rounded">
+                            </div>
+                            <button id="run-simulation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">Запустити модель</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <h4 class="font-bold text-lg mb-4">Результати моделювання</h4>
+                        <div class="chart-container relative h-64 md:h-80 w-full mb-4">
+                            <canvas id="movementChart"></canvas>
+                        </div>
+                        <div class="h-64 overflow-y-auto border rounded-lg">
+                            <table class="min-w-full text-sm text-center">
+                                <thead class="bg-slate-100 sticky top-0">
+                                    <tr>
+                                        <th class="p-2">Час, хв</th>
+                                        <th class="p-2">Шлях 1, км</th>
+                                        <th class="p-2">Шлях 2, км</th>
+                                        <th class="p-2">Відстань, км</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-table-body">
+                                    <!-- Results will be generated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="simulation-error-message" class="mt-2 text-red-600 text-sm font-medium"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="experiments-content" class="tab-content">
+               <div class="bg-white p-6 rounded-xl shadow-md">
+                   <h3 class="text-2xl font-bold mb-4 text-green-700">Вправа 27: Експерименти з моделлю</h3>
+                   <p class="text-slate-600 mb-6">Використовуйте "Симулятор моделі" на попередній вкладці, щоб провести досліди. Змінюйте вхідні дані відповідно до завдань та аналізуйте, як змінюються результати.</p>
+                   <div class="space-y-4">
+                       <div class="p-4 border rounded-lg bg-slate-50">
+                           <p class="font-semibold">Досліди 1-3: Зміна кроку часу</p>
+                           <p class="text-sm text-slate-700 mt-1">Дослідіть рух за однакових відстаней (150 км) та швидкостей (80 і 75 км/год), але з різними кроками часу (напр., 6 хв, 3 хв, 1 хв). Як зміна кроку часу впливає на точність визначення моменту зустрічі?</p>
+                       </div>
+                       <div class="p-4 border rounded-lg bg-slate-50">
+                           <p class="font-semibold">Дослід 4: Зміна швидкостей</p>
+                           <p class="text-sm text-slate-700 mt-1">Встановіть L=150, v1=75, v2=40, крок=1. Проаналізуйте результат.</p>
+                       </div>
+                       <div class="p-4 border rounded-lg bg-slate-50">
+                           <p class="font-semibold">Досліди 5-6: Самостійний підбір даних</p>
+                           <p class="text-sm text-slate-700 mt-1">Спробуйте самостійно підібрати такі значення L та v1 (при v2=75), щоб час зустрічі та пройдений шлях першого автомобіля (l1) були однаковими в обох дослідах.</p>
+                       </div>
+                   </div>
+               </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-green-700">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">Що таке математична модель?</div><div class="flip-card-back bg-green-200">Це опис об'єкта або процесу за допомогою математичних співвідношень (формул).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">Які величини характеризують рівномірний рух?</div><div class="flip-card-back bg-green-200">Швидкість (v), час (t) та пройдений шлях (l).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">Поясніть формулу d = L - l1 - l2.</div><div class="flip-card-back bg-green-200">Відстань між автомобілями (d) дорівнює початковій відстані (L) мінус шлях, який проїхав перший (l1) і другий (l2) автомобіль.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">Навіщо в формулі ділити на 60?</div><div class="flip-card-back bg-green-200">Щоб перевести час з хвилин (крок часу) в години, оскільки швидкість задана в км/год.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-green-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 27 (стор. 160-162).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 27 (стор. 163-164).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/vzbGE1MaZ2c?si=wOTAwFZR4lKCEkA4" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/vzbGE1MaZ2c</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 27: <a href="https://ua.izzi.digital/DOS/750894/932381.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932381.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-green-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 27, стор. 160-164)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 27: <a href="https://ua.izzi.digital/DOS/750894/932381.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932381.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Simulator Logic
+            const runBtn = document.getElementById('run-simulation-btn');
+            const resultsTableBody = document.getElementById('results-table-body');
+            const chartCanvas = document.getElementById('movementChart');
+            const simulationErrorMessage = document.getElementById('simulation-error-message');
+            let movementChart; // Variable to hold the Chart.js instance
+
+            // Function to run the simulation and update UI
+            function runSimulation() {
+                // Clear previous error messages
+                simulationErrorMessage.textContent = ''; 
+
+                // Get input values and parse them as floats
+                const L = parseFloat(document.getElementById('distance-l').value);
+                const v1 = parseFloat(document.getElementById('speed-v1').value);
+                const v2 = parseFloat(document.getElementById('speed-v2').value);
+                const timeStep = parseFloat(document.getElementById('time-step').value);
+
+                // Input validation
+                if (isNaN(L) || isNaN(v1) || isNaN(v2) || isNaN(timeStep) || L <= 0 || v1 < 0 || v2 < 0 || timeStep <= 0) {
+                    simulationErrorMessage.textContent = 'Будь ласка, введіть коректні додатні числові дані для всіх полів.';
+                    return;
+                }
+
+                resultsTableBody.innerHTML = ''; // Clear previous table results
+                const timeLabels = []; // Array for chart X-axis labels (time)
+                const distanceData = []; // Array for chart Y-axis data (distance)
+                
+                let time = 0;
+                let distanceBetween = L;
+                let met = false; // Flag to check if cars have met
+
+                // Simulate movement step by step
+                while (!met && time <= 600) { // Limit iterations (10 hours) to prevent infinite loops for edge cases
+                    // Calculate distance covered by each car
+                    const l1 = (v1 * time) / 60; // Convert minutes to hours for speed calculation
+                    const l2 = (v2 * time) / 60;
+                    
+                    // Calculate remaining distance between cars
+                    distanceBetween = L - l1 - l2;
+                    
+                    let distanceDisplay;
+                    if (distanceBetween <= 0) {
+                        distanceBetween = 0; // Set to 0 if distance becomes negative (cars have passed each other)
+                        distanceDisplay = '<span class="font-bold text-red-600">зустрілися</span>'; // Display special message
+                        met = true; // Set flag to stop simulation
+                    } else {
+                        distanceDisplay = distanceBetween.toFixed(2); // Format to 2 decimal places
+                    }
+
+                    // Store data for the chart
+                    timeLabels.push(time);
+                    distanceData.push(distanceBetween);
+
+                    // Add a new row to the results table
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border p-2">${time}</td>
+                        <td class="border p-2">${l1.toFixed(2)}</td>
+                        <td class="border p-2">${l2.toFixed(2)}</td>
+                        <td class="border p-2">${distanceDisplay}</td>
+                    `;
+                    resultsTableBody.appendChild(row);
+
+                    if (met) break; // Exit loop if cars have met
+
+                    time += timeStep; // Increment time by the specified step
+                }
+                updateChart(timeLabels, distanceData); // Update the chart with new simulation data
+            }
+
+            // Function to update or create the Chart.js graph
+            function updateChart(labels, data) {
+                // Destroy existing chart instance if it exists to prevent overlap
+                if (movementChart) {
+                    movementChart.destroy();
+                }
+                // Create a new Chart.js instance
+                movementChart = new Chart(chartCanvas, {
+                    type: 'line', // Line chart for showing change over time
+                    data: {
+                        labels: labels, // Time on X-axis
+                        datasets: [{
+                            label: 'Відстань між авто, км',
+                            data: data, // Distance on Y-axis
+                            borderColor: '#16a34a', // Green line color
+                            backgroundColor: 'rgba(22, 163, 74, 0.1)', // Light green fill under the line
+                            fill: true, // Fill area under the line
+                            tension: 0.1 // Smoothness of the line
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow chart to resize freely
+                        scales: {
+                            y: {
+                                beginAtZero: true, // Start Y-axis from zero
+                                title: { display: true, text: 'Відстань, км' } // Y-axis label
+                            },
+                            x: {
+                                title: { display: true, text: 'Час, хв' } // X-axis label
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Event listener for the "Run Simulation" button
+            runBtn.addEventListener('click', runSimulation);
+            runSimulation(); // Run simulation once on page load with default values
+
+            // Chart for NUШ results (already present and functional)
+            const nushCtx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(nushCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 3, 2, 2], // Importance levels: 4: Найважливіша, 3: Дуже важлива, 2: Важлива
+                        backgroundColor: ['rgba(22, 163, 74, 0.7)', 'rgba(74, 222, 128, 0.7)', 'rgba(134, 239, 172, 0.7)', 'rgba(134, 239, 172, 0.7)'],
+                        borderColor: ['rgba(22, 163, 74, 1)', 'rgba(74, 222, 128, 1)', 'rgba(134, 239, 172, 1)', 'rgba(134, 239, 172, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

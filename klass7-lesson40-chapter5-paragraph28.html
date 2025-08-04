@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Етапи розв’язування задачі на комп’ютері</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Accordion content for smooth expand/collapse */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+        .source { padding: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 40. (До § 28)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Етапи розв’язування задачі на комп’ютері</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з основними етапами розв’язування задач на комп’ютері.</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне, алгоритмічне та системне мислення.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність та інтерес до програмування.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Називати та пояснювати етапи розв’язування задач.</li>
+                        <li>Визначати вхідні/вихідні дані для задачі.</li>
+                        <li>Розуміти роль алгоритму та тестування.</li>
+                        <li>Наводити приклади задач, що розв'язуються комп'ютером.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення етапів та прикладів).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (логіка, послідовності, формули, обчислення).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="review-content" class="tab-content">
+            <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <div class="md:w-1/4 flex justify-center md:justify-start mb-6 md:mb-0">
+                            <img src="./images/img05.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="300px">
+                        </div>
+                        <div class="md:w-3/4 text-gray-700 text-lg">
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви познайомилися з прийомами роботи в програмному середовищі Python і правилами запису алгоритмів мовою Python. Ви навчилися вести діалог в інтерактивному режимі в оболонці IDLE і створювати та зберігати програмний код для подальшого використання у вікні програми.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви також знайомі з поняттям величини в програмуванні і маєте уявлення про <b><i>алгоритми роботи з величинами</i></b> числового та рядкового типів.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви вдосконалили знання та навички зі створення інформаційних моделей, дізналися про <b><i>математичне моделювання</i></b>, проаналізували кроки, які потрібно виконати для створення та реалізації математичної моделі задачі у про грамному середовищі.</p>
+                        </div>
+                    </section>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Які види вікон існують у IDLE?</li>
+                            <li>Які повідомлення з’являються у вікні консолі?</li>
+                            <li>Як відкрити вікно програми?</li>
+                            <li>Як організувати діалог людини з програмою?</li>
+                            <li>Які типи даних вам відомі?</li>
+                            <li>Назвіть базові алгоритмічні структури.</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg shadow-md">
+                        <p class="text-gray-800 text-lg mb-4">У цьому розділі («Алгоритми та програми») ви навчитеся працювати з такими конструкціями мови, як рядки та списки. Ви навчитесь описувати функції користувача і використовувати метод покрокової деталізації для розв’язування складних задач.</p>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 168)</a></i></p>
+                    </section>
+                </div>
+
+                
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивний огляд ключових понять</h3>
+                <div class="space-y-4" id="accordion">
+                    <!-- Accordion Item 1: Stages Ordering -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>1. Розташуйте етапи розв'язування задачі</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Перетягніть етапи або використовуйте стрілки, щоб розташувати їх у правильному порядку.</p>
+                            <div id="stages-list" class="space-y-2 p-2 border rounded bg-white">
+                                <!-- Stages will be dynamically loaded here -->
+                            </div>
+                            <button id="check-stages-btn" class="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Перевірити порядок</button>
+                            <div id="stages-feedback" class="mt-2 text-sm font-medium"></div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 2: Input/Output Identification -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>2. Визначення вхідних/вихідних даних</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Прочитайте задачу та вкажіть вхідні та вихідні дані.</p>
+                            <div class="bg-white p-4 rounded border mb-4">
+                                <h4 class="font-bold text-md mb-2">Задача:</h4>
+                                <p class="text-slate-700">Обчислити площу прямокутника, якщо відомі його довжина та ширина.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="input-data" class="block text-sm font-medium text-slate-700">Вхідні дані:</label>
+                                    <input type="text" id="input-data" class="mt-1 block w-full p-2 border rounded" placeholder="Наприклад: довжина, ширина">
+                                </div>
+                                <div>
+                                    <label for="output-data" class="block text-sm font-medium text-slate-700">Вихідні дані:</label>
+                                    <input type="text" id="output-data" class="mt-1 block w-full p-2 border rounded" placeholder="Наприклад: площа">
+                                </div>
+                            </div>
+                            <button id="check-data-btn" class="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Перевірити</button>
+                            <div id="data-feedback" class="mt-2 text-sm font-medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота: Спрощений Python-симулятор</h3>
+                <p class="text-slate-600 mb-6">Спробуйте написати програму для визначення "золотого" прямокутника. Введіть код у поле нижче та натисніть "Виконати".</p>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="python-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                        <textarea id="python-code-input" class="w-full p-3 border rounded font-mono text-sm h-64 bg-slate-100" placeholder="Введіть ваш код тут...">
+a = float(input('Введіть a: '))
+b = float(input('Введіть b: '))
+
+if abs(a/b - b/(a-b)) < 0.001:
+    print('Прямокутник є "золотим".')
+else:
+    print('Прямокутник не є "золотим".')
+                        </textarea>
+                        <button id="run-python-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати код</button>
+                    </div>
+                    <div>
+                        <div class="block text-sm font-medium text-slate-700 mb-2">Вивід програми:</div>
+                        <pre id="python-output" class="w-full p-3 border rounded font-mono text-sm h-64 bg-slate-800 text-green-300 overflow-auto"></pre>
+                    </div>
+                </div>
+                <div id="python-error" class="mt-4 text-red-600 font-medium"></div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який перший етап розв’язування задачі на комп’ютері?</div><div class="flip-card-back bg-indigo-200">Постановка задачі.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що таке інформаційна модель задачі?</div><div class="flip-card-back bg-indigo-200">Опис задачі за допомогою математичних формул, таблиць, графіків тощо.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Для чого потрібен етап тестування та налагодження?</div><div class="flip-card-back bg-indigo-200">Для перевірки програми на помилки та їх виправлення.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що є результатом етапу складання програми?</div><div class="flip-card-back bg-indigo-200">Програма, записана мовою програмування (наприклад, Python).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Які три основні складові має постановка задачі?</div><div class="flip-card-back bg-indigo-200">Вхідні дані, вихідні дані, обмеження.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що таке алгоритм?</div><div class="flip-card-back bg-indigo-200">Чітка послідовність дій для розв'язання задачі.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 28 (стор. 169-171).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 28 (стор. 172-173).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/3PXXJiiyvtw?si=JlN-IqmFa2HJxGWl" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/3PXXJiiyvtw</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 28: <a href="https://ua.izzi.digital/DOS/750894/932621.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932621.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 28, стор. 169-173)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 28: <a href="https://ua.izzi.digital/DOS/750894/932621.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932621.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Accordion logic
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    // Toggle accordion content visibility
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Close other open accordions before opening the current one
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        // Open the clicked accordion
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Chart.js for NUШ results visualization
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 2, 2], // Importance levels: 4: Найважливіша, 2: Важлива
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(165, 180, 252, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(165, 180, 252, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива'; // Not used in this chart, but good to keep for consistency
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Stages Ordering Simulator Logic
+            const stages = [
+                "Постановка задачі",
+                "Побудова інформаційної моделі",
+                "Розробка алгоритму",
+                "Складання програми",
+                "Тестування та налагодження",
+                "Аналіз результатів (використання)"
+            ];
+            let currentStages = [...stages].sort(() => Math.random() - 0.5); // Shuffle initially
+            const stagesList = document.getElementById('stages-list');
+            const checkStagesBtn = document.getElementById('check-stages-btn');
+            const stagesFeedback = document.getElementById('stages-feedback');
+
+            function renderStages() {
+                stagesList.innerHTML = '';
+                currentStages.forEach((stage, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between p-2 bg-white border rounded shadow-sm';
+                    item.draggable = true;
+                    item.dataset.index = index;
+                    item.innerHTML = `
+                        <span>${index + 1}. ${stage}</span>
+                        <div class="flex space-x-1">
+                            <button class="move-up-btn p-1 rounded hover:bg-slate-200 text-slate-600 text-xs">▲</button>
+                            <button class="move-down-btn p-1 rounded hover:bg-slate-200 text-slate-600 text-xs">▼</button>
+                        </div>
+                    `;
+                    stagesList.appendChild(item);
+                });
+                addDragListeners();
+                addMoveButtonListeners();
+            }
+
+            function addDragListeners() {
+                const items = stagesList.querySelectorAll('[draggable="true"]');
+                items.forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', e.target.dataset.index);
+                        e.target.classList.add('opacity-50');
+                    });
+                    item.addEventListener('dragend', (e) => {
+                        e.target.classList.remove('opacity-50');
+                    });
+                    item.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+                    item.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                        const droppedIndex = parseInt(e.target.closest('[data-index]').dataset.index);
+
+                        if (draggedIndex !== droppedIndex) {
+                            const [draggedItem] = currentStages.splice(draggedIndex, 1);
+                            currentStages.splice(droppedIndex, 0, draggedItem);
+                            renderStages();
+                        }
+                    });
+                });
+            }
+
+            function addMoveButtonListeners() {
+                stagesList.querySelectorAll('.move-up-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.closest('[data-index]').dataset.index);
+                        if (index > 0) {
+                            [currentStages[index], currentStages[index - 1]] = [currentStages[index - 1], currentStages[index]];
+                            renderStages();
+                        }
+                    });
+                });
+                stagesList.querySelectorAll('.move-down-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.closest('[data-index]').dataset.index);
+                        if (index < currentStages.length - 1) {
+                            [currentStages[index], currentStages[index + 1]] = [currentStages[index + 1], currentStages[index]];
+                            renderStages();
+                        }
+                    });
+                });
+            }
+
+            checkStagesBtn.addEventListener('click', () => {
+                const isCorrect = currentStages.every((stage, index) => stage === stages[index]);
+                if (isCorrect) {
+                    stagesFeedback.textContent = 'Вірно! Ви розташували етапи у правильному порядку.';
+                    stagesFeedback.className = 'mt-2 text-sm font-medium text-green-600';
+                } else {
+                    stagesFeedback.textContent = 'Невірно. Спробуйте ще раз.';
+                    stagesFeedback.className = 'mt-2 text-sm font-medium text-red-600';
+                }
+            });
+
+            renderStages(); // Initial render
+
+            // Input/Output Identification Logic
+            const inputDataInput = document.getElementById('input-data');
+            const outputDataInput = document.getElementById('output-data');
+            const checkDataBtn = document.getElementById('check-data-btn');
+            const dataFeedback = document.getElementById('data-feedback');
+
+            checkDataBtn.addEventListener('click', () => {
+                const userInput = inputDataInput.value.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+                const userOutput = outputDataInput.value.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+
+                const correctInput = ['довжина', 'ширина'];
+                const correctOutput = ['площа'];
+
+                // Check if all correct items are in user's input and no extra items
+                const isInputCorrect = correctInput.every(item => userInput.includes(item)) && userInput.length === correctInput.length;
+                const isOutputCorrect = correctOutput.every(item => userOutput.includes(item)) && userOutput.length === correctOutput.length;
+
+                if (isInputCorrect && isOutputCorrect) {
+                    dataFeedback.textContent = 'Вірно! Ви правильно визначили вхідні та вихідні дані.';
+                    dataFeedback.className = 'mt-2 text-sm font-medium text-green-600';
+                } else {
+                    dataFeedback.textContent = 'Невірно. Перевірте свої відповіді. Вхідні: "довжина, ширина", Вихідні: "площа".';
+                    dataFeedback.className = 'mt-2 text-sm font-medium text-red-600';
+                }
+            });
+
+            // Simplified Python Simulator Logic for "Golden Rectangle"
+            const pythonCodeInput = document.getElementById('python-code-input');
+            const runPythonBtn = document.getElementById('run-python-btn');
+            const pythonOutput = document.getElementById('python-output');
+            const pythonError = document.getElementById('python-error');
+
+            runPythonBtn.addEventListener('click', () => {
+                console.log("Запуск Python-симулятора..."); // Diagnostic log
+                pythonOutput.textContent = '';
+                pythonError.textContent = '';
+
+                // Simulate input values using prompt
+                // Note: prompt() calls might be blocked by pop-up blockers or appear in background.
+                // Please check your browser settings if you don't see them.
+                let a_val = parseFloat(prompt("Введіть значення для 'a':"));
+                let b_val = parseFloat(prompt("Введіть значення для 'b':"));
+
+                // Handle user cancellation of prompt
+                if (a_val === null || b_val === null) {
+                    pythonError.textContent = 'Операцію скасовано користувачем.';
+                    return;
+                }
+
+                if (isNaN(a_val) || isNaN(b_val)) {
+                    pythonError.textContent = 'Помилка: Будь ласка, введіть числові значення для a та b.';
+                    return;
+                }
+
+                try {
+                    let output_buffer = [];
+                    // Python-like print function
+                    const print = (...args) => output_buffer.push(args.join(' '));
+                    // Python-like abs function
+                    const abs = Math.abs;
+
+                    // Manual simulation of the Python code logic from the textarea
+                    const threshold = 0.001; // From the problem description
+
+                    if (b_val === 0 || (a_val - b_val) === 0) {
+                        output_buffer.push("Помилка: Ділення на нуль неможливе.");
+                    } else if (abs(a_val / b_val - b_val / (a_val - b_val)) < threshold) {
+                        output_buffer.push('Прямокутник є "золотим".');
+                    } else {
+                        output_buffer.push('Прямокутник не є "золотим".');
+                    }
+
+                    pythonOutput.textContent = output_buffer.join('\n');
+
+                } catch (e) {
+                    pythonError.textContent = `Помилка виконання: ${e.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

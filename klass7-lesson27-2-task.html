@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підсумкова робота: Моделювання, Інтернет, Анімація</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Digital Explorer -->
+    <!-- Application Structure Plan: The SPA is designed as a "Digital Assessment Center" where students choose one of two "Missions" (A or B) after a brief intro. This gamified, choice-based approach makes the final assessment less intimidating and more engaging. Each mission is a self-contained, multi-step interactive simulation of the practical tasks (e.g., building a mind map, composing an email, filling a spreadsheet, watching an animation). This structure is chosen to actively test practical skills in a controlled, simulated environment, focusing on the core concepts from the lesson plan rather than software-specific knowledge, thus providing a more accurate and enjoyable assessment of student learning. -->
+    <!-- Visualization & Content Choices:
+        - Theoretical Quiz: Report Info (Test questions) -> Goal (Assess knowledge) -> Method (Interactive multi-choice questions in a modal) -> Interaction (Clicking answers) -> Justification (A quick, engaging way to check theoretical understanding before the practical tasks) -> Method (JS).
+        - Mind Map (Variant A): Report Info (Task to create a mind map) -> Goal (Organize information hierarchically) -> Method (Interactive HTML/CSS nodes and connectors) -> Interaction (Clicking buttons to add nodes) -> Justification (Simulates the creation process, focusing on the logic of structuring information visually) -> Method (JS DOM manipulation).
+        - Email (Variant A): Report Info (Task to send an email with attachment) -> Goal (Demonstrate digital communication skills) -> Method (Simulated email client UI) -> Interaction (Typing in fields, "attaching" the created map, sending) -> Justification (Provides a safe, guided environment to practice formal email composition and file attachment) -> Method (JS).
+        - Spreadsheet (Variant B): Report Info (Task to build a mathematical model) -> Goal (Apply mathematical modeling) -> Method (Simulated spreadsheet table) -> Interaction (Entering data, clicking "Calculate") -> Justification (Clearly demonstrates the input-process-output nature of mathematical models without needing external software) -> Method (JS).
+        - Animation (Variant B): Report Info (Task to create an animation) -> Goal (Visualize the result of a model) -> Method (Simple Canvas animation) -> Interaction (Clicking "Play") -> Justification (Connects the abstract data from the spreadsheet to a tangible, moving visual, reinforcing the concept of animation as a dynamic model) -> Method (Canvas API).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mission-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .mission-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .hidden-section { display: none; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+        .mindmap-node {
+            position: absolute;
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 20px;
+            background-color: white;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .connector {
+            position: absolute;
+            height: 2px;
+            background-color: #cbd5e1;
+            transform-origin: left;
+            width: 0;
+            transition: width 0.7s ease;
+            z-index: -1;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson27-control-work.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+         <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-slate-600 mt-2">Підсумкова робота. Урок № 27.</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Підсумкова робота «Служби Інтернету. Комп’ютерна анімація. Моделі та моделювання»</h1>
+                <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>   
+
+        <div id="app-container" class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-6xl">
+            <!-- Welcome Section -->
+            <section id="welcome" class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-indigo-800" style="font-family: 'Montserrat', sans-serif;">Цифрові завдання</h1>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Вітаємо! Ви завершили вивчення важливих тем. Тепер час продемонструвати свої знання та навички. Оберіть одну з двох місій для виконання підсумкової роботи.</p>
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Mission A -->
+                    <div id="start-mission-a" class="mission-card cursor-pointer bg-white p-8 rounded-2xl shadow-lg border border-transparent hover:border-teal-500">
+                        <h2 class="text-2xl font-bold text-teal-600">Місія А: Цифровий комунікатор</h2>
+                        <p class="mt-2 text-gray-600">Створіть модель правил безпеки в Інтернеті та надішліть її, продемонструвавши навички безпечного онлайн-спілкування.</p>
+                        <div class="mt-4 text-sm font-semibold text-gray-500">Навички: Карти знань, Електронна пошта</div>
+                    </div>
+                    <!-- Mission B -->
+                    <div id="start-mission-b" class="mission-card cursor-pointer bg-white p-8 rounded-2xl shadow-lg border border-transparent hover:border-purple-500">
+                        <h2 class="text-2xl font-bold text-purple-600">Місія Б: Дата-аніматор</h2>
+                        <p class="mt-2 text-gray-600">Побудуйте математичну модель для розрахунків та візуалізуйте результат за допомогою комп'ютерної анімації.</p>
+                        <div class="mt-4 text-sm font-semibold text-gray-500">Навички: Математичні моделі, Анімація</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Quiz Modal -->
+            <div id="quiz-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl text-center">
+                    <h2 class="text-2xl font-bold mb-4">Теоретичний тест</h2>
+                    <p class="mb-6 text-gray-600">Спочатку дайте відповідь на декілька питань.</p>
+                    <div id="quiz-question" class="text-xl mb-6"></div>
+                    <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <p id="quiz-feedback" class="mt-4 font-semibold h-6"></p>
+                </div>
+            </div>
+            
+            <!-- Mission A Section -->
+            <section id="mission-a" class="hidden-section">
+                <h2 class="text-3xl font-bold text-center text-teal-600 mb-8">Місія А: Цифровий комунікатор</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Mind Map -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4">Завдання 1: Створіть карту знань</h3>
+                        <div id="mindmap-controls" class="space-y-2 mb-4">
+                            <button data-step="1" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition">1. Додати центральний вузол "Безпека в Інтернеті"</button>
+                            <button data-step="2" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition" disabled>2. Додати гілки "Загрози" та "Етикет"</button>
+                            <button data-step="3" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition" disabled>3. Додати приклади до "Загроз"</button>
+                        </div>
+                        <div id="mindmap-canvas" class="relative h-80 bg-gray-50 rounded-lg border"></div>
+                    </div>
+                    <!-- Email -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4">Завдання 2: Надішліть листа</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="email-to" class="w-full p-2 border rounded" value="вчитель@школа.укр" disabled>
+                            <input type="text" id="email-subject" class="w-full p-2 border rounded" placeholder="Тема листа">
+                            <textarea id="email-body" class="w-full p-2 border rounded h-24" placeholder="Текст повідомлення"></textarea>
+                            <div id="attachment-area" class="p-3 border-2 border-dashed rounded-lg text-center text-gray-500">Перетягніть карту сюди для вкладення</div>
+                            <button id="send-email" class="w-full bg-teal-500 text-white font-bold py-2 rounded-lg hover:bg-teal-600 transition" disabled>Надіслати</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mission B Section -->
+            <section id="mission-b" class="hidden-section">
+                <h2 class="text-3xl font-bold text-center text-purple-600 mb-8">Місія Б: Дата-аніматор</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Spreadsheet -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4">Завдання 1: Побудуйте математичну модель</h3>
+                        <p class="text-sm text-gray-600 mb-2">Розрахуйте витрати пального (л) для авто (витрата 8л/100км).</p>
+                        <table class="w-full text-center">
+                            <thead><tr class="bg-gray-100"><th class="p-2">Відстань (км)</th><th class="p-2">Витрати (л)</th></tr></thead>
+                            <tbody>
+                                <tr><td class="p-2">50</td><td><button class="calc-btn w-full bg-gray-200 rounded p-1" data-dist="50">?</button></td></tr>
+                                <tr><td class="p-2">120</td><td><button class="calc-btn w-full bg-gray-200 rounded p-1" data-dist="120">?</button></td></tr>
+                                <tr><td class="p-2">350</td><td><button class="calc-btn w-full bg-gray-200 rounded p-1" data-dist="350">?</button></td></tr>
+                            </tbody>
+                        </table>
+                        <p id="model-conclusion" class="mt-4 text-center font-semibold text-purple-800 h-6"></p>
+                    </div>
+                    <!-- Animation -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4">Завдання 2: Візуалізуйте модель</h3>
+                        <p class="text-sm text-gray-600 mb-2">Натисніть "Старт", щоб побачити анімацію руху авто на 350 км.</p>
+                        <canvas id="animation-canvas" class="w-full h-48 bg-blue-100 rounded-lg border"></canvas>
+                        <button id="play-animation" class="mt-4 w-full bg-purple-500 text-white font-bold py-2 rounded-lg hover:bg-purple-600 transition" disabled>Старт анімації</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Completion Screen -->
+            <section id="completion" class="hidden-section text-center">
+                <h2 class="text-4xl font-bold text-green-600" style="font-family: 'Montserrat', sans-serif;">Атестацію завершено!</h2>
+                <p class="mt-4 text-lg text-gray-700">Ви успішно продемонстрували свої знання та навички. Чудова робота!</p>
+                <button id="restart-btn" class="mt-8 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">Повернутися на головну</button>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = {
+        welcome: document.getElementById('welcome'),
+        missionA: document.getElementById('mission-a'),
+        missionB: document.getElementById('mission-b'),
+        completion: document.getElementById('completion')
+    };
+    const quizModal = document.getElementById('quiz-modal');
+    const quiz = {
+        questionEl: document.getElementById('quiz-question'),
+        optionsEl: document.getElementById('quiz-options'),
+        feedbackEl: document.getElementById('quiz-feedback'),
+        currentQuestionIndex: 0,
+        questions: [
+            { q: "Який з цих об'єктів є інформаційною моделлю?", a: ["Карта місцевості", "Глобус", "Манекен"], correct: "Карта місцевості" },
+            { q: "Яка частина email-адреси 'student@example.com' є доменним ім'ям?", a: ["student", "example.com", "@"], correct: "example.com" },
+            { q: "Який анімаційний ефект змінює розмір об'єкта?", a: ["Переміщення", "Обертання", "Масштабування"], correct: "Масштабування" }
+        ]
+    };
+
+    let chosenMission = null;
+
+    function showSection(sectionId) {
+        Object.values(sections).forEach(s => s.style.display = 'none');
+        if (sections[sectionId]) {
+            sections[sectionId].style.display = 'block';
+        }
+    }
+
+    // Quiz Logic
+    function showQuiz() {
+        quizModal.classList.add('active');
+        quiz.currentQuestionIndex = 0;
+        loadQuizQuestion();
+    }
+
+    function loadQuizQuestion() {
+        if (quiz.currentQuestionIndex >= quiz.questions.length) {
+            quizModal.classList.remove('active');
+            showSection(chosenMission);
+            return;
+        }
+        const q = quiz.questions[quiz.currentQuestionIndex];
+        quiz.questionEl.textContent = q.q;
+        quiz.optionsEl.innerHTML = '';
+        quiz.feedbackEl.textContent = '';
+        q.a.forEach(optionText => {
+            const button = document.createElement('button');
+            button.textContent = optionText;
+            button.className = 'p-4 bg-gray-100 rounded-lg hover:bg-indigo-100 transition';
+            button.onclick = () => checkAnswer(optionText, q.correct);
+            quiz.optionsEl.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selected, correct) {
+        const isCorrect = selected === correct;
+        quiz.feedbackEl.textContent = isCorrect ? 'Правильно!' : 'Неправильно.';
+        quiz.feedbackEl.className = `mt-4 font-semibold h-6 ${isCorrect ? 'text-green-600' : 'text-red-600'}`;
+        quiz.currentQuestionIndex++;
+        setTimeout(loadQuizQuestion, 1000);
+    }
+    
+    // Event Listeners
+    document.getElementById('start-mission-a').onclick = () => { chosenMission = 'missionA'; showQuiz(); };
+    document.getElementById('start-mission-b').onclick = () => { chosenMission = 'missionB'; showQuiz(); };
+    document.getElementById('restart-btn').onclick = () => showSection('welcome');
+
+    // Mission A: Mind Map Logic
+    const mindmapCanvas = document.getElementById('mindmap-canvas');
+    const mindmapControls = document.getElementById('mindmap-controls');
+    let mindmapState = {};
+
+    function createMindmapNode(id, text, pos, baseClass = 'border-gray-400') {
+        const node = document.createElement('div');
+        node.id = `node-${id}`;
+        node.className = `mindmap-node ${baseClass}`;
+        node.textContent = text;
+        node.style.left = pos.x;
+        node.style.top = pos.y;
+        mindmapCanvas.appendChild(node);
+        mindmapState[id] = node;
+        setTimeout(() => {
+            node.style.opacity = '1';
+            node.style.transform = 'scale(1)';
+        }, 100);
+    }
+
+    function connectMindmapNodes(id1, id2) {
+        const node1 = mindmapState[id1];
+        const node2 = mindmapState[id2];
+        const canvasRect = mindmapCanvas.getBoundingClientRect();
+        
+        const x1 = node1.offsetLeft + node1.offsetWidth / 2;
+        const y1 = node1.offsetTop + node1.offsetHeight / 2;
+        const x2 = node2.offsetLeft + node2.offsetWidth / 2;
+        const y2 = node2.offsetTop + node2.offsetHeight / 2;
+
+        const connector = document.createElement('div');
+        connector.className = 'connector';
+        const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+        connector.style.top = `${y1}px`;
+        connector.style.left = `${x1}px`;
+        connector.style.transform = `rotate(${angle}deg)`;
+        mindmapCanvas.prepend(connector);
+        setTimeout(() => { connector.style.width = `${length}px`; }, 200);
+    }
+
+    mindmapControls.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        const step = parseInt(e.target.dataset.step);
+        switch(step) {
+            case 1:
+                createMindmapNode('central', 'Безпека в Інтернеті', {x: '50%', y: '50%'}, 'border-blue-500 font-bold');
+                break;
+            case 2:
+                createMindmapNode('threats', 'Загрози', {x: '10%', y: '15%'}, 'border-red-500');
+                createMindmapNode('etiquette', 'Етикет', {x: '75%', y: '70%'}, 'border-green-500');
+                connectMindmapNodes('central', 'threats');
+                connectMindmapNodes('central', 'etiquette');
+                break;
+            case 3:
+                createMindmapNode('virus', 'Віруси', {x: '5%', y: '50%'}, 'border-red-400');
+                createMindmapNode('phishing', 'Фішинг', {x: '25%', y: '80%'}, 'border-red-400');
+                connectMindmapNodes('threats', 'virus');
+                connectMindmapNodes('threats', 'phishing');
+                document.getElementById('send-email').disabled = false;
+                break;
+        }
+        e.target.disabled = true;
+        e.target.classList.add('bg-green-100', 'text-green-800');
+        const nextButton = mindmapControls.querySelector(`button[data-step="${step + 1}"]`);
+        if (nextButton) nextButton.disabled = false;
+    });
+    
+    document.getElementById('send-email').onclick = () => showSection('completion');
+
+    // Mission B: Spreadsheet and Animation Logic
+    document.querySelectorAll('.calc-btn').forEach(btn => {
+        btn.onclick = () => {
+            const distance = parseFloat(btn.dataset.dist);
+            const consumption = (distance * 8 / 100).toFixed(1);
+            btn.textContent = consumption;
+            btn.disabled = true;
+            btn.classList.add('bg-green-200');
+            
+            if (document.querySelectorAll('.calc-btn:disabled').length === 3) {
+                 document.getElementById('model-conclusion').textContent = 'Модель розраховано!';
+                 document.getElementById('play-animation').disabled = false;
+            }
+        };
+    });
+    
+    const animCanvas = document.getElementById('animation-canvas');
+    const animCtx = animCanvas.getContext('2d');
+    
+    function drawCar(x) {
+        animCtx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+        animCtx.fillStyle = 'purple';
+        animCtx.fillRect(x, animCanvas.height - 30, 50, 20);
+        animCtx.fillStyle = 'black';
+        animCtx.beginPath();
+        animCtx.arc(x + 10, animCanvas.height - 5, 5, 0, Math.PI * 2);
+        animCtx.arc(x + 40, animCanvas.height - 5, 5, 0, Math.PI * 2);
+        animCtx.fill();
+    }
+    
+    let carX = 10;
+    drawCar(carX);
+
+    document.getElementById('play-animation').onclick = () => {
+        let startTime = null;
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const progress = (timestamp - startTime) / 3000; // 3 sec animation
+            carX = 10 + (animCanvas.width - 70) * Math.min(progress, 1);
+            drawCar(carX);
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                 setTimeout(() => showSection('completion'), 500);
+            }
+        }
+        requestAnimationFrame(animate);
+        document.getElementById('play-animation').disabled = true;
+    };
+    
+    // Initial state
+    showSection('welcome');
+});
+</script>
+
+</body>
+</html>

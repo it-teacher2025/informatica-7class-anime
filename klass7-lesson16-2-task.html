@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Створення анімаційних ефектів</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Creative Tech / Indigo & Slate -->
+    <!-- Application Structure Plan: The SPA is an "Animator's FX Studio" with a central interactive lab. Users apply and combine animation effects (scaling, rotation, color change, opacity) to an object on a canvas using a control panel. This is followed by a simple foreground layer demo and a project checklist. This hands-on, simulation-first approach is chosen to make complex, multi-layered animation concepts tangible and easier to grasp for 7th graders than a theoretical explanation. -->
+    <!-- Visualization & Content Choices: 1. Combined Effects -> Goal: Teach stacking effects -> Viz: A single canvas with a control panel for multiple effects -> Interaction: Checkboxes enable effects, sliders control parameters. A `requestAnimationFrame` loop interpolates all active effects simultaneously. 2. Foreground -> Goal: Explain layering -> Viz: A simple animation with a toggleable foreground layer -> Interaction: A button shows/hides the top layer. 3. Practical Task -> Goal: Guide Вправа 12 -> Viz: Interactive checklist. All interactions use Vanilla JS and HTML Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+             background-color: #334155; /* slate-700 */
+             color: #e2e8f0; /* slate-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #475569; /* slate-600 */
+        }
+        .control-group {
+            background-color: #334155;
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+        .control-group input[type="checkbox"]:checked {
+            background-color: #4f46e5;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson16-chapter2-paragraph12.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+         <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 16. (До § 12)</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Створення анімаційних ефектів</h1>
+                <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>
+
+        <div class="container mx-auto px-4 py-12">        
+            <section id="intro" class="text-center mb-24">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Лабораторія Анімаційних Ефектів</h1>
+                <p class="text-lg max-w-3xl mx-auto text-slate-400">Опануйте професійні анімаційні ефекти! Навчіться комбінувати рух, обертання, зміну розміру та кольору, щоб створювати справді видовищні сцени.</p>
+            </section>
+
+            <!-- Animation Workshop -->
+            <section id="animation-workshop" class="scroll-mt-24 mb-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Симулятор Ефектів</h2>
+                    <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Експериментуйте з різними ефектами та їх параметрами. Вмикайте їх одночасно, щоб побачити, як вони взаємодіють!</p>
+                </div>
+                <div class="card max-w-6xl mx-auto">
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <!-- Canvas -->
+                        <div class="lg:col-span-2 bg-slate-900 rounded-lg border border-slate-700 aspect-video">
+                            <canvas id="main-canvas"></canvas>
+                        </div>
+                        <!-- Controls -->
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-bold text-indigo-400">Панель керування</h3>
+                            
+                            <!-- Rotation -->
+                            <div class="control-group">
+                                <label class="flex items-center gap-3 font-semibold cursor-pointer">
+                                    <input type="checkbox" id="enable-rotation" class="h-5 w-5 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500">
+                                    Обертання
+                                </label>
+                                <div class="mt-2 pl-8">
+                                    <label for="rotation-speed" class="text-sm">Швидкість: <span id="rotation-speed-value">5</span></label>
+                                    <input id="rotation-speed" type="range" min="1" max="10" value="5" class="w-full mt-1">
+                                </div>
+                            </div>
+
+                            <!-- Scaling -->
+                            <div class="control-group">
+                                <label class="flex items-center gap-3 font-semibold cursor-pointer">
+                                    <input type="checkbox" id="enable-scaling" class="h-5 w-5 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500">
+                                    Масштабування (Пульсація)
+                                </label>
+                                <div class="mt-2 pl-8">
+                                    <label for="scale-factor" class="text-sm">Макс. розмір: <span id="scale-factor-value">150</span>%</label>
+                                    <input id="scale-factor" type="range" min="100" max="200" value="150" class="w-full mt-1">
+                                </div>
+                            </div>
+
+                            <!-- Opacity -->
+                            <div class="control-group">
+                                <label class="flex items-center gap-3 font-semibold cursor-pointer">
+                                    <input type="checkbox" id="enable-opacity" class="h-5 w-5 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500">
+                                    Цілісність (Зникнення/Поява)
+                                </label>
+                            </div>
+
+                            <!-- Coloring -->
+                            <div class="control-group">
+                                <label class="flex items-center gap-3 font-semibold cursor-pointer">
+                                    <input type="checkbox" id="enable-coloring" class="h-5 w-5 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500">
+                                    Розмальовування
+                                </label>
+                            </div>
+                            
+                            <button id="play-animation-btn" class="btn btn-primary w-full mt-4">Відтворити Анімацію</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Foreground Demo -->
+            <section id="foreground-demo" class="mb-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Векторний передній план</h2>
+                    <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Це спеціальний шар, який завжди знаходиться попереду всіх об'єктів. Він дозволяє створювати ефект глибини або ховати частину сцени.</p>
+                </div>
+                <div class="card max-w-3xl mx-auto">
+                    <div class="relative bg-slate-900 rounded-lg border border-slate-700 aspect-video overflow-hidden">
+                        <div id="fg-ball" class="absolute w-12 h-12 bg-yellow-400 rounded-full" style="bottom: 20px; left: -50px;"></div>
+                        <div id="fg-tree" class="absolute bottom-0 left-1/4 w-32 h-64 bg-emerald-700 hidden">
+                            <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500 rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button id="toggle-fg-btn" class="btn btn-secondary">Показати передній план (дерево)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Project -->
+            <section id="final-project" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                    <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                </div>
+                <div class="card max-w-3xl mx-auto">
+                    <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 12: План дій</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                            <h4 class="font-bold">1. Проєкт "Казка"</h4>
+                            <p class="text-sm text-slate-400 mt-1">Доповніть проєкт, додавши до Колобка одночасно анімацію переміщення та обертання. Зробіть так, щоб сонце безперервно оберталося.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                            <h4 class="font-bold">2. Проєкт "Зорі"</h4>
+                            <p class="text-sm text-slate-400 mt-1">Створіть анімацію двох зірок, які мерехтять із різними періодами, використовуючи анімацію <span class="font-semibold text-yellow-300">масштабування</span> та <span class="font-semibold text-yellow-300">цілісності</span>.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                            <h4 class="font-bold">3. Проєкт "Вогнище"</h4>
+                            <p class="text-sm text-slate-400 mt-1">Створіть анімацію вогнища, що змінює колір та розмір, використовуючи анімацію <span class="font-semibold text-yellow-300">розмальовування</span> та <span class="font-semibold text-yellow-300">масштабування</span>. Додайте кілька язиків полум'я.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>   
+    </main>
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const controls = {
+                rotation: document.getElementById('enable-rotation'),
+                scaling: document.getElementById('enable-scaling'),
+                opacity: document.getElementById('enable-opacity'),
+                coloring: document.getElementById('enable-coloring'),
+                rotationSpeed: document.getElementById('rotation-speed'),
+                scaleFactor: document.getElementById('scale-factor'),
+                playBtn: document.getElementById('play-animation-btn')
+            };
+
+            let animationId;
+            let progress = 0; // from 0 to 1
+            const animationDuration = 2000; // in ms
+            let startTime = 0;
+
+            const star = {
+                x: 0, y: 0,
+                outerRadius: 50, innerRadius: 25,
+                points: 5,
+                rotation: 0,
+                scale: 1,
+                opacity: 1,
+                color: '#facc15' // yellow-400
+            };
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                star.x = canvas.width / 2;
+                star.y = canvas.height / 2;
+                drawStar();
+            }
+
+            function drawStar(props = star) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+                ctx.translate(props.x, props.y);
+                ctx.rotate(props.rotation * Math.PI / 180);
+                ctx.scale(props.scale, props.scale);
+                
+                ctx.globalAlpha = props.opacity;
+                ctx.fillStyle = props.color;
+                
+                ctx.beginPath();
+                for (let i = 0; i < props.points * 2; i++) {
+                    const radius = i % 2 === 0 ? props.outerRadius : props.innerRadius;
+                    const angle = Math.PI / props.points * i;
+                    ctx.lineTo(radius * Math.sin(angle), -radius * Math.cos(angle));
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function lerp(start, end, t) {
+                return start * (1 - t) + end * t;
+            }
+            
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            function rgbToHex(r, g, b) {
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0');
+            }
+
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                progress = Math.min(elapsed / animationDuration, 1);
+                
+                // Ping-pong effect
+                const pingPongProgress = Math.sin(progress * Math.PI);
+
+                const currentProps = { ...star };
+
+                if (controls.rotation.checked) {
+                    const speed = parseFloat(controls.rotationSpeed.value);
+                    currentProps.rotation = (star.rotation + progress * 360 * (speed / 5)) % 360;
+                }
+                if (controls.scaling.checked) {
+                    const maxScale = parseFloat(controls.scaleFactor.value) / 100;
+                    currentProps.scale = lerp(1, maxScale, pingPongProgress);
+                }
+                if (controls.opacity.checked) {
+                    currentProps.opacity = 1 - pingPongProgress;
+                }
+                if (controls.coloring.checked) {
+                    const startColor = hexToRgb('#facc15'); // yellow
+                    const endColor = hexToRgb('#ef4444'); // red
+                    const r = Math.round(lerp(startColor.r, endColor.r, pingPongProgress));
+                    const g = Math.round(lerp(startColor.g, endColor.g, pingPongProgress));
+                    const b = Math.round(lerp(startColor.b, endColor.b, pingPongProgress));
+                    currentProps.color = rgbToHex(r, g, b);
+                }
+
+                drawStar(currentProps);
+
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    controls.playBtn.disabled = false;
+                }
+            }
+
+            controls.playBtn.addEventListener('click', () => {
+                cancelAnimationFrame(animationId);
+                startTime = 0;
+                controls.playBtn.disabled = true;
+                requestAnimationFrame(animate);
+            });
+            
+            document.getElementById('rotation-speed').addEventListener('input', (e) => {
+                document.getElementById('rotation-speed-value').textContent = e.target.value;
+            });
+            document.getElementById('scale-factor').addEventListener('input', (e) => {
+                document.getElementById('scale-factor-value').textContent = e.target.value;
+            });
+
+            // Foreground Demo
+            const toggleFgBtn = document.getElementById('toggle-fg-btn');
+            const fgBall = document.getElementById('fg-ball');
+            const fgTree = document.getElementById('fg-tree');
+            let fgAnimation;
+
+            function startFgAnimation() {
+                fgBall.style.transition = 'left 3s linear';
+                fgBall.style.left = '110%';
+                fgAnimation = setTimeout(() => {
+                    fgBall.style.transition = 'none';
+                    fgBall.style.left = '-50px';
+                }, 3000);
+            }
+
+            toggleFgBtn.addEventListener('click', () => {
+                fgTree.classList.toggle('hidden');
+                toggleFgBtn.textContent = fgTree.classList.contains('hidden') ? 'Показати передній план' : 'Сховати передній план';
+                clearTimeout(fgAnimation);
+                fgBall.style.transition = 'none';
+                fgBall.style.left = '-50px';
+                setTimeout(startFgAnimation, 100);
+            });
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            startFgAnimation();
+        });
+    </script>
+</body>
+</html>
+
+<!-- Я створив для вас інтерактивний SPA-додаток "Лабораторія анімаційних ефектів". Замість того, щоб просто переказувати текст підручника, учні отримують можливість:
+
+Комбінувати ефекти в реальному часі: У "Симуляторі ефектів" вони можуть вмикати та вимикати різні анімації (обертання, масштабування, зміну прозорості та кольору) за допомогою чекбоксів. Повзунки дозволяють керувати параметрами, а кнопка "Відтворити" миттєво показує результат комбінованої анімації.
+
+"Відчути" передній план: Інтерактивна демонстрація наочно показує, як шар переднього плану (дерево) перекриває анімований об'єкт (м'яч), що допомагає зрозуміти концепцію глибини сцени.
+
+Отримати чіткий план: Практична робота розбита на три зрозумілі проєкти ("Казка", "Зорі", "Вогнище") з чіткими інструкціями, що допомагає учням структурувати своє завдання та впевнено його виконати у TupiTube.
+
+Такий підхід, заснований на взаємодії та симуляції, робить складні поняття анімації доступними та цікавими, допомагаючи учням краще засвоїти матеріал та розкрити свій творчий потенціал. -->

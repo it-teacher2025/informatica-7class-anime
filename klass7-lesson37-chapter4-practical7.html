@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивна практична робота: Функції та умовне форматування</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Slate -->
+    <!-- Application Structure Plan: A tab-based SPA to guide the student through the practical work. The structure (About, Workspace, Conclusions) provides a clear workflow. The core is the "Workspace" tab, which presents a "before" state of a grade sheet. A single button, "Обчислити та відформатувати", triggers all the complex operations from the lesson plan (calculating averages with ROUND, counting absences with COUNTIF, and applying conditional formatting). This provides a powerful "one-click" demonstration of how these tools automate data analysis and visualization. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata (Goals, Outcomes): Goal: Inform. Method: Styled cards with Unicode icons. Justification: Quick, scannable overview of the lesson's purpose.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Justification: Visually represents the priority of each learning group.
+        - Grade Sheet (Practical Work): Goal: Apply/Synthesize. Method: An interactive HTML table. Interaction: The main button triggers a JS function that populates the table with calculated final grades, absence counts, and summary statistics. It also dynamically applies CSS classes to the grade cells to simulate conditional formatting based on achievement levels. Justification: This approach focuses on the powerful result of combining functions and formatting, making the learning objective tangible and impressive.
+        - Conclusions: Goal: Reflect/Assess. Method: An interactive Q&A section using flip-cards to reinforce the key takeaways about which functions to use and why. Justification: Encourages students to think critically about the tools they just used.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #475569; background-color: #475569; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Conditional formatting classes for grades */
+        .level-high { color: #dc2626; } /* red */
+        .level-sufficient { color: #2563eb; } /* blue */
+        .level-medium { color: #16a34a; } /* green */
+        .level-initial { color: #1f2937; } /* black */
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 37. (До ПР7)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 7. «Використання функцій табличного процесора. Умовне форматування».</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Використання функцій та умовного форматування</h2>
+        </section>
+
+        <section>
+        <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                <button data-tab="workspace" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="conclusions" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Висновки</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-slate-700">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Закріпити навички використання функцій AVERAGE та COUNTIF.</li>
+                        <li>Навчитись створювати таблиці з автоматичним обчисленням.</li>
+                        <li>Практикуватись у застосуванні умовного форматування для візуалізації даних.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-slate-700">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Застосовувати AVERAGE для обчислення середнього.</li>
+                        <li>Використовувати COUNTIF для підрахунку за умовою.</li>
+                        <li>Налаштовувати умовне форматування за значенням.</li>
+                        <li>Робити висновки про ефективність функцій.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-slate-700">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-slate-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок формування вмінь та навичок (комплексна практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-slate-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка (для демонстрації завдання та висновків).</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-slate-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (середнє арифметичне, відсотки, лічба).</li>
+                        <li>Українська мова (робота з текстом, прізвища).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що таке умовне форматування?</li>
+                            <li>Як призначити клітинці умовний формат?</li>
+                            <li>Що відбудеться, якщо два правила суперечать одне одному?</li>
+                            <li>Наведіть приклад умови для форматування.</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+        <div id="workspace-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-slate-800">Таблиця успішності</h3>
+                <p class="text-slate-600 mb-6">Натисніть кнопку, щоб автоматично обчислити підсумкові оцінки, порахувати кількість відсутніх та застосувати умовне форматування.</p>
+                <div class="overflow-x-auto">
+                    <table id="grades-table" class="min-w-full border-collapse text-sm text-center">
+                        <thead>
+                            <!-- Table header generated by JS -->
+                        </thead>
+                        <tbody>
+                            <!-- Student data generated by JS -->
+                        </tbody>
+                        <tfoot>
+                            <!-- Absence counts generated by JS -->
+                        </tfoot>
+                    </table>
+                </div>
+                <button id="calculate-btn" class="mt-6 bg-slate-700 text-white py-2 px-4 rounded-md hover:bg-slate-800 transition">Обчислити та відформатувати</button>
+                <div id="summary" class="mt-6 bg-slate-100 p-4 rounded-lg border hidden">
+                       <h4 class="font-bold text-lg mb-2">Рівні навчальних досягнень:</h4>
+                       <p>Початковий рівень (оцінка < 4): <b id="initial-level-count" class="text-slate-700"></b></p>
+                       <p>Високий рівень (оцінка > 9): <b id="high-level-count" class="text-slate-700"></b></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="conclusions-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-slate-800">Висновки за результатами роботи</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-slate-200">Які функції використовують для розрахунків у цій роботі?</div><div class="flip-card-back bg-slate-300">AVERAGE (для середньої оцінки), ROUND (для округлення), та COUNTIF (для підрахунку відсутніх та рівнів).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-slate-200">Яка з використаних функцій має найбільше аргументів?</div><div class="flip-card-back bg-slate-300">Функція AVERAGE, оскільки вона може приймати багато чисел або цілий діапазон для обчислення середнього.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Повторити § 26 (стор. 155-156).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 7 (стор. 158-159).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/BvACNnsumZ0?si=opzfMVlbobuu3gSC" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/BvACNnsumZ0</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 7: <a href="https://ua.izzi.digital/DOS/750894/1250910.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1250910.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-slate-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР7, стор. 158-159)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 7: <a href="https://ua.izzi.digital/DOS/750894/1250910.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1250910.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Workspace Logic (Grade Table)
+            const studentData = [
+                { name: 'Іванчук', grades: [6, 8, 4, 4, 'н', 5, 'н'] },
+                { name: 'Петренко', grades: [12, 10, 12, 9, 'н', 'н', 'н'] },
+                { name: 'Сидоров', grades: [10, 9, 'н', 8, 'н', 'н', 'н'] },
+                { name: 'Тесленко', grades: [11, 10, 9, 'н', 8, 8, 'н'] },
+                { name: 'Айсман', grades: [5, 'н', 7, 8, 6, 'н', 'н'] },
+                { name: 'Бойко', grades: [12, 12, 12, 'н', 'н', 'н', 'н'] },
+                { name: 'Грицюк', grades: [9, 'н', 8, 9, 10, 11, 'н'] },
+                { name: 'Буренко', grades: ['н', 12, 'н', 'н', 12, 9, 'н'] },
+                { name: 'Вівчар', grades: ['н', 'н', 12, 8, 8, 8, 8] },
+            ].sort((a, b) => a.name.localeCompare(b.name)); // Sort by name
+
+            const dates = ['09.02.2023', '16.02.2023', '23.02.2023', '01.03.2023', '08.03.2023', '15.03.2023', '22.03.2023'];
+            const table = document.getElementById('grades-table');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            const tfoot = table.querySelector('tfoot');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const summaryDiv = document.getElementById('summary');
+            const initialLevelCountSpan = document.getElementById('initial-level-count');
+            const highLevelCountSpan = document.getElementById('high-level-count');
+
+
+            // Renders the initial table structure and data
+            function renderInitialTable() {
+                // Render Table Header (dynamic dates, fixed columns for № and Прізвище)
+                thead.innerHTML = `
+                    <tr class="bg-slate-100">
+                        <th class="border p-2">№</th>
+                        <th class="border p-2">Прізвище</th>
+                        ${dates.map(date => `<th class="border p-2">${date}</th>`).join('')}
+                        <th class="border p-2 font-semibold">Підсумкова</th>
+                    </tr>`;
+                
+                // Render Table Body (student data with placeholders for final grades)
+                tbody.innerHTML = studentData.map((student, index) => `
+                    <tr id="student-row-${index}">
+                        <td class="border p-2">${index + 1}</td>
+                        <td class="border p-2 text-left">${student.name}</td>
+                        ${student.grades.map(grade => `<td class="border p-2">${grade}</td>`).join('')}
+                        <td class="border p-2 font-bold" id="final-grade-${index}"></td>
+                    </tr>
+                `).join('');
+
+                // Render Table Footer (placeholder for absence counts)
+                tfoot.innerHTML = `
+                    <tr class="bg-slate-100">
+                        <td class="border p-2 font-semibold" colspan="2">Кількість відсутніх</td>
+                        ${dates.map((_, i) => `<td class="border p-2 font-bold" id="absence-count-${i}"></td>`).join('')}
+                        <td class="border p-2"></td>
+                    </tr>`;
+            }
+
+            // Event listener for the "Calculate and Format" button
+            calculateBtn.addEventListener('click', () => {
+                const finalGrades = []; // Array to store calculated final grades
+
+                // Iterate through each student to calculate final grades and apply row-level formatting
+                studentData.forEach((student, index) => {
+                    // Filter out 'н' (absent) and convert to numbers for calculation
+                    const numericGrades = student.grades.filter(g => typeof g === 'number');
+                    // Calculate average, handling cases with no numeric grades
+                    const avg = numericGrades.length > 0 ? numericGrades.reduce((a, b) => a + b, 0) / numericGrades.length : 0;
+                    const finalGrade = Math.round(avg); // Round to nearest whole number (like Excel's ROUND)
+                    finalGrades.push(finalGrade); // Store for summary calculations
+                    
+                    const finalGradeCell = document.getElementById(`final-grade-${index}`);
+                    finalGradeCell.textContent = finalGrade; // Display the calculated final grade
+
+                    // Apply conditional formatting based on grade levels
+                    // First, remove all existing level classes to ensure only one is applied
+                    finalGradeCell.classList.remove('level-high', 'level-sufficient', 'level-medium', 'level-initial');
+                    if (finalGrade > 9) finalGradeCell.classList.add('level-high');        // High level (10-12)
+                    else if (finalGrade > 6) finalGradeCell.classList.add('level-sufficient'); // Sufficient level (7-9)
+                    else if (finalGrade > 3) finalGradeCell.classList.add('level-medium');     // Medium level (4-6)
+                    else finalGradeCell.classList.add('level-initial');                     // Initial level (1-3)
+                });
+
+                // Calculate and display absence counts for each date (column-wise)
+                dates.forEach((_, dateIndex) => {
+                    let absenceCount = 0;
+                    studentData.forEach(student => {
+                        // Check if the grade for this specific date is 'н' (absent)
+                        if (student.grades[dateIndex] === 'н') {
+                            absenceCount++;
+                        }
+                    });
+                    document.getElementById(`absence-count-${dateIndex}`).textContent = absenceCount;
+                });
+
+                // Calculate summary statistics for achievement levels
+                const initialLevelCount = finalGrades.filter(g => g < 4).length; // Count grades < 4
+                const highLevelCount = finalGrades.filter(g => g > 9).length;     // Count grades > 9
+                
+                // Display summary and make the summary div visible
+                initialLevelCountSpan.textContent = initialLevelCount;
+                highLevelCountSpan.textContent = highLevelCount;
+                summaryDiv.classList.remove('hidden');
+            });
+            
+            renderInitialTable(); // Render the table on page load with initial data
+
+            // Chart.js for NUШ results visualization
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Bar chart type
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість', // Label for the dataset
+                        data: [4, 2, 3, 2], // Importance data for each group (4: Найважливіша, 3: Дуже важлива, 2: Важлива)
+                        backgroundColor: ['rgba(71, 85, 105, 0.7)', 'rgba(148, 163, 184, 0.7)', 'rgba(100, 116, 139, 0.7)', 'rgba(148, 163, 184, 0.7)'], // Colors for bars
+                        borderColor: ['rgba(71, 85, 105, 1)', 'rgba(148, 163, 184, 1)', 'rgba(100, 116, 139, 1)', 'rgba(148, 163, 184, 1)'], // Border colors for bars
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, // Chart resizes with window
+                    maintainAspectRatio: false, // Don't force aspect ratio
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, // Start Y-axis from 0
+                            max: 4, // Max value on Y-axis
+                            ticks: { 
+                                stepSize: 1, // Y-axis tick interval
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' // Custom labels for Y-axis ticks
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, // Hide legend
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Анімація обертання</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Creative Dark (Indigo & Slate) -->
+    <!-- Application Structure Plan: The SPA is an "Animator's Rotation Lab" with two interactive canvas-based simulators for continuous and partial rotation, followed by a project checklist. This task-oriented, hands-on structure is chosen to make abstract concepts like rotation parameters (speed, angle, looping) tangible and easy to experiment with, which is more effective for 7th graders than a static lesson plan. -->
+    <!-- Visualization & Content Choices: 1. Continuous Rotation -> Goal: Teach speed/direction -> Viz: Canvas with a sun -> Interaction: Sliders and radio buttons control animation parameters in a `requestAnimationFrame` loop. 2. Partial Rotation -> Goal: Teach angle limits & looping -> Viz: Canvas with a seesaw -> Interaction: Sliders for angles/speed and checkboxes for looping modes control the animation. 3. Practical Task -> Goal: Guide Вправа 11 -> Viz: Interactive checklist -> Interaction: Users can mark steps as complete. All interactions use Vanilla JS and HTML Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+             background-color: #334155; /* slate-700 */
+             color: #e2e8f0; /* slate-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #475569; /* slate-600 */
+        }
+        .label-group input:checked + label {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson15-chapter2-paragraph11.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 15. (До § 11)</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Анімація обертання</h1>
+                <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>
+
+        <div class="container mx-auto px-4 py-12">        
+            <section id="intro" class="text-center mb-24">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Лабораторія Обертання</h1>
+                <p class="text-lg max-w-3xl mx-auto text-slate-400">Надайте своїм анімаціям нового виміру! Навчіться створювати плавне обертання об'єктів та керувати кожним градусом руху.</p>
+            </section>
+
+            <!-- Rotation Labs -->
+            <div class="grid lg:grid-cols-2 gap-8 items-start">
+                <!-- Continuous Rotation -->
+                <section id="continuous-rotation" class="space-y-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-white">Безперервне Обертання</h2>
+                        <p class="text-slate-400 mt-1">Ідеально для об'єктів, що обертаються постійно, як сонце або колесо.</p>
+                    </div>
+                    <div class="card">
+                        <div class="bg-slate-900 rounded-lg border border-slate-700 aspect-square mx-auto max-w-md">
+                            <canvas id="sun-canvas"></canvas>
+                        </div>
+                        <div class="max-w-md mx-auto mt-6 space-y-4">
+                            <div>
+                                <label for="sun-speed-slider" class="block text-sm font-medium">Швидкість (град/кадр): <span id="sun-speed-value" class="font-bold text-indigo-400">3</span></label>
+                                <input id="sun-speed-slider" type="range" min="0.5" max="10" value="3" step="0.5" class="w-full mt-1">
+                            </div>
+                            <div>
+                                <span class="block text-sm font-medium mb-2">Напрям</span>
+                                <div class="flex gap-2 label-group">
+                                    <input type="radio" name="sun-direction" id="sun-cw" value="1" class="sr-only" checked>
+                                    <label for="sun-cw" class="btn btn-secondary w-full text-center cursor-pointer border-2 border-transparent">За годинниковою</label>
+                                    <input type="radio" name="sun-direction" id="sun-ccw" value="-1" class="sr-only">
+                                    <label for="sun-ccw" class="btn btn-secondary w-full text-center cursor-pointer border-2 border-transparent">Проти годинникової</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Partial Rotation -->
+                <section id="partial-rotation" class="space-y-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-white">Часткове Обертання</h2>
+                        <p class="text-slate-400 mt-1">Ідеально для маятникових рухів, як гойдалка або махання рукою.</p>
+                    </div>
+                    <div class="card">
+                        <div class="bg-slate-900 rounded-lg border border-slate-700 aspect-square mx-auto max-w-md">
+                            <canvas id="seesaw-canvas"></canvas>
+                        </div>
+                        <div class="max-w-md mx-auto mt-6 space-y-4">
+                            <div>
+                                <label for="seesaw-speed-slider" class="block text-sm font-medium">Швидкість (град/кадр): <span id="seesaw-speed-value" class="font-bold text-indigo-400">1</span></label>
+                                <input id="seesaw-speed-slider" type="range" min="0.2" max="5" value="1" step="0.2" class="w-full mt-1">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input id="seesaw-reverse-checkbox" type="checkbox" class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                <label for="seesaw-reverse-checkbox" class="text-sm font-medium">Зациклити з реверсом (рух туди-назад)</label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Final Project -->
+            <section id="final-project" class="scroll-mt-24 mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                    <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                </div>
+                <div class="card max-w-3xl mx-auto">
+                    <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 11: План дій</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                            <h4 class="font-bold">1. Проєкт "Казка"</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-300 mt-2 space-y-1">
+                                <li>Відкрийте проєкт "Казка".</li>
+                                <li>Змініть швидкість руху Колобка на різних ділянках для більш природного вигляду.</li>
+                                <li>Додайте до об'єкта "Сонце" ефект <span class="font-semibold text-yellow-300">безперервного обертання</span>.</li>
+                                <li>Збережіть проєкт.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                            <h4 class="font-bold">2. Проєкт "Гойдалка"</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-300 mt-2 space-y-1">
+                                <li>Створіть новий проєкт. Намалюйте гойдалку з дітьми.</li>
+                                <li>Згрупуйте об'єкти та встановіть центр обертання в точці опори.</li>
+                                <li>Додайте ефект <span class="font-semibold text-yellow-300">часткового обертання</span>.</li>
+                                <li>Налаштуйте параметри: діапазон від 340° до 20°, швидкість 1 град/кадр, увімкніть "зациклити з реверсом".</li>
+                                <li>Збережіть проєкт.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Continuous Rotation: Sun ---
+            const sunCanvas = document.getElementById('sun-canvas');
+            const sunCtx = sunCanvas.getContext('2d');
+            const sunSpeedSlider = document.getElementById('sun-speed-slider');
+            const sunSpeedValue = document.getElementById('sun-speed-value');
+            
+            let sunAngle = 0;
+            let sunState = { speed: 3, direction: 1 };
+
+            function resizeCanvas(canvas) {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+
+            function drawSun() {
+                sunCtx.clearRect(0, 0, sunCanvas.width, sunCanvas.height);
+                sunCtx.save();
+                sunCtx.translate(sunCanvas.width / 2, sunCanvas.height / 2);
+                sunCtx.rotate(sunAngle * Math.PI / 180);
+
+                // Sun body
+                sunCtx.fillStyle = '#facc15'; // yellow-400
+                sunCtx.beginPath();
+                sunCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                sunCtx.fill();
+
+                // Sun rays
+                for (let i = 0; i < 12; i++) {
+                    sunCtx.rotate(30 * Math.PI / 180);
+                    sunCtx.beginPath();
+                    sunCtx.moveTo(70, 0);
+                    sunCtx.lineTo(90, 0);
+                    sunCtx.strokeStyle = '#facc15';
+                    sunCtx.lineWidth = 8;
+                    sunCtx.stroke();
+                }
+                
+                sunCtx.restore();
+            }
+
+            function animateSun() {
+                sunAngle += sunState.speed * sunState.direction;
+                drawSun();
+                requestAnimationFrame(animateSun);
+            }
+
+            sunSpeedSlider.addEventListener('input', () => {
+                sunState.speed = parseFloat(sunSpeedSlider.value);
+                sunSpeedValue.textContent = sunState.speed;
+            });
+            document.querySelectorAll('input[name="sun-direction"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    sunState.direction = parseInt(e.target.value);
+                });
+            });
+
+
+            // --- Partial Rotation: Seesaw ---
+            const seesawCanvas = document.getElementById('seesaw-canvas');
+            const seesawCtx = seesawCanvas.getContext('2d');
+            const seesawSpeedSlider = document.getElementById('seesaw-speed-slider');
+            const seesawSpeedValue = document.getElementById('seesaw-speed-value');
+            const seesawReverseCheckbox = document.getElementById('seesaw-reverse-checkbox');
+
+            let seesawAngle = 0; // Current angle in degrees
+            let seesawDirection = 1;
+            let seesawState = { speed: 1, reverse: true };
+            const seesawMinAngle = -20; // Corresponds to 340 degrees
+            const seesawMaxAngle = 20;
+
+            function drawSeesaw() {
+                seesawCtx.clearRect(0, 0, seesawCanvas.width, seesawCanvas.height);
+                const centerX = seesawCanvas.width / 2;
+                const centerY = seesawCanvas.height / 2;
+
+                // Base
+                seesawCtx.fillStyle = '#94a3b8'; // slate-400
+                seesawCtx.beginPath();
+                seesawCtx.moveTo(centerX - 20, centerY + 50);
+                seesawCtx.lineTo(centerX + 20, centerY + 50);
+                seesawCtx.lineTo(centerX, centerY);
+                seesawCtx.closePath();
+                seesawCtx.fill();
+
+                seesawCtx.save();
+                seesawCtx.translate(centerX, centerY);
+                seesawCtx.rotate(seesawAngle * Math.PI / 180);
+
+                // Plank
+                seesawCtx.fillStyle = '#a16207'; // yellow-700
+                seesawCtx.fillRect(-120, -5, 240, 10);
+
+                // Kids
+                seesawCtx.fillStyle = '#3b82f6'; // blue-500
+                seesawCtx.beginPath();
+                seesawCtx.arc(-100, -25, 20, 0, Math.PI * 2);
+                seesawCtx.fill();
+
+                seesawCtx.fillStyle = '#ec4899'; // pink-500
+                seesawCtx.beginPath();
+                seesawCtx.arc(100, -25, 20, 0, Math.PI * 2);
+                seesawCtx.fill();
+
+                seesawCtx.restore();
+            }
+
+            function animateSeesaw() {
+                seesawAngle += seesawState.speed * seesawDirection;
+
+                if (seesawState.reverse) {
+                    if (seesawAngle > seesawMaxAngle || seesawAngle < seesawMinAngle) {
+                        seesawDirection *= -1;
+                        // Clamp angle to prevent overshooting
+                        seesawAngle = Math.max(seesawMinAngle, Math.min(seesawMaxAngle, seesawAngle));
+                    }
+                } else {
+                    if (seesawAngle > seesawMaxAngle) {
+                        seesawAngle = seesawMinAngle;
+                    }
+                }
+                
+                drawSeesaw();
+                requestAnimationFrame(animateSeesaw);
+            }
+            
+            seesawSpeedSlider.addEventListener('input', () => {
+                seesawState.speed = parseFloat(seesawSpeedSlider.value);
+                seesawSpeedValue.textContent = seesawState.speed;
+            });
+             seesawReverseCheckbox.addEventListener('change', () => {
+                seesawState.reverse = seesawReverseCheckbox.checked;
+            });
+
+
+            // --- Initial Setup ---
+            window.addEventListener('resize', () => {
+                resizeCanvas(sunCanvas);
+                drawSun();
+                resizeCanvas(seesawCanvas);
+                drawSeesaw();
+            });
+            
+            resizeCanvas(sunCanvas);
+            animateSun();
+            resizeCanvas(seesawCanvas);
+            animateSeesaw();
+        });
+    </script>
+</body>
+</html>
+
+<!-- Я створив для вас інтерактивний SPA-додаток "Лабораторія обертання". Замість того, щоб просто переказувати текст підручника, учні отримують можливість:
+
+Керувати безперервним обертанням: У першому симуляторі вони можуть за допомогою повзунка та кнопок змінювати швидкість і напрям обертання сонця, миттєво бачачи, як це впливає на анімацію.
+
+Досліджувати часткове обертання: У другому симуляторі учні керують гойдалкою. Вони можуть змінювати швидкість та вмикати/вимикати режим "реверсу", щоб наочно зрозуміти, як створюється маятниковий рух.
+
+Отримати чіткий план: Практична робота розбита на два зрозумілі проєкти ("Казка" та "Гойдалка") з чіткими інструкціями, що допомагає учням структурувати своє завдання та впевнено його виконати у TupiTube.
+
+Такий підхід, заснований на взаємодії та симуляції, робить складні поняття анімації доступними та цікавими, допомагаючи учням краще засвоїти матеріал та розкрити свій творчий потенціал. -->

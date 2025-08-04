@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Створення інтерфейсу користувача засобами easygui</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Custom message box for easygui simulation */
+        #easygui-message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            max-width: 90%;
+            width: 400px;
+            overflow: hidden;
+        }
+        #easygui-message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Головний заголовок сторінки (Header) -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основний вміст сторінки (Main) -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 54. (До § 38)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Створення інтерфейсу користувача засобами easygui</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Навігація по вкладках -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Вміст вкладок -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити учнів з поняттям GUI; навчити використовувати бібліотеку `easygui` для створення діалогових вікон (`msgbox`, `buttonbox`, `choicebox`, `enterbox`).</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне мислення при проектуванні взаємодії; формувати вміння застосовувати `easygui` для інтерактивних програм.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність, відповідальність та естетичний смак при розробці інтерфейсу.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати, що таке графічний інтерфейс користувача.</li>
+                        <li>Викликати вікно повідомлення за допомогою `msgbox()`.</li>
+                        <li>Створювати діалогові вікна з кнопками (`buttonbox()`).</li>
+                        <li>Створювати діалогові вікна з вибором зі списку (`choicebox()`).</li>
+                        <li>Отримувати дані від користувача за допомогою `enterbox()`.</li>
+                        <li>Обробляти відповіді користувача.</li>
+                        <li>Створювати прості програми з графічним інтерфейсом.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python та встановленою бібліотекою easygui.</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення функцій та прикладів діалогових вікон).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Дизайн (інтерфейси).</li>
+                        <li>Ергономіка.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="review-content" class="tab-content">
+            <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Які є основні способи перебору елементів списку в Python?</li>
+                            <li>Який спосіб перебору дозволяє змінювати елементи списку?</li>
+                            <li>Як визначити, чи змінювала температура знак між двома послідовними днями?</li>
+                            <li>Як підрахувати кількість елементів у списку, що задовольняють певну умову?</li>
+                            <li>Для чого потрібен модуль `random` при роботі зі списками?</li>
+                            <li>Яка функція дозволяє отримати довжину списку?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-3.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+                
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивний огляд функцій easygui</h3>
+                <p class="text-slate-600 mb-4">Спробуйте створити простий калькулятор, використовуючи різні діалогові вікна easygui.</p>
+                <div class="space-y-6">
+                    <!-- msgbox() simulator -->
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">1. `msgbox()`: Вікно повідомлення</h4>
+                        <p class="text-sm text-slate-600 mb-2">Введіть повідомлення, заголовок та текст кнопки.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <input type="text" id="msgbox-message" class="p-2 border rounded w-full" placeholder="Повідомлення (message)" value="Привіт, світ!">
+                            <input type="text" id="msgbox-title" class="p-2 border rounded w-full" placeholder="Заголовок (title)" value="Привітання">
+                            <input type="text" id="msgbox-button" class="p-2 border rounded w-full" placeholder="Текст кнопки (button)" value="ОК">
+                        </div>
+                        <button id="run-msgbox" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Показати msgbox</button>
+                        <div id="msgbox-output" class="mt-3 p-3 bg-white border rounded text-slate-800"></div>
+                    </div>
+
+                    <!-- buttonbox() simulator -->
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">2. `buttonbox()`: Вікно з кнопками</h4>
+                        <p class="text-sm text-slate-600 mb-2">Введіть повідомлення, заголовок та варіанти кнопок через кому (напр., `Так,Ні,Можливо`).</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <input type="text" id="buttonbox-message" class="p-2 border rounded w-full" placeholder="Повідомлення" value="Оберіть дію:">
+                            <input type="text" id="buttonbox-title" class="p-2 border rounded w-full" placeholder="Заголовок" value="Вибір">
+                            <input type="text" id="buttonbox-choices" class="p-2 border rounded w-full" placeholder="Варіанти кнопок (через кому)" value="Так,Ні,Можливо">
+                        </div>
+                        <button id="run-buttonbox" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Показати buttonbox</button>
+                        <div id="buttonbox-output" class="mt-3 p-3 bg-white border rounded text-slate-800"></div>
+                    </div>
+
+                    <!-- choicebox() simulator -->
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">3. `choicebox()`: Вікно вибору зі списку</h4>
+                        <p class="text-sm text-slate-600 mb-2">Введіть повідомлення, заголовок та елементи списку вибору через кому (напр., `Яблуко,Банан,Апельсин`).</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <input type="text" id="choicebox-message" class="p-2 border rounded w-full" placeholder="Повідомлення" value="Оберіть фрукт:">
+                            <input type="text" id="choicebox-title" class="p-2 border rounded w-full" placeholder="Заголовок" value="Фрукти">
+                            <input type="text" id="choicebox-choices" class="p-2 border rounded w-full" placeholder="Елементи списку (через кому)" value="Яблуко,Банан,Апельсин">
+                        </div>
+                        <button id="run-choicebox" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Показати choicebox</button>
+                        <div id="choicebox-output" class="mt-3 p-3 bg-white border rounded text-slate-800"></div>
+                    </div>
+
+                    <!-- enterbox() simulator -->
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">4. `enterbox()`: Вікно для введення даних</h4>
+                        <p class="text-sm text-slate-600 mb-2">Введіть повідомлення, заголовок та значення за замовчуванням (необов'язково).</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <input type="text" id="enterbox-message" class="p-2 border rounded w-full" placeholder="Повідомлення" value="Введіть ваше ім'я:">
+                            <input type="text" id="enterbox-title" class="p-2 border rounded w-full" placeholder="Заголовок" value="Введення">
+                            <input type="text" id="enterbox-default" class="p-2 border rounded w-full" placeholder="За замовчуванням (default)" value="Гість">
+                        </div>
+                        <button id="run-enterbox" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Показати enterbox</button>
+                        <div id="enterbox-output" class="mt-3 p-3 bg-white border rounded text-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+            Сторінка знаходиться в процесі розробки.
+            <!-- <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота: Вікторина з easygui</h3>
+                <p class="text-slate-600 mb-6">Створіть програму-вікторину, яка використовує діалогові вікна easygui для взаємодії з користувачем.</p>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="python-quiz-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                        <textarea id="python-quiz-code-input" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-100" placeholder="Введіть ваш код тут (використовуйте 'msgbox', 'buttonbox', 'choicebox', 'enterbox')...">
+# Вікторина з easygui
+
+# Вхідні дані (для симуляції)
+# Замість реальних діалогів easygui, ці функції будуть виводити текст в консоль
+# та використовувати фіксовані або заглушені відповіді для демонстрації логіки.
+
+# 1. Початок вікторини (msgbox)
+msgbox("Ласкаво просимо до вікторини!", "Вікторина")
+
+# 2. Питання з кнопками (buttonbox)
+# Яка тварина вміє літати, але не птах? (Кажан, Бджола, Муха)
+answer1 = buttonbox("Яка тварина вміє літати, але не птах?", "Загадка", ["Кажан", "Бджола", "Муха"])
+
+score = 0
+if answer1 == "Кажан":
+    msgbox("Правильно!", "Результат")
+    score = score + 1 # Використовуємо score = score + 1 замість score += 1 для симуляції
+else:
+    msgbox("Неправильно. Правильна відповідь: Кажан.", "Результат")
+
+# 3. Питання з вибором зі списку (choicebox)
+# Яка планета найбільша у Сонячній системі? (Земля, Марс, Юпітер)
+choices2 = ["Земля", "Марс", "Юпітер"]
+answer2 = choicebox("Яка планета найбільша у Сонячній системі?", "Вибір планети", choices2)
+
+if answer2 == "Юпітер":
+    msgbox("Правильно!", "Результат")
+    score = score + 1
+else:
+    msgbox("Неправильно. Правильна відповідь: Юпітер.", "Результат")
+
+# 4. Введення імені та підсумок (enterbox)
+user_name = enterbox("Введіть ваше ім'я:", "Ім'я")
+msgbox(f"Дякую, {user_name}! Ви набрали {score} з 2 балів.", "Підсумок вікторини")
+                        </textarea>
+                        <button id="run-quiz-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати вікторину</button>
+                    </div>
+                    <div>
+                        <label for="python-quiz-output" class="block text-sm font-medium text-slate-700 mb-2">Вивід програми (симуляція easygui):</label>
+                        <pre id="python-quiz-output" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-800 text-green-300 overflow-auto"></pre>
+                    </div>
+                </div>
+                <div id="python-quiz-error" class="mt-4 text-red-600 font-medium"></div>
+            </div> -->
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як викликати вікно з повідомленням і єдиною кнопкою з модуля EasyGUI?</div><div class="flip-card-back bg-indigo-200">Використовувати функцію `msgbox()`. Наприклад: `msgbox("Привіт!")`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який вигляд має діалогове вікно, створене з параметрами: `choice = buttonbox('Виберіть рівень', 'Гра', ['1', '2', '3'])`?</div><div class="flip-card-back bg-indigo-200">Вікно із заголовком 'Гра', текстом 'Виберіть рівень' та трьома кнопками: '1', '2', '3'.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який вигляд має діалогове вікно, створене з параметрами: `choice = choicebox('Скільки гравців?', 'Гра', ['1', '2', '3'])`?</div><div class="flip-card-back bg-indigo-200">Вікно із заголовком 'Гра', текстом 'Скільки гравців?', та випадаючим списком (або списком для вибору) з елементами '1', '2', '3'.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як засобами модуля EasyGUI ввести рядок тексту?</div><div class="flip-card-back bg-indigo-200">Використовувати функцію `enterbox()`. Наприклад: `name = enterbox("Введіть ім'я:")`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як засобами модуля EasyGUI ввести ціле число?</div><div class="flip-card-back bg-indigo-200">Спочатку ввести як рядок за допомогою `enterbox()`, потім перетворити на ціле число за допомогою `int()`. Наприклад: `age = int(enterbox("Введіть вік:"))`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Чим відрізняється `buttonbox()` від `choicebox()`?</div><div class="flip-card-back bg-indigo-200">`buttonbox()` відображає кнопки для вибору, тоді як `choicebox()` надає список для вибору елемента.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 38 (стор. 227-231).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати завдання із прикладу № 4 (стор. 230).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 38: <a href="https://ua.izzi.digital/DOS/750894/932591.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932591.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 38, стор. 227-233)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 38: <a href="https://ua.izzi.digital/DOS/750894/932591.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932591.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер сторінки (Footer) -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Custom message box for simulation -->
+    <div id="easygui-message-box-overlay"></div>
+    <div id="easygui-message-box" class="p-6">
+        <div class="bg-indigo-600 text-white p-3 -mx-6 -mt-6 mb-4 rounded-t-lg">
+            <h4 id="easygui-box-title" class="font-bold text-lg">Заголовок</h4>
+        </div>
+        <p id="easygui-box-message" class="text-slate-700 mb-4"></p>
+        <div id="easygui-box-content" class="flex flex-wrap justify-center gap-2">
+            <!-- Buttons or input field will be inserted here -->
+        </div>
+        <div id="easygui-box-error" class="text-red-600 text-sm mt-2"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [3, 4, 4, 2], // ГР2, ГР3 - Найважливіша (4), ГР1 - Дуже важлива (3), ГР4 - Важлива (2)
+                        backgroundColor: ['rgba(165, 180, 252, 0.7)', 'rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(165, 180, 252, 1)', 'rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива';
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // EasyGUI custom message box elements
+            const msgBox = document.getElementById('easygui-message-box');
+            const msgBoxOverlay = document.getElementById('easygui-message-box-overlay');
+            const msgBoxTitle = document.getElementById('easygui-box-title');
+            const msgBoxMessage = document.getElementById('easygui-box-message');
+            const msgBoxContent = document.getElementById('easygui-box-content');
+            const msgBoxError = document.getElementById('easygui-box-error');
+            let resolveEasyguiPromise; // To resolve promises for async easygui calls
+
+            // Make these functions globally accessible
+            window.hideEasyguiBox = function() {
+                msgBox.style.display = 'none';
+                msgBoxOverlay.style.display = 'none';
+            };
+
+            window.resolveEasyguiPromise = function(value) {
+                if (resolveEasyguiPromise) {
+                    resolveEasyguiPromise(value);
+                    resolveEasyguiPromise = null; // Clear the resolver
+                }
+            };
+
+            // Function to show the custom easygui message box
+            function showEasyguiBox(title, message, contentHTML, inputMode = false) {
+                msgBoxTitle.textContent = title;
+                msgBoxMessage.textContent = message;
+                msgBoxContent.innerHTML = contentHTML;
+                msgBoxError.textContent = ''; // Clear previous errors
+
+                msgBoxOverlay.style.display = 'block';
+                msgBox.style.display = 'block';
+
+                return new Promise(resolve => {
+                    resolveEasyguiPromise = resolve;
+                    if (inputMode) {
+                        // Focus on the input field if it exists
+                        const inputField = msgBoxContent.querySelector('input, select'); // Also target select for choicebox
+                        if (inputField) {
+                            inputField.focus();
+                        }
+                    }
+                });
+            }
+
+            // --- easygui() simulator functions for Interactive Review ---
+
+            // msgbox()
+            document.getElementById('run-msgbox').addEventListener('click', async () => {
+                const message = document.getElementById('msgbox-message').value;
+                const title = document.getElementById('msgbox-title').value;
+                const buttonText = document.getElementById('msgbox-button').value;
+
+                await showEasyguiBox(title, message, `<button class="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition" onclick="window.hideEasyguiBox();">${buttonText}</button>`);
+                document.getElementById('msgbox-output').textContent = `Ви натиснули: '${buttonText}'`;
+            });
+
+            // buttonbox()
+            document.getElementById('run-buttonbox').addEventListener('click', async () => {
+                const message = document.getElementById('buttonbox-message').value;
+                const title = document.getElementById('buttonbox-title').value;
+                const choicesStr = document.getElementById('buttonbox-choices').value;
+                const choices = choicesStr.split(',').map(c => c.trim()).filter(c => c !== '');
+
+                if (choices.length === 0) {
+                    document.getElementById('buttonbox-output').textContent = 'Помилка: Введіть хоча б один варіант кнопки.';
+                    return;
+                }
+
+                const buttonsHtml = choices.map(choice =>
+                    `<button class="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition" onclick="window.resolveEasyguiPromise('${choice}'); window.hideEasyguiBox();">${choice}</button>`
+                ).join('');
+
+                const result = await showEasyguiBox(title, message, buttonsHtml);
+                document.getElementById('buttonbox-output').textContent = `Ви обрали: '${result}'`;
+            });
+
+            // choicebox()
+            document.getElementById('run-choicebox').addEventListener('click', async () => {
+                const message = document.getElementById('choicebox-message').value;
+                const title = document.getElementById('choicebox-title').value;
+                const choicesStr = document.getElementById('choicebox-choices').value;
+                const choices = choicesStr.split(',').map(c => c.trim()).filter(c => c !== '');
+
+                if (choices.length === 0) {
+                    document.getElementById('choicebox-output').textContent = 'Помилка: Введіть хоча б один елемент для вибору.';
+                    return;
+                }
+
+                const selectOptions = choices.map(choice => `<option value="${choice}">${choice}</option>`).join('');
+                const contentHtml = `
+                    <select id="choicebox-select" class="p-2 border rounded w-full mb-3">
+                        ${selectOptions}
+                    </select>
+                    <button class="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition w-full" onclick="window.resolveEasyguiPromise(document.getElementById('choicebox-select').value); window.hideEasyguiBox();">ОК</button>
+                `;
+                
+                const result = await showEasyguiBox(title, message, contentHtml, true);
+                document.getElementById('choicebox-output').textContent = `Ви обрали: '${result}'`;
+            });
+
+            // enterbox()
+            document.getElementById('run-enterbox').addEventListener('click', async () => {
+                const message = document.getElementById('enterbox-message').value;
+                const title = document.getElementById('enterbox-title').value;
+                const defaultValue = document.getElementById('enterbox-default').value;
+
+                const contentHtml = `
+                    <input type="text" id="enterbox-input" class="p-2 border rounded w-full mb-3" value="${defaultValue}" placeholder="Введіть значення">
+                    <button class="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition w-full" onclick="window.resolveEasyguiPromise(document.getElementById('enterbox-input').value); window.hideEasyguiBox();">ОК</button>
+                    <button class="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition w-full mt-2" onclick="window.resolveEasyguiPromise(null); window.hideEasyguiBox();">Скасувати</button>
+                `;
+                
+                const result = await showEasyguiBox(title, message, contentHtml, true);
+                document.getElementById('enterbox-output').textContent = `Ви ввели: '${result === null ? 'Скасовано' : result}'`;
+            });
+
+            // --- Python Quiz Simulator Logic ---
+            const pythonQuizCodeInput = document.getElementById('python-quiz-code-input');
+            const runQuizBtn = document.getElementById('run-quiz-btn');
+            const pythonQuizOutput = document.getElementById('python-quiz-output');
+            const pythonQuizError = document.getElementById('python-quiz-error');
+
+            runQuizBtn.addEventListener('click', async () => {
+                pythonQuizOutput.textContent = '';
+                pythonQuizError.textContent = '';
+                let output_buffer = [];
+
+                // Define print and other helper functions for the simulated Python environment
+                const print = (...args) => output_buffer.push(args.join(' '));
+                const len = (arr) => arr.length;
+                const str = (val) => String(val); // Simulate str() function
+
+                // Mock easygui functions for the Python simulator
+                const msgbox = async (message, title = "", button = "OK") => {
+                    output_buffer.push(`[MsgBox] Title: "${title}", Message: "${message}", Button: "${button}"`);
+                    // Simulate user clicking OK button
+                    return button; 
+                };
+
+                const buttonbox = async (message, title = "", choices = ["OK"]) => {
+                    output_buffer.push(`[ButtonBox] Title: "${title}", Message: "${message}", Choices: ${JSON.stringify(choices)}`);
+                    // Simulate user selecting the first choice for demonstration
+                    return choices[0]; 
+                };
+
+                const choicebox = async (message, title = "", choices = []) => {
+                    output_buffer.push(`[ChoiceBox] Title: "${title}", Message: "${message}", Choices: ${JSON.stringify(choices)}`);
+                    // Simulate user selecting the first choice for demonstration
+                    return choices[0];
+                };
+
+                const enterbox = async (message, title = "", default_value = "") => {
+                    output_buffer.push(`[EnterBox] Title: "${title}", Message: "${message}", Default: "${default_value}"`);
+                    // Simulate a fixed input for the quiz or use default if available
+                    if (message.includes("ім'я")) return "Тестовий Користувач"; // Fixed name for quiz demo
+                    return default_value || "Simulated_Input"; // Generic simulated input
+                };
+
+                const pythonCode = pythonQuizCodeInput.value;
+
+                try {
+                    // Convert Python comments to JS comments
+                    const processedCode = pythonCode.replace(/^(\s*)#(.*)$/gm, '$1//$2')
+                        .replace(/f"(.*?)"/g, (match, p1) => { // Basic f-string simulation
+                            return p1.replace(/{([^}]+)}/g, (m, varName) => `"+${varName}+"`);
+                        })
+                        .replace(/score \+= 1/g, 'score = score + 1'); // Replace `+=` for simple `eval`
+
+                    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+                    const f = new AsyncFunction('msgbox', 'buttonbox', 'choicebox', 'enterbox', 'print', 'len', 'str', processedCode);
+                    
+                    await f(msgbox, buttonbox, choicebox, enterbox, print, len, str);
+
+                    pythonQuizOutput.textContent = output_buffer.join('\n');
+                } catch (e) {
+                    pythonQuizError.textContent = `Помилка виконання: ${e.message}`;
+                    console.error("Помилка виконання Python симулятора:", e);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

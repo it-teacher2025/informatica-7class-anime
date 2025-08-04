@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Застосунок «Відгадай загадку»</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Головний заголовок сторінки (Header) -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основний вміст сторінки (Main) -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Практикум з використання інформаційних технологій. Урок № 66. (До ПР18)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 18. «Розробка застосунку «Відгадай загадку»»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивна практична робота для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+        <!-- Навігація по вкладках -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія: Ключові елементи</button>
+                <button data-tab="game" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивна гра</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Вміст вкладок -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Закріпити знання про списки, цикли, розгалуження; навчити використовувати модуль `easygui` для створення діалогових вікон; навчити складати програми, що взаємодіють з користувачем.</li>
+                        <li><b>Розвивальна:</b> Розвивати алгоритмічне та логічне мислення; формувати вміння організовувати дані у списки; розвивати навички роботи з GUI.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність, відповідальність та креативність при розробці власного програмного продукту.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Створювати та ініціалізувати списки в Python.</li>
+                        <li>Використовувати цикли для перебору елементів списку.</li>
+                        <li>Застосовувати розгалуження для перевірки умов.</li>
+                        <li>Імпортувати та використовувати функції `easygui`.</li>
+                        <li>Організовувати взаємодію з користувачем.</li>
+                        <li>Складати програму, що ставить загадки та перевіряє відповіді.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок застосування знань, умінь та навичок (практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Модуль easygui (повинен бути встановлений).</li>
+                        <li>Графічні файли (зображення-відповіді до загадок у форматі GIF).</li>
+                        <li>Завдання практичної роботи.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Українська мова (загадки, робота з текстом).</li>
+                        <li>Математика (логічні умови, підрахунок результатів).</li>
+                        <li>Мистецтво (графічні зображення).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Ключові елементи програми</h3>
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="p-4 border rounded-lg bg-slate-50">
+                        <h4 class="font-semibold text-lg text-slate-800">1. Списки для зберігання даних</h4>
+                        <p class="mt-2 text-slate-700">Ми використовуємо три списки, щоб організувати дані гри. Важливо, щоб елементи в них відповідали один одному за індексом.</p>
+                        <pre class="w-full mt-2 p-3 border rounded-lg font-mono text-sm bg-slate-900 text-white overflow-auto"><code>riddles = ['Загадка 1', 'Загадка 2', ...]
+answer  = ['Відповідь 1', 'Відповідь 2', ...]
+pictures= ['pic1.gif', 'pic2.gif', ...]</code></pre>
+                    </div>
+                    <div class="p-4 border rounded-lg bg-blue-50">
+                        <h4 class="font-semibold text-lg text-blue-800">2. Цикл для перебору загадок</h4>
+                        <p class="mt-2 text-slate-700">Цикл `for i in range(4):` дозволяє послідовно пройти по кожній з чотирьох загадок, використовуючи індекс `i` для доступу до елементів у списках.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                           <div class="p-4 border rounded-lg bg-green-50">
+                               <h4 class="font-semibold text-lg text-green-800">3. Вікно з варіантами: `buttonbox`</h4>
+                               <p class="mt-2 text-slate-700">Ця функція показує вікно із загадкою та кнопками-варіантами. Вона повертає текст натиснутої кнопки.</p>
+                               <img src="https://placehold.co/400x200/dcfce7/166534?text=buttonbox" alt="Приклад вікна buttonbox" class="mt-2 rounded-lg w-full">
+                           </div>
+                           <div class="p-4 border rounded-lg bg-yellow-50">
+                               <h4 class="font-semibold text-lg text-yellow-800">4. Вікно з повідомленням: `msgbox`</h4>
+                               <p class="mt-2 text-slate-700">Використовується для показу результату: правильно чи ні. Можна також додати зображення.</p>
+                               <img src="https://placehold.co/400x200/fef9c3/b45309?text=msgbox" alt="Приклад вікна msgbox" class="mt-2 rounded-lg w-full">
+                           </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="game-content" class="tab-content">
+             <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Гра «Відгадай загадку»</h3>
+                <p class="text-slate-600 mb-8 max-w-2xl mx-auto">Це симулятор програми, яку ви створите на уроці. Натисніть "Почати гру", щоб перевірити свої знання та побачити, як працює застосунок.</p>
+                <button id="start-game-btn" class="bg-indigo-600 text-white py-3 px-8 rounded-lg hover:bg-indigo-700 transition text-lg font-bold">Почати гру</button>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Для чого в цій програмі використовуються списки?</div><div class="flip-card-back bg-indigo-200 p-4">Для зберігання та організації даних: текстів загадок, правильних відповідей та назв файлів зображень.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Яка функція `easygui` створює вікно з кнопками-варіантами?</div><div class="flip-card-back bg-indigo-200 p-4">`buttonbox()`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як програма дізнається, яку відповідь обрав користувач?</div><div class="flip-card-back bg-indigo-200 p-4">Функція `buttonbox()` повертає текст, написаний на натиснутій кнопці. Це значення ми зберігаємо у змінну.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як перевіряється правильність відповіді?</div><div class="flip-card-back bg-indigo-200 p-4">За допомогою оператора `if`, який порівнює відповідь користувача з правильним елементом зі списку `answer`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Чому важливо, щоб файли зображень були в тій самій папці, що й програма?</div><div class="flip-card-back bg-indigo-200 p-4">Тому що ми вказуємо лише ім'я файлу (`'Калина.GIF'`), а не повний шлях. Програма шукає його в поточній папці.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Чи можна легко додати нову загадку до гри?</div><div class="flip-card-back bg-indigo-200 p-4">Так, потрібно просто додати новий елемент до кожного з трьох списків (`riddles`, `answer`, `pictures`) та змінити `range` в циклі.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <div>
+                                <p><b>1. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 18 (стор. 263-265).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/FZvONqyVt64?si=pGOzREbx2r1Sl0aw" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/FZvONqyVt64</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>2. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 18: <a href="https://ua.izzi.digital/DOS/750894/1251261.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251261.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР18, стор. 263-265)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 18: <a href="https://ua.izzi.digital/DOS/750894/1251261.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251261.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер сторінки (Footer) -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Контейнер для модальних вікон -->
+    <div id="modal-container"></div>
+
+    <!-- JavaScript для інтерактивності -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР1: Інфо, дані, моделі', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 3, 2, 2],
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => ['','','Важлива','Дуже важлива','Найважливіша'][v]
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => ['','','Важлива','Дуже важлива','Найважливіша'][c.parsed.y] || ''
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Game Logic
+            const startGameBtn = document.getElementById('start-game-btn');
+            const modalContainer = document.getElementById('modal-container');
+
+            const gameData = [
+                {
+                    riddle: 'Фарбоване коромисло над річкою зависло. Що це?',
+                    choices: ['Міст', 'Веселка', 'Хмара', 'Птах'],
+                    answer: 'Веселка',
+                    image: 'https://placehold.co/300x200/a5b4fc/1e1b4b?text=Веселка'
+                },
+                {
+                    riddle: 'Біла рілля, чорне насіння. Хто його вміє, той і розуміє.',
+                    choices: ['Поле', 'Газета', 'Книжка', 'Зошит'],
+                    answer: 'Книжка',
+                    image: 'https://placehold.co/300x200/a5b4fc/1e1b4b?text=Книжка'
+                },
+                {
+                    riddle: 'Чорний Іван, дерев\'яний каптан: де носом проведе, там помітку кладе.',
+                    choices: ['Маркер', 'Олівець', 'Ручка', 'Цвях'],
+                    answer: 'Олівець',
+                    image: 'https://placehold.co/300x200/a5b4fc/1e1b4b?text=Олівець'
+                },
+                {
+                    riddle: 'І червона, й соковита, та гірка вона все літо. Припече мороз – вона стала добра й смачна.',
+                    choices: ['Вишня', 'Горобина', 'Яблуко', 'Калина'],
+                    answer: 'Калина',
+                    image: 'https://placehold.co/300x200/a5b4fc/1e1b4b?text=Калина'
+                }
+            ];
+
+            let currentRiddleIndex = 0;
+            let score = 0;
+
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function showModal(content) {
+                modalContainer.innerHTML = content;
+            }
+
+            function hideModal() {
+                modalContainer.innerHTML = '';
+            }
+
+            function showResult(isCorrect) {
+                const currentData = gameData[currentRiddleIndex];
+                let message, imageHtml = '';
+                if (isCorrect) {
+                    score++;
+                    message = `Молодець! Це ${currentData.answer}!`;
+                    imageHtml = `<img src="${currentData.image}" alt="${currentData.answer}" class="mx-auto my-4 rounded-lg">`;
+                } else {
+                    message = `На жаль, це не ${currentData.answer}.`;
+                }
+
+                const modalHtml = `
+                    <div class="modal-overlay">
+                        <div class="modal-content">
+                            <p class="text-xl font-semibold mb-4">${message}</p>
+                            ${imageHtml}
+                            <button id="next-btn" class="bg-indigo-600 text-white py-2 px-6 rounded-lg">Далі</button>
+                        </div>
+                    </div>`;
+                showModal(modalHtml);
+                document.getElementById('next-btn').addEventListener('click', nextRiddle);
+            }
+            
+            function showRiddle() {
+                const currentData = gameData[currentRiddleIndex];
+                const shuffledChoices = shuffle([...currentData.choices]);
+                const choicesHtml = shuffledChoices.map(choice => 
+                    `<button class="choice-btn bg-slate-200 hover:bg-slate-300 py-2 px-4 rounded-lg transition" data-choice="${choice}">${choice}</button>`
+                ).join('');
+
+                const modalHtml = `
+                    <div class="modal-overlay">
+                        <div class="modal-content">
+                            <h3 class="text-xl font-bold mb-2">Загадка ${currentRiddleIndex + 1} / ${gameData.length}</h3>
+                            <p class="text-lg mb-6">${currentData.riddle}</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                ${choicesHtml}
+                            </div>
+                        </div>
+                    </div>`;
+                showModal(modalHtml);
+
+                document.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const isCorrect = e.target.dataset.choice === currentData.answer;
+                        showResult(isCorrect);
+                    });
+                });
+            }
+
+            function nextRiddle() {
+                currentRiddleIndex++;
+                if (currentRiddleIndex < gameData.length) {
+                    showRiddle();
+                } else {
+                    showFinalScore();
+                }
+            }
+
+            function showFinalScore() {
+                   const modalHtml = `
+                    <div class="modal-overlay">
+                        <div class="modal-content">
+                            <h3 class="text-2xl font-bold mb-4">Гру завершено!</h3>
+                            <p class="text-lg">Ваш результат:</p>
+                            <p class="text-4xl font-bold my-4 text-indigo-600">${score} / ${gameData.length}</p>
+                            <p class="text-slate-600">Правильних відповідей - ${score}</p>
+                            <button id="close-btn" class="mt-6 bg-slate-500 text-white py-2 px-6 rounded-lg">Закрити</button>
+                        </div>
+                    </div>`;
+                showModal(modalHtml);
+                document.getElementById('close-btn').addEventListener('click', hideModal);
+            }
+
+            startGameBtn.addEventListener('click', () => {
+                currentRiddleIndex = 0;
+                score = 0;
+                showRiddle();
+            });
+        });
+    </script>
+</body>
+</html>

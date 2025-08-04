@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-align: center; transition: all 0.2s; cursor: pointer; }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+             background-color: #334155; /* slate-700 */
+             color: #e2e8f0; /* slate-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #475569; /* slate-600 */
+        }
+        .label-group input:checked + label { background-color: #4f46e5; color: white; border-color: #6366f1; }
+
+        /* Стилі для Теоретичного блоку */
+        .source { padding: 16px; color: #334155; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 15. (До § 11)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Анімація обертання</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з поняттям анімації обертання; навчити додавати анімацію неперервного та часткового обертання до об'єктів у TupiTube; пояснити, як змінювати швидкість обертання та налаштовувати його тип.</li>
+                            <li><b>Розвивальна:</b> Розвивати просторове мислення та уяву при створенні обертових об'єктів; формувати вміння аналізувати та коригувати параметри анімації для досягнення потрібного візуального ефекту; розвивати креативність при розробці анімаційних сценаріїв.</li>
+                            <li><b>Виховна:</b> Виховувати акуратність та уважність у роботі з програмним забезпеченням; формувати інтерес до комп'ютерної анімації та її можливостей; заохочувати до самостійного дослідження функцій програми TupiTube.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Розрізняти неперервне та часткове обертання.</li>
+                            <li>Додавати анімацію обертання до об'єктів у TupiTube.</li>
+                            <li>Налаштовувати напрям та швидкість обертання.</li>
+                            <li>Визначати діапазон обертання для часткового типу.</li>
+                            <li>Застосовувати обертання з реверсом.</li>
+                            <li>Створювати анімації з обертовими елементами (наприклад, сонце, гойдалка)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок формування та вдосконалення практичних умінь та навичок.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим редактором TupiTube.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням скріншотів з підручника, прикладів анімації обертання).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика (геометрія, кути, обертання).</li>
+                            <li>Фізика (обертальний рух).</li>
+                            <li>Образотворче мистецтво (композиція, динаміка).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Чому створення анімації без комп’ютерів потребувало багато часу або одночасної роботи багатьох людей?</li>
+                            <li>Поясніть суть методу ключових кадрів.</li>
+                            <li>Яка послідовність додавання до об’єкта автоматичного ані маційного ефекту?</li>
+                            <li>Як додати до об’єкта анімацію переміщення вздовж певної траєкторії?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema2-5.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 70)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="container mx-auto px-4 py-12">
+                    <section id="intro" class="text-center mb-24">
+                        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Лабораторія Обертання</h1>
+                        <p class="text-lg max-w-3xl mx-auto text-slate-400">Надайте своїм анімаціям нового виміру! Навчіться створювати плавне обертання об'єктів та керувати кожним градусом руху.</p>
+                    </section>
+
+                    <!-- Rotation Labs -->
+                    <div class="grid lg:grid-cols-2 gap-8 items-start">
+                        <!-- Continuous Rotation -->
+                        <section id="continuous-rotation" class="space-y-8">
+                            <div class="text-center">
+                                <h2 class="text-3xl font-bold text-white">Безперервне Обертання</h2>
+                                <p class="text-slate-400 mt-1">Ідеально для об'єктів, що обертаються постійно, як сонце або колесо.</p>
+                                <p class="text-md max-w-2xl mx-auto text-yellow-400 mt-2"><i><a href="./klass7-lesson15-2-task.html" class="hover:text-yellow-300 transition-colors duration-200">(Натисніть сюди, щоб перейти на сторінку "Безперервне Обертання")</a></i></p>
+                            </div>
+                            <!-- <div class="card">
+                                <div class="bg-slate-900 rounded-lg border border-slate-700 aspect-square mx-auto max-w-md">
+                                    <canvas id="sun-canvas"></canvas>
+                                </div>
+                                <div class="max-w-md mx-auto mt-6 space-y-4">
+                                    <div>
+                                        <label for="sun-speed-slider" class="block text-sm font-medium">Швидкість (град/кадр): <span id="sun-speed-value" class="font-bold text-indigo-400">3</span></label>
+                                        <input id="sun-speed-slider" type="range" min="0.5" max="10" value="3" step="0.5" class="w-full mt-1">
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-medium mb-2">Напрям</span>
+                                        <div class="flex gap-2 label-group">
+                                            <input type="radio" name="sun-direction" id="sun-cw" value="1" class="sr-only" checked>
+                                            <label for="sun-cw" class="btn btn-secondary w-full text-center cursor-pointer border-2 border-transparent">За годинниковою</label>
+                                            <input type="radio" name="sun-direction" id="sun-ccw" value="-1" class="sr-only">
+                                            <label for="sun-ccw" class="btn btn-secondary w-full text-center cursor-pointer border-2 border-transparent">Проти годинникової</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </section>
+
+                        <!-- Partial Rotation -->
+                        <section id="partial-rotation" class="space-y-8">
+                            <div class="text-center">
+                                <h2 class="text-3xl font-bold text-white">Часткове Обертання</h2>
+                                <p class="text-slate-400 mt-1">Ідеально для маятникових рухів, як гойдалка або махання рукою.</p>
+                                <p class="text-md max-w-2xl mx-auto text-yellow-400 mt-2"><i><a href="./klass7-lesson15-2-task.html" class="hover:text-yellow-300 transition-colors duration-200">(Натисніть сюди, щоб перейти на сторінку "Часткове Обертання")</a></i></p>
+                            </div>
+                            <!-- <div class="card">
+                                <div class="bg-slate-900 rounded-lg border border-slate-700 aspect-square mx-auto max-w-md">
+                                    <canvas id="seesaw-canvas"></canvas>
+                                </div>
+                                <div class="max-w-md mx-auto mt-6 space-y-4">
+                                    <div>
+                                        <label for="seesaw-speed-slider" class="block text-sm font-medium">Швидкість (град/кадр): <span id="seesaw-speed-value" class="font-bold text-indigo-400">1</span></label>
+                                        <input id="seesaw-speed-slider" type="range" min="0.2" max="5" value="1" step="0.2" class="w-full mt-1">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input id="seesaw-reverse-checkbox" type="checkbox" class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500" checked>
+                                        <label for="seesaw-reverse-checkbox" class="text-sm font-medium">Зациклити з реверсом (рух туди-назад)</label>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </section>
+                    </div>
+
+                    <!-- Final Project -->
+                    <section id="final-project" class="scroll-mt-24 mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                            <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 11: План дій</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">1. Проєкт "Казка"</h4>
+                                    <ul class="list-disc list-inside text-sm text-slate-300 mt-2 space-y-1">
+                                        <li>Відкрийте проєкт "Казка".</li>
+                                        <li>Змініть швидкість руху Колобка на різних ділянках для більш природного вигляду.</li>
+                                        <li>Додайте до об'єкта "Сонце" ефект <span class="font-semibold text-yellow-300">безперервного обертання</span>.</li>
+                                        <li>Збережіть проєкт.</li>
+                                    </ul>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                                    <h4 class="font-bold">2. Проєкт "Гойдалка"</h4>
+                                    <ul class="list-disc list-inside text-sm text-slate-300 mt-2 space-y-1">
+                                        <li>Створіть новий проєкт. Намалюйте гойдалку з дітьми.</li>
+                                        <li>Згрупуйте об'єкти та встановіть центр обертання в точці опори.</li>
+                                        <li>Додайте ефект <span class="font-semibold text-yellow-300">часткового обертання</span>.</li>
+                                        <li>Налаштуйте параметри: діапазон від 340° до 20°, швидкість 1 град/кадр, увімкніть "зациклити з реверсом".</li>
+                                        <li>Збережіть проєкт.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">1. Як додати до об’єкта анімацію обертання?</div><div class="flip-card-back bg-green-900">Щоб додати анімацію обертання до об'єкта:<br>1. Вибрати об'єкт, який потрібно обертати.<br>2. На панелі інструментів вибрати Анімація обертання.<br>3. На панелі параметрів вказати швидкість обертання (в градусах/кадр) та тип обертання (неперервне чи часткове).</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">2. Поясніть різницю між неперервним і частковим обертанням.</div><div class="flip-card-back bg-green-900">Неперервне обертання — об'єкт обертається без зупинки.<br><br>Часткове обертання — об'єкт обертається з певного початкового градуса до кінцевого, а потім може повторюватися або повертатися у зворотному напрямку.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 70)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 11 (стор. 68-70).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати п.2 із вправи № 11 (стор. 70).</li>
+                                    <li>Приклад виконання п.1 із вправи № 11 (Гойдалка): <a href="https://youtu.be/IPitZm9PzTE?si=nqSQIogEQ0JAHi4C" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/IPitZm9PzTE</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 11: <a href="https://ua.izzi.digital/DOS/750894/838211.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838211.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 11, стор. 64-70)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 11: <a href="https://ua.izzi.digital/DOS/750894/838211.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838211.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx2 = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [2, 4, 3, 1],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+
+        });
+    </script>
+</body>
+</html>

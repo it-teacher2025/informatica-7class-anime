@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #403d39;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .card { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);}        
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-weight: 600; text-align: center; transition: background-color 0.3s, transform 0.3s; }
+        .btn-primary { background-color: #606c38; color: #fff; }
+        .btn-primary:hover { background-color: #283618; transform: translateY(-2px); }        
+        .interactive-diagram-item { cursor: pointer; border: 2px dashed #a3b18a; transition: background-color 0.3s, border-color 0.3s; }
+        .interactive-diagram-item.active { background-color: #e9f5db; border-color: #606c38; }        
+        #password-strength-bar { height: 10px; border-radius: 5px; transition: width 0.5s, background-color 0.5s; }
+
+        /* Стилі для Теоретичного блоку */
+        .container {
+            max-width: 960px;
+        }
+        .heading-underline {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px; /* Space for the underline */
+        }
+        .heading-underline::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border-radius: 2px;
+        }
+
+        /* Стилі для перевірки знань */
+        .height-learn { height: 600px; }
+        .height300 { height: 300px; }
+
+        .source { padding: 16px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 1: «Служби Інтернету». Урок № 2. (До § 1)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Поштові служби інтернету</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з поняттям електронної пошти та її призначенням; пояснити структуру електронної адреси та принципи функціонування електронної пошти; навчити створювати поштову скриньку на одному з поштових серверів; ознайомити з правилами створення надійних паролів.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне мислення при розумінні структури мережевих комунікацій; формувати вміння аналізувати інформацію та обирати оптимальні рішення (надійний пароль); розвивати навички роботи з веб-інтерфейсами.</li>
+                            <li><b>Виховна:</b> Виховувати відповідальне ставлення до створення та використання особистих облікових записів; формувати культуру безпечної поведінки в Інтернеті; заохочувати до самостійного вивчення та використання цифрових інструментів для комунікації.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати призначення електронної пошти.</li>
+                            <li>Називати основні компоненти електронної пошти: комп'ютер відправника, поштовий сервер, комп'ютер адресата.</li>
+                            <li>Розрізняти доменне ім'я та ім'я поштової скриньки в електронній адресі.</li>
+                            <li>Називати приклади популярних поштових служб.</li>
+                            <li>Самостійно зареєструвати поштову скриньку на обраному поштовому сервері.</li>
+                            <li>Формулювати та використовувати надійні паролі.</li>
+                            <li>Пояснювати базові правила безпечного користування електронною поштою.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (на основі наданих скріншотів та додаткових матеріалів).</li>
+                            <li>Веб-браузери (Google Chrome, Mozilla Firefox, Microsoft Edge тощо).</li>
+                            <li>Дошка, крейда/маркер.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Українська мова (правила ділового листування, етикет спілкування).</li>
+                            <li>Англійська мова (електронна пошта, e-mail)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <div class="md:w-1/4 flex justify-center md:justify-start mb-6 md:mb-0">
+                            <!-- Placeholder for the girl image -->
+                            <!-- <img src="https://placehold.co/150x200/e0f2fe/0284c7?text=Girl+with+Book" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md"> -->
+                            <!-- <img src="https://st5.depositphotos.com/6489488/68184/v/1600/depositphotos_681844928-stock-illustration-girl-reading-book-coloring-book.jpg" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md"> -->
+                            <img src="./images/img01.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="300px">
+                        </div>
+                        <div class="md:w-3/4 text-gray-700 text-lg">
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви вже знайомі з поняттям <b><i>комп’ютерної мережі</i></b>, розрізняєте <b><i>локальну мережу</i></b>, що об’єднує комп’ютери, розташовані на невеликій відстані один від одного, і <b><i>глобальну мережу</i></b>, яка об’єднує мільйони комп’ютерів і локальних мереж. Найбільшою глобальною мережею є <b><i>«Інтернет»</i></b>.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви знаєте, що <b>сторінки сайтів (вебсторінки)</b> є гіпертекстовими документами, тобто вони містять <b>гіперпосилання</b> — об’єкти (слова, малюнки тощо), що дають змогу перейти до іншого місця в документі, до іншого документа, на іншій сайт.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви пам’ятаєте про можливі загрози під час роботи в інтернеті, дотримуєтеся <b>правил безпечного користування</b> ним, критично оцінюйте інформацію.</p>
+                        </div>
+                    </section>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що таке локальна мережа; глобальна мережа?</li>
+                            <li>Які можливості надає нам інтернет?</li>
+                            <li>Якою пошуковою системою ви користуєтеся?</li>
+                            <li>Що таке гіпертекстовий документ; гіперпосилання?</li>
+                            <li>Опишіть відомі вам інтернет-загрози.</li>
+                            <li>Яких правил безпечного користування інтернетом ви дотримуєтеся?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <!-- Placeholder for the question mark image -->
+                            <!-- <img src="https://placehold.co/50x50/e0f2fe/0284c7?text=? " alt="Знак питання" class="w-12 h-12"> -->
+                            <img src="./images/img-tema1-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg shadow-md">
+                        <p class="text-gray-800 text-lg mb-4">У цьому розділі («Служби Інтернету») ви розширите свої знання про службу електронної пошти, створите власну поштову скриньку. Дізнаєтеся, що таке хмарні технології та хмарний диск, попрацюєте з онлайновим перекладачем, колективно опрацюєте документи. З’ясуєте, що таке штучний інтелект і як його застосовують.</p>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 6)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                
+                <div class="bg-[#283618] text-white py-4 shadow-md sticky top-0 z-50">	
+                    <div class="container mx-auto px-4 flex justify-between items-center">
+                        <h1 class="text-xl md:text-2xl font-bold">📧 Поштові служби Інтернету</h1>
+                        <nav class="hidden md:flex space-x-4">
+                            <a href="#intro" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Що таке E-mail?</a>
+                            <a href="#how-it-works" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Як це працює?</a>
+                            <a href="#structure" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Будова адреси</a>
+                            <a href="#security" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Безпека</a>
+                            <a href="#practice" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Практика</a>
+                            <a href="#quiz" class="nav-link text-lg font-medium border-b-2 border-transparent hover:text-[#dda15e]">Перевірка</a>
+                        </nav>
+                        <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                        </button>
+                    </div>
+                    <div id="mobile-menu" class="hidden md:hidden bg-[#606c38] py-2">
+                        <a href="#intro" class="block text-center py-2 text-white hover:bg-[#283618]">Що таке E-mail?</a>
+                        <a href="#how-it-works" class="block text-center py-2 text-white hover:bg-[#283618]">Як це працює?</a>
+                        <a href="#structure" class="block text-center py-2 text-white hover:bg-[#283618]">Будова адреси</a>
+                        <a href="#security" class="block text-center py-2 text-white hover:bg-[#283618]">Безпека</a>
+                        <a href="#practice" class="block text-center py-2 text-white hover:bg-[#283618]">Практика</a>
+                        <a href="#quiz" class="block text-center py-2 text-white hover:bg-[#283618]">Перевірка</a>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-8">                    
+                    <section id="intro" class="mb-16 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-[#283618] mb-4">Відкрийте світ цифрових комунікацій!</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Ми живемо в епоху, де швидкий обмін інформацією є ключовим. Уявіть, що вам потрібно надіслати важливий документ другу в інше місто. Як це зробити швидко та надійно? Сьогодні ми дізнаємося про один із найпотужніших інструментів для цього – електронну пошту!</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-2xl font-semibold mb-4 text-[#bc6c25]">Давайте пригадаємо!</h3>
+                            <p class="mb-4">Перш ніж ми почнемо, давайте перевіримо, що ми вже знаємо про світ комп'ютерних мереж. Натисніть на питання, щоб побачити відповідь.</p>
+                            <div id="recap-questions" class="space-y-2">
+                                <div class="recap-item border rounded-lg">
+                                    <button class="w-full text-left p-4 font-medium focus:outline-none">Що таке локальна та глобальна мережа?</button>
+                                    <div class="recap-answer hidden p-4 border-t bg-green-50">Локальна мережа об'єднує комп'ютери на невеликій відстані (кімната, будівля), а глобальна — мільйони комп'ютерів по всьому світу. Найбільшою глобальною мережею є Інтернет.</div>
+                                </div>
+                                <div class="recap-item border rounded-lg">
+                                    <button class="w-full text-left p-4 font-medium focus:outline-none">Які можливості надає нам Інтернет?</button>
+                                    <div class="recap-answer hidden p-4 border-t bg-green-50">Інтернет надає доступ до інформації, спілкування, навчання, розваг, онлайн-послуг та багато іншого.</div>
+                                </div>
+                                <div class="recap-item border rounded-lg">
+                                    <button class="w-full text-left p-4 font-medium focus:outline-none">Які комп'ютерні загрози ви знаєте?</button>
+                                    <div class="recap-answer hidden p-4 border-t bg-green-50">Це віруси, шкідливе програмне забезпечення, фішинг (шахрайство для отримання паролів), онлайн-цькування та інші.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="how-it-works" class="mb-16 scroll-mt-24">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#283618]">Як працює електронна пошта?</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Процес відправки e-mail схожий на роботу звичайної пошти, але все відбувається миттєво і в цифровому світі. Давайте розглянемо шлях листа від відправника до одержувача. Натисніть на кожен етап, щоб дізнатися більше.</p>
+                        </div>
+                        <div class="card">
+                            <div class="grid md:grid-cols-5 items-center gap-4 text-center">
+                                <div id="diagram-sender" class="interactive-diagram-item p-4 rounded-lg">
+                                    <div class="text-4xl">🧑‍💻</div>
+                                    <div class="font-bold">Комп'ютер відправника</div>
+                                </div>
+                                <div class="text-4xl text-gray-400 font-mono">→</div>
+                                <div id="diagram-server" class="interactive-diagram-item p-4 rounded-lg">
+                                    <div class="text-4xl">🏢</div>
+                                    <div class="font-bold">Поштовий сервер</div>
+                                </div>
+                                <div class="text-4xl text-gray-400 font-mono">→</div>
+                                <div id="diagram-recipient" class="interactive-diagram-item p-4 rounded-lg">
+                                    <div class="text-4xl">💻</div>
+                                    <div class="font-bold">Комп'ютер адресата</div>
+                                </div>
+                            </div>
+                            <div id="diagram-explanation" class="mt-6 p-4 bg-amber-50 rounded-lg min-h-[80px] flex items-center justify-center">
+                                <p class="text-center text-gray-600">Натисніть на елемент схеми, щоб побачити опис.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="structure" class="mb-16 scroll-mt-24">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#283618]">Будова електронної адреси</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Кожна поштова скринька має свою унікальну адресу, як будинок на вулиці. Вона складається з двох основних частин. Давайте спробуємо її створити!</p>
+                        </div>
+                        <div class="card md:flex items-center gap-8">
+                            <div class="flex-1 mb-6 md:mb-0">
+                                <div class="mb-4">
+                                    <label for="username" class="block font-medium mb-1">Ім'я скриньки (логін)</label>
+                                    <input type="text" id="username" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-[#606c38]" placeholder="napryklad.student">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="domain" class="block font-medium mb-1">Поштовий сервер (домен)</label>
+                                    <select id="domain" class="w-full p-2 border rounded-md bg-white">
+                                        <option value="@ukr.net">@ukr.net</option>
+                                        <option value="@gmail.com">@gmail.com</option>
+                                        <option value="@outlook.com">@outlook.com</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1 text-center">
+                                <p class="font-medium mb-2">Ваша електронна адреса:</p>
+                                <div class="bg-gray-100 p-4 rounded-lg text-lg md:text-xl font-mono break-all" id="email-result">
+                                    <span id="email-user" class="text-[#bc6c25] cursor-pointer">napryklad.student</span><span id="email-domain" class="text-[#283618] cursor-pointer">@ukr.net</span>
+                                </div>
+                                <div id="email-explanation" class="mt-4 text-gray-600 min-h-[40px]">Натисніть на частини адреси, щоб побачити пояснення.</div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="security" class="mb-16 scroll-mt-24">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#283618]">Безпека — це важливо! Створюємо надійний пароль</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Пароль — це ваш ключ до поштової скриньки. Він має бути міцним, щоб ніхто чужий не зміг його підібрати. Спробуйте ввести пароль нижче та подивіться, наскільки він надійний.</p>
+                        </div>
+                        <div class="card max-w-2xl mx-auto">
+                            <div class="mb-4">
+                                <input type="password" id="password-input" class="w-full p-3 border rounded-md text-lg focus:ring-2 focus:ring-[#606c38]" placeholder="Введіть пароль тут...">
+                                <div class="w-full bg-gray-200 rounded-full mt-2">
+                                    <div id="password-strength-bar" class="bg-red-500" style="width: 0%"></div>
+                                </div>
+                                <p id="password-feedback" class="text-center mt-2 font-medium"></p>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                                <div id="check-length" class="flex items-center text-gray-500">❌ Мінімум 8 символів</div>
+                                <div id="check-uppercase" class="flex items-center text-gray-500">❌ Велика літера (A-Z)</div>
+                                <div id="check-lowercase" class="flex items-center text-gray-500">❌ Мала літера (a-z)</div>
+                                <div id="check-number" class="flex items-center text-gray-500">❌ Цифра (0-9)</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="practice" class="mb-16 scroll-mt-24">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#283618]">Практика: Створення власної поштової скриньки</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Тепер, коли ви знаєте основи, час створити власну поштову скриньку! Виконуйте кроки по черзі. Це ваше перше завдання у великому світі Інтернету.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-4 text-[#bc6c25]">Вправа: Реєстрація на поштовому сервері</h3>
+                            <ol class="list-decimal list-inside space-y-4">
+                                <li>Відкрийте сайт поштового сервера (наприклад, <a href="https://mail.ukr.net/" target="_blank" class="text-[#606c38] font-bold">mail.ukr.net</a>) і знайдіть кнопку "Створити скриньку" або "Реєстрація".</li>
+                                <li>Придумайте надійний пароль, використовуючи правила, які ми щойно вивчили. Запишіть його в надійному місці!</li>
+                                <li>Заповніть реєстраційні дані. Якщо ви не хочете вказувати справжні дані, порадьтеся з батьками або вчителем.</li>
+                                <li>Підтвердіть реєстрацію. Можливо, знадобиться ввести код з СМС (попросіть допомоги дорослих) або розгадати капчу.</li>
+                                <li>Запишіть повну адресу своєї нової поштової скриньки. Вітаємо!</li>
+                                <li class="font-bold text-red-600">Завжди виходьте зі свого облікового запису після завершення роботи на чужому комп'ютері, натиснувши "Вихід"!</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="quiz" class="scroll-mt-24">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#283618]">Перевірка знань</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-700">Давайте перевіримо, що ви запам'ятали з сьогоднішнього уроку. Дайте відповідь на кілька запитань.</p>
+                        </div>
+                        <div id="quiz-container" class="card max-w-3xl mx-auto">
+                            <div id="quiz-question-1" class="quiz-question">
+                                <p class="font-semibold text-lg mb-4">1. Яка частина електронної адреси `student@gmail.com` є доменним ім'ям поштового сервера?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">student</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">gmail.com</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">@</button>
+                                </div>
+                            </div>
+                            <div id="quiz-question-2" class="quiz-question hidden">
+                                <p class="font-semibold text-lg mb-4">2. Що робить поштовий сервер?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">Надсилає листи безпосередньо на комп'ютер друга</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">Зберігає листи, поки адресат їх не забере</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">Створює паролі для користувачів</button>
+                                </div>
+                            </div>
+                            <div id="quiz-question-3" class="quiz-question hidden">
+                                <p class="font-semibold text-lg mb-4">3. Який пароль є найнадійнішим?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">password123</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">Mykola</button>
+                                    <button class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">Gr3at_Pa$$w0rd!</button>
+                                </div>
+                            </div>
+                            <div id="quiz-results" class="hidden text-center">
+                                <h3 class="text-2xl font-bold mb-4">Результати тесту</h3>
+                                <p class="text-xl mb-4">Ви відповіли правильно на <span id="quiz-score" class="font-bold">0</span> з 3 питань.</p>
+                                <p id="quiz-feedback-text" class="mb-6"></p>
+                                <button id="quiz-retry-btn" class="btn btn-primary">Спробувати ще раз</button>
+                            </div>
+                        </div>
+                    </section>                    
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">1. Назвіть відомі вам служби інтернету.</div><div class="flip-card-back bg-green-200">Згідно з текстом, "існують багато служб (сервісів) інтернету, і цей перелік постійно поповнюється". Надані скріншоти не перераховують ці служби, крім електронної пошти, яка згадується як одна з найдавніших.<br>Примітка: електронна пошта — це одна з найдавніших комунікаційних служб інтернету.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">2. Які функції виконує поштовий сервер?</div><div class="flip-card-back bg-green-200">Поштовий сервер — це комп'ютер, що забезпечує роботу електронної пошти завдяки встановленому на ньому програмному забезпеченню. Він приймає листа від відправника, зберігає його в електронній скриньці адресата та доставляє його адресату, коли той до нього звертається.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">3. Яка структура електронної адреси?</div><div class="flip-card-back bg-green-200">Електронна адреса має унікальну структуру і складається з двох частин, розділених символом @:<br>1. Назва скриньки (логін користувача).<br>2. Доменне ім'я поштового сервера.<br>Приклад: bober@ukr.net, де bober — назва скриньки, а ukr.net — доменне ім'я сервера.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height300">4. Як створити надійний пароль?</div><div class="flip-card-back bg-green-200 height300">Щоб створити надійний пароль, потрібно дотримуватись таких правил:<br>- Пароль має бути завдовжки понад 8 символів.<br>- Не використовуйте імена (рідних, друзів), прізвища, ініціали, дати народження, номери телефонів тощо.<br>- Комбінуйте великі та малі літери, цифри, розділові знаки.<br>- Варто створювати надійний пароль для різних випадків реєстрації, щоб уникнути ситуації, коли злам одного пароля дозволить отримати доступ до всіх скриньок.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">5. Для чого може знадобитися телефон або адреса додаткової скриньки після реєстрації на поштовому сервері?</div><div class="flip-card-back bg-green-200">Телефон або адреса додаткової скриньки може знадобитися для відновлення пароля. Це допомагає підвищити ймовірність того, що людина не втратить доступу до своєї скриньки, навіть якщо забуде власний пароль. Також за допомогою телефону можна підтверджувати реєстрацію, отримуючи SMS-повідомлення з цифровим кодом.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">6. Що з наведеного можна змінити після створення поштової скриньки: назву скриньки, прізвище та ім’я користувача / користувачки, пароль?</div><div class="flip-card-back bg-green-200">Після створення поштової скриньки можна змінити прізвище та ім'я користувача (користувачки), а також пароль. Однак назву скриньки (логін користувача) змінити неможливо.<br>Примітка: Особисті дані, що вводяться під час реєстрації, можна змінити в налаштуваннях.</div></div></div>
+                    </div>
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 11)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 1 (стор. 7-10).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 1 (стор. 11).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/y1pFHemlWSE?si=a2wC_zRyp-KczdEz" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/y1pFHemlWSE</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 1: <a href="https://ua.izzi.digital/DOS/750894/750940.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/750940.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 1, стор. 7-11)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 1: <a href="https://ua.izzi.digital/DOS/750894/750940.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/750940.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+   
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // Mobile menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+            });
+
+            // Smooth scrolling and active nav link
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            const sections = document.querySelectorAll('section');
+            const mainNavLinks = document.querySelectorAll('header nav a');
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 150) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                mainNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            // Recap questions
+            document.querySelectorAll('.recap-item button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.nextElementSibling;
+                    const isVisible = !answer.classList.contains('hidden');
+                    document.querySelectorAll('.recap-answer').forEach(ans => ans.classList.add('hidden'));
+                    if (!isVisible) {
+                        answer.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // Interactive diagram
+            const diagramItems = {
+                sender: 'Тут ви пишете листа, додаєте файли та натискаєте "Надіслати". Ваш комп\'ютер відправляє його на поштовий сервер.',
+                server: 'Це потужний комп\'ютер в Інтернеті, який приймає ваш лист, знаходить, куди його доставити, і зберігає його, поки одержувач не перевірить свою пошту.',
+                recipient: 'Коли ваш друг відкриває свою поштову програму, вона підключається до сервера і завантажує ваш лист для прочитання.'
+            };
+            const explanationBox = document.getElementById('diagram-explanation');
+            document.querySelectorAll('.interactive-diagram-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.id.split('-')[1];
+                    explanationBox.innerHTML = `<p class="text-center font-medium text-[#283618]">${diagramItems[id]}</p>`;
+                    document.querySelectorAll('.interactive-diagram-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+            
+            // Email structure builder
+            const usernameInput = document.getElementById('username');
+            const domainSelect = document.getElementById('domain');
+            const emailUserSpan = document.getElementById('email-user');
+            const emailDomainSpan = document.getElementById('email-domain');
+            const emailExplanation = document.getElementById('email-explanation');
+
+            function updateEmail() {
+                emailUserSpan.textContent = usernameInput.value || 'imya_korystuvacha';
+                emailDomainSpan.textContent = domainSelect.value;
+            }
+            usernameInput.addEventListener('input', updateEmail);
+            domainSelect.addEventListener('change', updateEmail);
+            updateEmail();
+
+            emailUserSpan.addEventListener('click', () => {
+                emailExplanation.textContent = "Це унікальне ім'я вашої скриньки, яке ви придумуєте самі (ваш логін).";
+            });
+            emailDomainSpan.addEventListener('click', () => {
+                emailExplanation.textContent = 'Це адреса поштового сервера, на якому створено вашу скриньку (наприклад, ukr.net або gmail.com).';
+            });
+            
+            // Password strength checker
+            const passwordInput = document.getElementById('password-input');
+            const strengthBar = document.getElementById('password-strength-bar');
+            const feedbackText = document.getElementById('password-feedback');
+            const checks = {
+                length: document.getElementById('check-length'),
+                uppercase: document.getElementById('check-uppercase'),
+                lowercase: document.getElementById('check-lowercase'),
+                number: document.getElementById('check-number'),
+            };
+
+            passwordInput.addEventListener('input', () => {
+                const pass = passwordInput.value;
+                let score = 0;
+                
+                // Length check
+                if (pass.length >= 8) {
+                    checks.length.innerHTML = '✅ Мінімум 8 символів';
+                    checks.length.classList.remove('text-gray-500');
+                    checks.length.classList.add('text-green-600');
+                    score++;
+                } else {
+                    checks.length.innerHTML = '❌ Мінімум 8 символів';
+                    checks.length.classList.remove('text-green-600');
+                    checks.length.classList.add('text-gray-500');
+                }
+
+                // Uppercase check
+                if (/[A-Z]/.test(pass)) {
+                    checks.uppercase.innerHTML = '✅ Велика літера (A-Z)';
+                    checks.uppercase.classList.remove('text-gray-500');
+                    checks.uppercase.classList.add('text-green-600');
+                    score++;
+                } else {
+                    checks.uppercase.innerHTML = '❌ Велика літера (A-Z)';
+                    checks.uppercase.classList.remove('text-green-600');
+                    checks.uppercase.classList.add('text-gray-500');
+                }
+                
+                // Lowercase check
+                if (/[a-z]/.test(pass)) {
+                    checks.lowercase.innerHTML = '✅ Мала літера (a-z)';
+                    checks.lowercase.classList.remove('text-gray-500');
+                    checks.lowercase.classList.add('text-green-600');
+                    score++;
+                } else {
+                    checks.lowercase.innerHTML = '❌ Мала літера (a-z)';
+                    checks.lowercase.classList.remove('text-green-600');
+                    checks.lowercase.classList.add('text-gray-500');
+                }
+
+                // Number check
+                if (/[0-9]/.test(pass)) {
+                    checks.number.innerHTML = '✅ Цифра (0-9)';
+                    checks.number.classList.remove('text-gray-500');
+                    checks.number.classList.add('text-green-600');
+                    score++;
+                } else {
+                    checks.number.innerHTML = '❌ Цифра (0-9)';
+                    checks.number.classList.remove('text-green-600');
+                    checks.number.classList.add('text-gray-500');
+                }
+                
+                strengthBar.style.width = (score / 4) * 100 + '%';
+                if(pass.length === 0) {
+                     strengthBar.style.width = '0%';
+                     feedbackText.textContent = '';
+                     strengthBar.style.backgroundColor = '#ef4444';
+                } else if (score < 2) {
+                    strengthBar.style.backgroundColor = '#ef4444'; // red
+                    feedbackText.textContent = 'Слабкий пароль';
+                } else if (score < 4) {
+                    strengthBar.style.backgroundColor = '#f59e0b'; // amber
+                    feedbackText.textContent = 'Середній пароль';
+                } else {
+                    strengthBar.style.backgroundColor = '#22c55e'; // green
+                    feedbackText.textContent = 'Надійний пароль!';
+                }
+            });
+
+            // Quiz logic
+            const quizContainer = document.getElementById('quiz-container');
+            const questions = quizContainer.querySelectorAll('.quiz-question');
+            const quizResults = document.getElementById('quiz-results');
+            const quizScore = document.getElementById('quiz-score');
+            const quizFeedbackText = document.getElementById('quiz-feedback-text');
+            const retryBtn = document.getElementById('quiz-retry-btn');
+            
+            let currentQuestionIndex = 0;
+            let score = 0;
+            
+            const correctAnswers = ['gmail.com', 'Зберігає листи, поки адресат їх не забере', 'Gr3at_Pa$$w0rd!'];
+
+            quizContainer.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('quiz-option')) return;
+
+                const selectedOption = e.target;
+                const parentQuestion = selectedOption.closest('.quiz-question');
+                const questionIndex = Array.from(questions).indexOf(parentQuestion);
+
+                if(selectedOption.textContent === correctAnswers[questionIndex]){
+                    score++;
+                    selectedOption.style.backgroundColor = '#dcfce7'; // green-100
+                    selectedOption.style.borderColor = '#22c55e'; // green-500
+                } else {
+                    selectedOption.style.backgroundColor = '#fee2e2'; // red-100
+                    selectedOption.style.borderColor = '#ef4444'; // red-500
+                }
+                
+                parentQuestion.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+
+                setTimeout(() => {
+                    parentQuestion.classList.add('hidden');
+                    currentQuestionIndex++;
+                    if(currentQuestionIndex < questions.length) {
+                        questions[currentQuestionIndex].classList.remove('hidden');
+                    } else {
+                        showResults();
+                    }
+                }, 1000);
+            });
+            
+            function showResults() {
+                quizResults.classList.remove('hidden');
+                quizScore.textContent = score;
+                if(score === 3) {
+                    quizFeedbackText.textContent = "Відмінно! Ви справжній експерт з електронної пошти!";
+                } else if (score >= 1) {
+                    quizFeedbackText.textContent = "Добре! Ви засвоїли основні поняття. Продовжуйте в тому ж дусі!";
+                } else {
+                     quizFeedbackText.textContent = "Не засмучуйтесь! Спробуйте пройти урок ще раз, щоб закріпити знання.";
+                }
+            }
+
+            retryBtn.addEventListener('click', () => {
+                score = 0;
+                currentQuestionIndex = 0;
+                quizResults.classList.add('hidden');
+                questions.forEach((q, index) => {
+                    q.classList.add('hidden');
+                    q.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.disabled = false;
+                        btn.style.backgroundColor = '';
+                        btn.style.borderColor = '';
+                    });
+                });
+                questions[0].classList.remove('hidden');
+            });
+
+        });
+    </script>
+</body>
+</html>

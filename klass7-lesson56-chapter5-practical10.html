@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Практична робота «Створення програм для опрацювання списків»</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Custom dialog for input/output simulation */
+        #sim-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        #sim-dialog-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            display: none;
+            max-width: 90%;
+            width: 350px;
+            padding: 1.5rem;
+        }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Головний заголовок сторінки (Header) -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основний вміст сторінки (Main) -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 56. (До ПР10)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 10. «Створення програм для опрацювання списків»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Навігація по вкладках -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Вміст вкладок -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Закріпити знання про списки, їхні методи та функції (`sum()`, `max()`, `index()`, `len()`).</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне мислення при розв'язанні задач з опрацюванням списків; формувати вміння декомпозиції.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність та відповідальність у процесі програмування.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Створювати списки та ініціалізувати їх.</li>
+                        <li>Використовувати `sum()`, `max()`, `index()`.</li>
+                        <li>Обчислити загальну суму, знайти найбільший елемент та його індекс.</li>
+                        <li>Підраховувати елементи за умовою.</li>
+                        <li>Розв'язувати комплексні задачі з опрацюванням числових даних у списках.</li>
+                        <li>Налагоджувати власні програми.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок застосування знань, умінь і навичок (практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Проєктор або інтерактивна дошка (для демонстрації та контролю).</li>
+                        <li>Інструкційні картки (або виведення завдань на екран).</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (сума, максимум, відсотки, порівняння).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="review-content" class="tab-content">
+            <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Як викликати вікно з повідомленням і єдиною кнопкою з модуля EasyGUI?</li>
+                            <li>Який вигляд має діалогове вікно, створене з параметрами: `choice = buttonbox('Виберіть рівень', 'Гра', ['1', '2', '3'])`?</li>
+                            <li>Який вигляд має діалогове вікно, створене з параметрами: `choice = choicebox('Скільки гравців?', 'Гра', ['1', '2', '3'])`?</li>
+                            <li>Як засобами модуля EasyGUI ввести рядок тексту?</li>
+                            <li>Як засобами модуля EasyGUI ввести ціле число?</li>
+                            <li>Чим відрізняється `buttonbox()` від `choicebox()`?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+                
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивне повторення: Функції для списків</h3>
+                <p class="text-slate-600 mb-4">Введіть список чисел (напр., `[1,5,7,31,-5]`) та перевірте роботу функцій.</p>
+                <div class="mb-4">
+                    <label for="list-input" class="block text-sm font-medium text-slate-700 mb-1">Список:</label>
+                    <input type="text" id="list-input" class="w-full p-2 border rounded" value="[42, 28, 53, 39, 54, 40, 35, 26, 51, 38]">
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">Функція `sum(list)`</h4>
+                        <button id="run-sum" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Обчислити суму</button>
+                        <p class="mt-3 text-slate-800">Результат: <span id="sum-output" class="font-mono"></span></p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">Функція `max(list)`</h4>
+                        <button id="run-max" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Знайти максимум</button>
+                        <p class="mt-3 text-slate-800">Результат: <span id="max-output" class="font-mono"></span></p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">Метод `list.index(value)`</h4>
+                        <label for="index-value" class="block text-sm font-medium text-slate-700 mb-1">Значення:</label>
+                        <input type="text" id="index-value" class="p-2 border rounded w-full mb-2" value="54">
+                        <button id="run-index" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Знайти індекс</button>
+                        <p class="mt-3 text-slate-800">Результат: <span id="index-output" class="font-mono"></span></p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg mb-3">Функція `len(list)`</h4>
+                        <button id="run-len" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Визначити довжину</button>
+                        <p class="mt-3 text-slate-800">Результат: <span id="len-output" class="font-mono"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+            Сторінка знаходиться в процесі розробки.
+            <!-- <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота 10: Аналіз маси вантажівок</h3>
+                <p class="text-slate-600 mb-6">Розробіть програму для аналізу даних про вантажівки, використовуючи списки та функції для їх опрацювання.</p>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="python-truck-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                        <textarea id="python-truck-code-input" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-100" placeholder="Введіть ваш код тут...">
+// Завдання: Аналіз маси вантажівок (Практична робота 10)
+
+// Оголошення змінних для симулятора JavaScript
+var v;
+var s;
+var m;
+var n_index;
+var n_truck;
+var norm;
+var count_over_norm;
+var weight; // For loop iteration
+
+// 1. Список значень маси вантажівок (у тоннах)
+v = [42, 28, 53, 39, 54, 40, 35, 26, 51, 38];
+
+// 2. Обчислити загальну масу перевезеного вантажу (сума)
+s = sum(v);
+print(`а) Загальна маса перевезеного вантажу: ${s} т.`);
+
+// 3. Номер автомобіля, що перевіз вантаж найбільшої маси
+m = max(v);
+// Індекс найбільшої маси
+n_index = v.indexOf(m); // Використовуємо нативний JS метод indexOf
+// Номер автомобіля (індекс + 1)
+n_truck = n_index + 1;
+print(`б) Автомобіль, що перевіз найбільшу масу (${m} т): номер ${n_truck}`);
+
+// 4. Кількість автомобілів, що перевищили денну норму перевезення (50 т)
+norm = 50;
+count_over_norm = 0;
+for (var i = 0; i < v.length; i++) { // Перебираємо елементи за індексом
+    weight = v[i];
+    if (weight > norm) {
+        count_over_norm = count_over_norm + 1;
+    }
+}
+print(`в) Кількість автомобілів, що перевищили денну норму (${norm} т): ${count_over_norm}`);
+                        </textarea>
+                        <button id="run-truck-analysis-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати програму</button>
+                    </div>
+                    <div>
+                        <label for="python-truck-output" class="block text-sm font-medium text-slate-700 mb-2">Вивід програми (симуляція Python):</label>
+                        <pre id="python-truck-output" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-800 text-green-300 overflow-auto"></pre>
+                    </div>
+                </div>
+                <div id="python-truck-error" class="mt-4 text-red-600 font-medium"></div>
+            </div> -->
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як обчислити загальну суму числових елементів списку?</div><div class="flip-card-back bg-indigo-200">Використати функцію `sum()`. <br>Наприклад: `total = sum(my_list)`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як знайти найбільший елемент у списку?</div><div class="flip-card-back bg-indigo-200">Використати функцію `max()`. <br>Наприклад: `largest = max(my_list)`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як знайти індекс першого входження певного значення у списку?</div><div class="flip-card-back bg-indigo-200">Використати метод `list.index()`. <br>Наприклад: `idx = my_list.index(value)`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як порахувати кількість елементів у списку, що відповідають певній умові?</div><div class="flip-card-back bg-indigo-200">Використати цикл `for` та умовний оператор `if` з лічильником.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">У чому відмінність між функціями `max()/min()` та методами `sort()/reverse()`?</div><div class="flip-card-back bg-indigo-200">`max()/min()` повертають значення, не змінюючи список. <br>`sort()/reverse()` змінюють список "на місці".</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як видалити елемент зі списку за його індексом?</div><div class="flip-card-back bg-indigo-200">Використати оператор `del`. <br>Наприклад: `del my_list[index]`.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Повторити § 38 (стор. 227-231).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 10 (стор. 234).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/Sdmo78oD9sU?si=UDjopPZIsmVf4Wuj" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/Sdmo78oD9sU</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 10: <a href="https://ua.izzi.digital/DOS/750894/1251270.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251270.html</a></li>
+                                    <li>Інтерактивна платформа IZZI (7 клас) до підсумкової роботи 4 розділу 5: <a href="https://ua.izzi.digital/DOS/750894/1077908.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1077908.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР10, стор. 234)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 10: <a href="https://ua.izzi.digital/DOS/750894/1251270.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251270.html</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до підсумкової роботи 4 розділу 5: <a href="https://ua.izzi.digital/DOS/750894/1077908.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1077908.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер сторінки (Footer) -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Custom dialog for input/output simulation -->
+    <div id="sim-dialog-overlay"></div>
+    <div id="sim-dialog-box">
+        <div class="p-4 border-b">
+            <h4 id="sim-dialog-title" class="font-bold text-lg text-slate-800"></h4>
+        </div>
+        <div class="p-4">
+            <p id="sim-dialog-message" class="mb-3 text-slate-700"></p>
+            <input type="text" id="sim-dialog-input" class="w-full p-2 border rounded mb-3" placeholder="Введіть значення">
+            <div class="flex justify-end gap-2">
+                <button id="sim-dialog-ok" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">ОК</button>
+                <button id="sim-dialog-cancel" class="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition">Скасувати</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 3, 2], // ГР1, ГР2 - Найважливіша (4), ГР3 - Дуже важлива (3), ГР4 - Важлива (2)
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива';
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- Interactive Review Tab Logic ---
+            const listInput = document.getElementById('list-input');
+            const sumOutput = document.getElementById('sum-output');
+            const maxOutput = document.getElementById('max-output');
+            const indexValueInput = document.getElementById('index-value');
+            const indexOutput = document.getElementById('index-output');
+            const lenOutput = document.getElementById('len-output');
+
+            function parseListInput(inputString) {
+                try {
+                    // Basic parsing for [...,...]
+                    const cleanedString = inputString.replace(/[\[\]\s]/g, '');
+                    if (cleanedString === '') return [];
+                    return cleanedString.split(',').map(item => {
+                        const num = Number(item);
+                        return isNaN(num) ? item.trim() : num; // Try to convert to number, otherwise keep as string
+                    });
+                } catch (e) {
+                    console.error("Error parsing list:", e);
+                    return [];
+                }
+            }
+
+            document.getElementById('run-sum').addEventListener('click', () => {
+                const list = parseListInput(listInput.value);
+                const sum = list.reduce((acc, curr) => typeof curr === 'number' ? acc + curr : acc, 0);
+                sumOutput.textContent = sum;
+            });
+
+            document.getElementById('run-max').addEventListener('click', () => {
+                const list = parseListInput(listInput.value);
+                const max = list.filter(item => typeof item === 'number').reduce((a, b) => Math.max(a, b), -Infinity);
+                maxOutput.textContent = max === -Infinity ? 'Немає чисел' : max;
+            });
+
+            document.getElementById('run-index').addEventListener('click', () => {
+                const list = parseListInput(listInput.value);
+                const valueToFind = Number(indexValueInput.value);
+                const index = list.indexOf(valueToFind);
+                if (index === -1) {
+                    indexOutput.textContent = `Значення '${indexValueInput.value}' не знайдено.`;
+                } else {
+                    indexOutput.textContent = index;
+                }
+            });
+
+            document.getElementById('run-len').addEventListener('click', () => {
+                const list = parseListInput(listInput.value);
+                lenOutput.textContent = list.length;
+            });
+
+
+            // --- Python Truck Analysis Simulator Logic for Practice Tab ---
+            const pythonTruckCodeInput = document.getElementById('python-truck-code-input');
+            const runTruckAnalysisBtn = document.getElementById('run-truck-analysis-btn');
+            const pythonTruckOutput = document.getElementById('python-truck-output');
+            const pythonTruckError = document.getElementById('python-truck-error');
+
+            runTruckAnalysisBtn.addEventListener('click', async () => {
+                pythonTruckOutput.textContent = '';
+                pythonTruckError.textContent = '';
+                let output_buffer = [];
+
+                // Define print and other helper functions for the simulated Python environment
+                const print = (...args) => output_buffer.push(args.join(' '));
+                
+                // Mock Python's sum, max, and list.index for the simulator
+                const sum = (arr) => arr.reduce((acc, curr) => acc + curr, 0);
+                const max = (arr) => Math.max(...arr); // Using spread operator for Math.max
+                
+                // Python's list.index is Array.prototype.indexOf in JS
+                // We assume `v.indexOf(m)` will be directly in the simulated code
+                // However, we need to provide `v.index` method for the sim if it's not directly `indexOf`
+                // For simplicity, we'll rely on the simulated code to use `v.indexOf(m)` if that's the intention.
+
+                const pythonCode = pythonTruckCodeInput.value;
+
+                try {
+                    // Convert Python comments to JS comments
+                    let processedCode = pythonCode.replace(/^(\s*)#(.*)$/gm, '$1//$2');
+                    
+                    // Replace Python boolean keywords with JS booleans
+                    processedCode = processedCode.replace(/\bTrue\b/g, 'true');
+                    processedCode = processedCode.replace(/\bFalse\b/g, 'false');
+
+                    // Basic arithmetic replacements (e.g., Python's `**` to JS `Math.pow`, `//` to `Math.floor`)
+                    processedCode = processedCode.replace(/(\w+)\s*\*\*\s*(\w+)/g, 'Math.pow($1, $2)'); // a ** b
+                    processedCode = processedCode.replace(/(\w+)\s*\/\/\s*(\w+)/g, 'Math.floor($1 / $2)'); // a // b
+
+                    // Replace Python `!=` with `!==` for strict comparison
+                    processedCode = processedCode.replace(/!=/g, '!==');
+                    processedCode = processedCode.replace(/==/g, '==='); // Strict equality
+
+                    // Replace `f` string interpolation for basic cases if still present (though pre-written code should use ` `` `)
+                    processedCode = processedCode.replace(/f`([^`]*)`/g, (match, p1) => {
+                        return `\`${p1.replace(/{([^}]+)}/g, (m, varName) => `\${${varName}}`)}\``;
+                    });
+
+                    // Ensure basic for loops are JS compatible (assuming `for (var i = 0; i < v.length; i++) { var weight = v[i]; ... }` in textarea)
+                    // If the Python code uses `for weight in v:`, convert it
+                    processedCode = processedCode.replace(/for\s+(\w+)\s+in\s+(\w+):/g, 'for (var _i = 0; _i < $2.length; _i++) { var $1 = $2[_i];');
+                    processedCode = processedCode.replace(/print\(([^)]*)\)/g, 'print($1);');
+
+
+                    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+                    // Create the function. Pass mock functions as arguments.
+                    const f = new AsyncFunction('print', 'sum', 'max', processedCode);
+                    
+                    await f(print, sum, max);
+
+                    pythonTruckOutput.textContent = output_buffer.join('\n');
+                } catch (e) {
+                    pythonTruckError.textContent = `Помилка виконання: ${e.message}`;
+                    console.error("Помилка виконання Python симулятора:", e);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #403d39;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .mission-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .mission-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .hidden-section { display: none; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+        .mindmap-node {
+            position: absolute;
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 20px;
+            background-color: white;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .connector {
+            position: absolute;
+            height: 2px;
+            background-color: #cbd5e1;
+            transform-origin: left;
+            width: 0;
+            transition: width 0.7s ease;
+            z-index: -1;
+        }
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Підсумкова робота. Урок № 27.</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Підсумкова робота «Служби Інтернету. Комп’ютерна анімація. Моделі та моделювання»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Узагальнити та систематизувати знання учнів з тем "Моделі та моделювання", "Служби Інтернету" та "Комп'ютерна анімація"; перевірити рівень засвоєння теоретичного матеріалу та сформованих практичних навичок щодо побудови та використання різних типів інформаційних моделей, роботи з інтернет-сервісами та створення анімації.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне, аналітичне та критичне мислення при розв'язанні тестових та практичних завдань; формувати вміння застосовувати набуті знання та навички в комплексних та нестандартних ситуаціях; розвивати навички самостійної роботи та самоконтролю.</li>
+                            <li><b>Виховна:</b> Виховувати відповідальне ставлення до навчання та виконання завдань; формувати прагнення до самовдосконалення та об'єктивної самооцінки; заохочувати до акуратності, точності та дотримання правил цифрового етикету.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати ключові поняття з тем "Моделі та моделювання", "Служби Інтернету" та "Комп'ютерна анімація".</li>
+                            <li>Розрізняти матеріальні та інформаційні моделі, класифікувати моделі за різними ознаками.</li>
+                            <li>Називати та наводити приклади різних форм подання інформаційних моделей.</li>
+                            <li>Називати етапи побудови інформаційної/математичної моделі, визначати вхідні/вихідні дані та взаємозв'язки.</li>
+                            <li>Демонструвати практичні навички роботи з електронною поштою (створення, надсилання, налаштування, використання гіперпосилань та вкладень).</li>
+                            <li>Створювати прості інформаційні моделі (таблиці, карти знань) у відповідному програмному середовищі.</li>
+                            <li>Аналізувати та інтерпретувати результати моделювання.</li>
+                            <li>Застосовувати правила безпечного та етичного користування Інтернетом.</li>
+                            <li>Аналізувати та оцінювати власні знання та вміння з вивчених тем.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок контролю та корекції знань, умінь і навичок.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка (для демонстрації інструкцій, критеріїв оцінювання).</li>
+                            <li>Електронні тести (на платформі Google Forms, Classroom, або інша система тестування) або роздруковані тестові завдання.</li>
+                            <li>Програмне забезпечення: веб-браузери, поштові клієнти, TupiTube, програма для роботи з електронними таблицями (наприклад, Excel, Google Таблиці), редактор карт знань (FreeMind або доступ до онлайн-сервісу).</li>
+                            <li>Індивідуальні завдання для практичної частини.</li>
+                            <li>Заздалегідь підготовлені файли-заготовки (якщо передбачені практичні завдання з анімації).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика, Фізика, Біологія, Географія (для завдань з моделювання);</li>
+                            <li>Українська мова (чіткість формулювань, етикет листування), Образотворче мистецтво (композиція в анімації).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ul>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Блок "Моделі та моделювання"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>"Що таке модель і навіщо їх створюють?"</li>
+                                    <li>"Чим відрізняється матеріальна модель від інформаційної?"</li>
+                                    <li>"Назвіть основні форми подання інформаційних моделей (словесні, графічні тощо)."</li>
+                                    <li>"Які етапи побудови інформаційної моделі ви знаєте?"</li>
+                                    <li>"Що таке математична модель? Наведіть приклад."</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Блок "Служби Інтернету"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>"Що таке електронна пошта? З яких частин складається електронна адреса?"</li>
+                                    <li>"Які є режими відкриття файлів у пошті (Кому, Копія, Прихована копія)?"</li>
+                                    <li>"Назвіть 3 правила безпечного користування електронною поштою."</li>
+                                    <li>"Що таке гіперпосилання? Як його додати до листа?"</li>
+                                    <li>"Що таке хмарні сервіси? Наведіть приклади."</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Блок "Комп'ютерна анімація"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>"Поясніть принцип анімації. Що таке кадр і частота кадрів?"</li>
+                                    <li>"Яке призначення програми TupiTube?"</li>
+                                    <li>"Які автоматичні анімаційні ефекти ви знаєте?"</li>
+                                    <li>"Як експортувати готовий анімаційний проєкт?"</li>
+                                </ol>
+                            </li>
+                        </ul>
+
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema3-3.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <h1 class="text-4xl md:text-5xl font-bold text-indigo-800" style="font-family: 'Montserrat', sans-serif; text-align: center;">Цифрові завдання</h1>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Вітаємо! Ви завершили вивчення важливих тем. Тепер час продемонструвати свої знання та навички. Оберіть одну з двох місій для виконання підсумкової роботи.</p>
+                <p class="text-md max-w-2xl mx-auto text-yellow-600 mt-2"><i><a href="./klass7-lesson27-2-task.html" class="hover:text-yellow-500 transition-colors duration-200">(Натисніть сюди, щоб перейти на сторінку "Цифрові завдання")</a></i></p>
+  
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>"Яке завдання було для вас найцікавішим/найскладнішим у сьогоднішній роботі?"</li>
+                            <li>"Які навички, отримані на цих уроках, ви вважаєте найкориснішими для себе в повсякденному житті та навчанні?"</li>
+                            <li>"Чи відчуваєте ви себе більш впевнено в цифровому світі після вивчення цих тем?"</li>
+                        </ol>
+
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema3-4.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <div>
+                                <p><b>1. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати підсумкову роботу № 1.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>2. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 1: <a href="https://ua.izzi.digital/DOS/750894/1072445.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1072445.html</a></li>
+                                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 2: <a href="https://ua.izzi.digital/DOS/750894/1075943.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075943.html</a></li>
+                                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 3: <a href="https://ua.izzi.digital/DOS/750894/1075982.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075982.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 1: <a href="https://ua.izzi.digital/DOS/750894/1072445.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1072445.html</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 2: <a href="https://ua.izzi.digital/DOS/750894/1075943.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075943.html</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до підсумків з розділу № 3: <a href="https://ua.izzi.digital/DOS/750894/1075982.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075982.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 4, 4],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+
+        });
+    </script>
+</body>
+</html>

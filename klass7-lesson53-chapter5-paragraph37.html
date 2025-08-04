@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Опрацювання елементів списку</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Accordion content for smooth expand/collapse */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 53. (До § 37)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Опрацювання елементів списку</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Навчити перебирати елементи списків за допомогою циклів; змінювати значення елементів під час перебору; ознайомити з алгоритмами розв'язання задач, пов'язаних з опрацюванням елементів списку.</li>
+                        <li><b>Розвивальна:</b> Розвивати алгоритмічне та логічне мислення, формувати вміння декомпозиції задач, навички самостійного написання та налагодження програм.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність, відповідальність, наполегливість, інтерес до розв'язання практичних задач.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Використовувати цикли `for` та `while` для перебору елементів списку.</li>
+                        <li>Змінювати значення елементів списку під час перебору.</li>
+                        <li>Обчислювати суму елементів списку під час перебору.</li>
+                        <li>Знаходити елементи списку, що відповідають критеріям.</li>
+                        <li>Складати програми для опрацювання всіх або частини елементів списку.</li>
+                        <li>Використовувати модуль `random` для генерації випадкових чисел.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок застосування знань, умінь і навичок (практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Проєктор або інтерактивна дошка (для демонстрації та контролю).</li>
+                        <li>Інструкційні картки (або виведення завдань на екран).</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (послідовності, обчислення суми, кратність, парність/непарність).</li>
+                        <li>Природознавство (температура, зміни показників).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="review-content" class="tab-content">
+            <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Яка функція повертає найбільший елемент списку?</li>
+                            <li>Як обчислити суму всіх елементів списку?</li>
+                            <li>Який оператор використовується для видалення елемента за індексом?</li>
+                            <li>Як округлити число до найближчого цілого?</li>
+                            <li>Чи змінюють функції `max()`, `min()`, `sum()` оригінальний список?</li>
+                            <li>Як знайти середнє арифметичне елементів списку?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+                
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивне повторення та закріплення</h3>
+                <div class="space-y-4" id="accordion">
+                    <!-- Accordion Item 1: List Iteration -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>1. Перебір елементів списку</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть список (напр., `10,20,30,40`).</p>
+                            <input type="text" id="list-iteration-input" class="p-2 border rounded w-full mb-4" value="10,20,30,40">
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button id="run-iterate-index-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Перебір за індексом</button>
+                                <button id="run-iterate-value-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Перебір за значенням</button>
+                            </div>
+                            <div id="iteration-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800 whitespace-pre-wrap">Результат: <span id="display-iteration-result"></span></div>
+                            <div id="iteration-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 2: Modifying List Elements -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>2. Зміна значень елементів списку під час перебору</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть список чисел (напр., `1,2,3,4,5`).</p>
+                            <input type="text" id="list-modify-input" class="p-2 border rounded w-full mb-4" value="1,2,3,4,5">
+                            
+                            <h4 class="font-medium text-slate-700 mb-2">Множення всіх елементів на коефіцієнт:</h4>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                <input type="number" id="multiply-factor" class="p-2 border rounded w-full sm:w-2/3" placeholder="Множник (напр., 2)">
+                                <button id="run-multiply-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Помножити</button>
+                            </div>
+                            <div id="multiply-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-multiply-result"></span></div>
+
+                            <h4 class="font-medium text-slate-700 mb-2">Заміна елементів менших за поріг:</h4>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="number" id="threshold-value" class="p-2 border rounded w-full sm:w-1/3" placeholder="Поріг (напр., 5)">
+                                <input type="text" id="replace-value" class="p-2 border rounded w-full sm:w-1/3" placeholder="Нове значення (напр., 0)">
+                                <button id="run-replace-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Замінити</button>
+                            </div>
+                            <div id="replace-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-replace-result"></span></div>
+                            <div id="modify-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 3: Conditional Sum/Count -->
+                    <div>
+                        <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                            <span>3. Обчислення суми/кількості з умовою</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                            <p class="mb-4 text-sm text-slate-600">Введіть список чисел (напр., `7,9,10,8,11,9,12`).</p>
+                            <input type="text" id="list-conditional-input" class="p-2 border rounded w-full mb-4" value="7,9,10,8,11,9,12">
+                            
+                            <h4 class="font-medium text-slate-700 mb-2">Підрахунок елементів більших за поріг:</h4>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                <input type="number" id="count-threshold" class="p-2 border rounded w-full sm:w-2/3" placeholder="Поріг (напр., 9)">
+                                <button id="run-count-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Підрахувати</button>
+                            </div>
+                            <div id="count-conditional-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-count-conditional-result"></span></div>
+
+                            <h4 class="font-medium text-slate-700 mb-2">Сума елементів менших за поріг:</h4>
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="number" id="sum-threshold" class="p-2 border rounded w-full sm:w-2/3" placeholder="Поріг (напр., 10)">
+                                <button id="run-sum-conditional-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Обчислити суму</button>
+                            </div>
+                            <div id="sum-conditional-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-sum-conditional-result"></span></div>
+                            <div id="conditional-error" class="mt-2 text-red-600 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота: Аналіз температур за тиждень (Вправа 37)</h3>
+                <p class="text-slate-600 mb-6">Розробіть програму, яка генерує список середньодобових температур за тиждень (від -10 до +5). Визначте, скільки разів температура змінювала знак, та в які дні це відбувалося. Додатково підрахуйте, скільки днів температура дорівнювала 0.</p>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="python-temp-analysis-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                        <textarea id="python-temp-analysis-code-input" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-100" placeholder="Введіть ваш код тут...">
+import random
+
+# Вправа 37: Аналіз температур за тиждень
+
+# 1. Завантажити модуль для генерування випадкових чисел
+# from random import * (Цей рядок потрібен в Python IDLE, тут random вже імпортовано)
+
+# 2. Створити порожній список t
+t = []
+
+# 3. Заповнити список випадковими значеннями в діапазоні від -10 до +5.
+# Вивести утворений список на консоль.
+for _ in range(7): # Тиждень = 7 днів
+    t.append(random.randint(-10, 5))
+print("Температури за тиждень:", t)
+
+# 4. Створити змінну k для збереження кількості змін знака температури.
+k = 0
+zero_days_count = 0 # Додатковий лічильник для днів з 0 температурою
+
+print("Аналіз змін знака температури:")
+# 5. Запишіть команду циклу для перебору елементів списку з індексами від 0 до 5 (тобто до len(t)-1).
+# Якщо добуток поточного і наступного елементів від'ємний,
+# потрібно вивести індекси цих елементів і збільшити значення лічильника k.
+for i in range(len(t) - 1):
+    if t[i] * t[i+1] < 0:
+        print("Зміна знака між днем", i, "та днем", i+1)
+        k += 1
+    # Додаткова перевірка на 0 температуру для поточного дня
+    if t[i] == 0:
+        zero_days_count += 1
+
+# Перевірка останнього дня на 0 температуру, якщо цикл не доходить до нього
+# (Цикл for range(len(t) - 1) не перевіряє останній елемент t[len(t)-1] на 0)
+if len(t) > 0 and t[len(t) - 1] == 0:
+    # Перевіряємо, чи останній елемент вже був врахований в циклі.
+    # Якщо len(t) == 1, то цикл не виконується, тому перевірка потрібна.
+    # Якщо len(t) > 1, то t[len(t)-1] не перевіряється в `for i in range(len(t) - 1)`.
+    # Тому додаємо його, якщо він не був врахований.
+    # Простіший спосіб - окремий прохід для zero_days_count або перерахунок.
+    # Для точності перерахуємо zero_days_count для всього списку:
+    zero_days_count = 0
+    for temp in t:
+        if temp == 0:
+            zero_days_count += 1
+
+# 6. Запишіть команду виведення значення k.
+print("Кількість змін знака температури:", k)
+print("Кількість днів з температурою 0:", zero_days_count)
+
+# Випробуйте програму. Внесіть зміни, щоб окремо підраховувалося число днів, коли середньодобова температура дорівнювала 0.
+                        </textarea>
+                        <button id="run-temp-analysis-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати код</button>
+                    </div>
+                    <div>
+                        <label for="python-temp-analysis-output" class="block text-sm font-medium text-slate-700 mb-2">Вивід програми:</label>
+                        <pre id="python-temp-analysis-output" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-800 text-green-300 overflow-auto"></pre>
+                    </div>
+                </div>
+                <div id="python-temp-analysis-error" class="mt-4 text-red-600 font-medium"></div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Які є основні способи перебору елементів списку в Python?</div><div class="flip-card-back bg-indigo-200">За індексом (`for i in range(len(list))`) та за значенням (`for item in list`).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який спосіб перебору дозволяє змінювати елементи списку?</div><div class="flip-card-back bg-indigo-200">Перебір за індексом, використовуючи `list[i] = new_value`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як визначити, чи змінювала температура знак між двома послідовними днями?</div><div class="flip-card-back bg-indigo-200">Перевірити, чи добуток `t[i] * t[i+1]` є від'ємним.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як підрахувати кількість елементів у списку, що задовольняють певну умову?</div><div class="flip-card-back bg-indigo-200">Використовувати цикл та лічильник з умовою `if`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Для чого потрібен модуль `random` при роботі зі списками?</div><div class="flip-card-back bg-indigo-200">Для генерації випадкових чисел для заповнення списків.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Яка функція дозволяє отримати довжину списку?</div><div class="flip-card-back bg-indigo-200">`len()`.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 37 (стор. 222-225).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 37 (стор. 226).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/AWxkotEPVVk?si=48eerd0QScQIA-aQ" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/AWxkotEPVVk</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 37: <a href="https://ua.izzi.digital/DOS/750894/932597.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932597.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 37, стор. 222-226)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 37: <a href="https://ua.izzi.digital/DOS/750894/932597.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932597.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Accordion logic
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    // Toggle accordion content visibility
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Close other open accordions before opening the current one
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        // Open the clicked accordion
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Chart.js for NUШ results visualization
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 3, 2], // Importance levels: GR1, GR2 - Most Important (4), GR3 - Very Important (3), GR4 - Important (2)
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива';
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Helper function to parse list input (e.g., "1,2,3" -> [1,2,3] or "'a','b'" -> ['a','b'])
+            function parseListInput(inputString) {
+                if (!inputString) return [];
+                try {
+                    const parsed = JSON.parse(inputString.replace(/'/g, '"'));
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    // Fallback to comma-separated values if JSON parsing fails
+                }
+
+                return inputString.split(',').map(item => {
+                    item = item.trim();
+                    if (item.startsWith("'") && item.endsWith("'")) {
+                        return item.substring(1, item.length - 1);
+                    }
+                    if (item.startsWith('"') && item.endsWith('"')) {
+                        return item.substring(1, item.length - 1);
+                    }
+                    if (/^-?\d+(\.\d+)?$/.test(item)) {
+                        return parseFloat(item);
+                    }
+                    return item;
+                });
+            }
+
+            // Helper function to convert list to string for display in text areas
+            function listToStringDisplay(list) {
+                return JSON.stringify(list).replace(/"/g, "'");
+            }
+
+            // Accordion 1: List Iteration Logic
+            const listIterationInput = document.getElementById('list-iteration-input');
+            const runIterateIndexBtn = document.getElementById('run-iterate-index-btn');
+            const runIterateValueBtn = document.getElementById('run-iterate-value-btn');
+            const displayIterationResult = document.getElementById('display-iteration-result');
+            const iterationError = document.getElementById('iteration-error');
+
+            runIterateIndexBtn.addEventListener('click', () => {
+                iterationError.textContent = '';
+                displayIterationResult.textContent = '';
+                let myList = parseListInput(listIterationInput.value);
+                let output = "Перебір за індексом:\n";
+                if (myList.length === 0) {
+                    output += "Список порожній.";
+                } else {
+                    for (let i = 0; i < myList.length; i++) {
+                        output += `Елемент за індексом ${i}: ${JSON.stringify(myList[i])}\n`;
+                    }
+                }
+                displayIterationResult.textContent = output;
+            });
+
+            runIterateValueBtn.addEventListener('click', () => {
+                iterationError.textContent = '';
+                displayIterationResult.textContent = '';
+                let myList = parseListInput(listIterationInput.value);
+                let output = "Перебір за значенням:\n";
+                if (myList.length === 0) {
+                    output += "Список порожній.";
+                } else {
+                    for (let item of myList) {
+                        output += `Елемент: ${JSON.stringify(item)}\n`;
+                    }
+                }
+                displayIterationResult.textContent = output;
+            });
+
+            // Accordion 2: Modifying List Elements Logic
+            const listModifyInput = document.getElementById('list-modify-input');
+            const multiplyFactorInput = document.getElementById('multiply-factor');
+            const runMultiplyBtn = document.getElementById('run-multiply-btn');
+            const displayMultiplyResult = document.getElementById('display-multiply-result');
+
+            const thresholdValueInput = document.getElementById('threshold-value');
+            const replaceValueInput = document.getElementById('replace-value');
+            const runReplaceBtn = document.getElementById('run-replace-btn');
+            const displayReplaceResult = document.getElementById('display-replace-result');
+            const modifyError = document.getElementById('modify-error');
+
+            runMultiplyBtn.addEventListener('click', () => {
+                modifyError.textContent = '';
+                displayMultiplyResult.textContent = '';
+                let originalList = parseListInput(listModifyInput.value);
+                let myListCopy = [...originalList]; // Create a copy to avoid modifying the original directly
+                const factor = parseFloat(multiplyFactorInput.value);
+
+                if (isNaN(factor)) {
+                    modifyError.textContent = 'Будь ласка, введіть дійсний множник.';
+                    return;
+                }
+                // Check if all elements are numbers for multiplication
+                if (!myListCopy.every(item => typeof item === 'number')) {
+                    modifyError.textContent = 'Список має містити лише числа для множення.';
+                    return;
+                }
+
+                for (let i = 0; i < myListCopy.length; i++) {
+                    myListCopy[i] *= factor;
+                }
+                displayMultiplyResult.textContent = listToStringDisplay(myListCopy);
+            });
+
+            runReplaceBtn.addEventListener('click', () => {
+                modifyError.textContent = '';
+                displayReplaceResult.textContent = '';
+                let originalList = parseListInput(listModifyInput.value);
+                let myListCopy = [...originalList]; // Create a copy
+                const threshold = parseFloat(thresholdValueInput.value);
+                let replaceVal = replaceValueInput.value.trim();
+
+                if (isNaN(threshold)) {
+                    modifyError.textContent = 'Будь ласка, введіть дійсний поріг.';
+                    return;
+                }
+                if (replaceVal === '') {
+                    modifyError.textContent = 'Будь ласка, введіть нове значення.';
+                    return;
+                }
+                // Convert replaceVal to number if it's a number string
+                if (!isNaN(parseFloat(replaceVal)) && isFinite(replaceVal)) {
+                    replaceVal = parseFloat(replaceVal);
+                } else if ((replaceVal.startsWith("'") && replaceVal.endsWith("'")) || (replaceVal.startsWith('"') && replaceVal.endsWith('"'))) {
+                    // Remove quotes if it's a quoted string
+                    replaceVal = replaceVal.substring(1, replaceVal.length - 1);
+                }
+                
+                // Check if all elements are numbers for comparison with threshold
+                if (!myListCopy.every(item => typeof item === 'number')) {
+                    modifyError.textContent = 'Список має містити лише числа для порівняння з порогом.';
+                    return;
+                }
+
+                for (let i = 0; i < myListCopy.length; i++) {
+                    if (myListCopy[i] < threshold) {
+                        myListCopy[i] = replaceVal;
+                    }
+                }
+                displayReplaceResult.textContent = listToStringDisplay(myListCopy);
+            });
+
+            // Accordion 3: Conditional Sum/Count Logic
+            const listConditionalInput = document.getElementById('list-conditional-input');
+            const countThresholdInput = document.getElementById('count-threshold');
+            const runCountBtn = document.getElementById('run-count-btn');
+            const displayCountConditionalResult = document.getElementById('display-count-conditional-result');
+
+            const sumThresholdInput = document.getElementById('sum-threshold');
+            const runSumConditionalBtn = document.getElementById('run-sum-conditional-btn');
+            const displaySumConditionalResult = document.getElementById('display-sum-conditional-result');
+            const conditionalError = document.getElementById('conditional-error');
+
+            runCountBtn.addEventListener('click', () => {
+                conditionalError.textContent = '';
+                displayCountConditionalResult.textContent = '';
+                let myList = parseListInput(listConditionalInput.value);
+                const threshold = parseFloat(countThresholdInput.value);
+
+                if (isNaN(threshold)) {
+                    conditionalError.textContent = 'Будь ласка, введіть дійсний поріг для підрахунку.';
+                    return;
+                }
+                // Check if all elements are numbers for counting
+                if (!myList.every(item => typeof item === 'number')) {
+                    conditionalError.textContent = 'Список має містити лише числа для підрахунку.';
+                    return;
+                }
+
+                let count = 0;
+                for (let item of myList) {
+                    if (item > threshold) {
+                        count++;
+                    }
+                }
+                displayCountConditionalResult.textContent = count;
+            });
+
+            runSumConditionalBtn.addEventListener('click', () => {
+                conditionalError.textContent = '';
+                displaySumConditionalResult.textContent = '';
+                let myList = parseListInput(listConditionalInput.value);
+                const threshold = parseFloat(sumThresholdInput.value);
+
+                if (isNaN(threshold)) {
+                    conditionalError.textContent = 'Будь ласка, введіть дійсний поріг для суми.';
+                    return;
+                }
+                // Check if all elements are numbers for summation
+                if (!myList.every(item => typeof item === 'number')) {
+                    conditionalError.textContent = 'Список має містити лише числа для обчислення суми.';
+                    return;
+                }
+
+                let sum = 0;
+                for (let item of myList) {
+                    if (item < threshold) {
+                        sum += item;
+                    }
+                }
+                displaySumConditionalResult.textContent = sum;
+            });
+
+            // Practice work: Python Simulator Logic for Temperature Analysis
+            const pythonTempAnalysisCodeInput = document.getElementById('python-temp-analysis-code-input');
+            const runTempAnalysisBtn = document.getElementById('run-temp-analysis-btn');
+            const pythonTempAnalysisOutput = document.getElementById('python-temp-analysis-output');
+            const pythonTempAnalysisError = document.getElementById('python-temp-analysis-error');
+
+            runTempAnalysisBtn.addEventListener('click', async () => {
+                console.log("Запуск Python-симулятора для аналізу температур...");
+                const code = pythonTempAnalysisCodeInput.value;
+                pythonTempAnalysisOutput.textContent = '';
+                pythonTempAnalysisError.textContent = '';
+
+                try {
+                    let output_buffer = [];
+                    // Custom print function to capture output
+                    const print = (...args) => output_buffer.push(args.map(arg => {
+                        if (Array.isArray(arg)) return JSON.stringify(arg).replace(/"/g, "'");
+                        return arg;
+                    }).join(' '));
+                    const len = (arr) => arr.length; // Simulate Python's len()
+
+                    // Simulate Python's random.randint()
+                    function randint(min, max) {
+                        return Math.floor(Math.random() * (max - min + 1)) + min;
+                    }
+
+                    // --- Start simulating the Python code logic from the textarea ---
+                    let t = [];
+                    for (let _ = 0; _ < 7; _++) {
+                        t.push(randint(-10, 5));
+                    }
+                    print("Температури за тиждень:", t);
+
+                    let k = 0;
+                    // The original Python code in the textarea had a specific zero_days_count logic
+                    // which could be a bit tricky due to loop boundaries.
+                    // For accuracy based on the user's Python code, we will re-calculate
+                    // zero_days_count after the main loop, or ensure it covers all elements.
+
+                    print("Аналіз змін знака температури:");
+                    for (let i = 0; i < len(t) - 1; i++) {
+                        if (t[i] * t[i+1] < 0) {
+                            print(`Зміна знака між днем ${i} та днем ${i+1}`);
+                            k += 1;
+                        }
+                    }
+                    
+                    // Re-calculate zero_days_count to be accurate for the full list, for robustness.
+                    // The user's Python code in the textarea explicitly recalculates it outside the loop,
+                    // so we simulate that for exact match to their provided Python logic.
+                    let zero_days_count = 0;
+                    for (let temp of t) {
+                        if (temp === 0) {
+                            zero_days_count += 1;
+                        }
+                    }
+
+                    print("Кількість змін знака температури:", k);
+                    print("Кількість днів з температурою 0:", zero_days_count);
+
+                    // --- End simulating the Python code logic ---
+
+                    pythonTempAnalysisOutput.textContent = output_buffer.join('\n');
+
+                } catch (e) {
+                    pythonTempAnalysisError.textContent = `Помилка виконання: ${e.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

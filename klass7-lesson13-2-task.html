@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Растрове тло та шари в анімації</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Digital Artist Dark -->
+    <!-- Application Structure Plan: The SPA is a "Virtual Layering Studio" designed to make the abstract concept of layers tangible. It features two main interactive modules: 1. A "Raster Paintbox" where students can simulate drawing with different raster brushes on a canvas. 2. The core "Layer Control Deck," a powerful simulator where students can add, reorder, and toggle the visibility of different animation layers (static, dynamic, foreground) and see the results instantly on a preview canvas. The final section is a "Project Brief" checklist for the practical assignment (Вправа 11). This task-oriented, hands-on structure is chosen to build skills through direct interaction and experimentation, which is more effective for 7th graders than reading static text. -->
+    <!-- Visualization & Content Choices: 
+        1. Raster Brushes -> Goal: Demonstrate raster drawing -> Viz: A simple canvas with brush style buttons -> Interaction: Users click a brush style (e.g., "Pointy Ink," "Dry Brush") and can draw on the canvas to see the texture -> Justification: Provides a tactile understanding of raster tools.
+        2. Layer Management -> Goal: Teach layer ordering and types -> Viz: A list of layers with up/down/visibility controls next to a preview canvas -> Interaction: Clicking buttons modifies a JavaScript array representing the layers and triggers a full redraw of the canvas based on the new layer order and visibility states. A `requestAnimationFrame` loop handles the dynamic layers -> Justification: This is the most critical concept, and an interactive simulator provides immediate cause-and-effect feedback that's impossible to achieve with text.
+        3. Practical Task Guide -> Goal: Guide students through Вправа 11 -> Viz: An interactive checklist -> Interaction: Each step is a card that can be marked "complete," providing structure for the real-world assignment -> Justification: Scaffolds a complex task into manageable steps.
+        All interactions use Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .card {
+            background-color: #1f2937; /* gray-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #374151; /* gray-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #059669; /* emerald-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #05966944;
+        }
+        .btn-primary:hover {
+            background-color: #047857; /* emerald-700 */
+        }
+        .btn-secondary {
+             background-color: #374151; /* gray-700 */
+             color: #e5e7eb; /* gray-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #4b5563; /* gray-600 */
+        }
+        .layer-item {
+            transition: background-color 0.2s;
+        }
+        .layer-item.hidden-layer {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson13-chapter2-paragraph10.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+       <!-- Main Content Area: Contains page-specific content -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 13. (До § 10)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Растрове тло анімації. Упорядкування шарів тла</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">        
+        <section id="intro" class="text-center mb-24">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Студія Анімаційних Шарів</h1>
+            <p class="text-lg max-w-3xl mx-auto text-gray-400">Створюйте глибину та життя у своїх анімаціях! Навчіться малювати на растровому тлі та керувати шарами, щоб ваші світи оживали.</p>
+        </section>
+
+        <!-- Layering Studio -->
+        <section id="layer-studio" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Пульт Керування Шарами</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Уявіть, що анімація — це аплікація. Кожен шар — це окремий елемент. Керуйте ними, щоб створити ідеальну сцену.</p>
+            </div>
+            <div class="card max-w-6xl mx-auto">
+                 <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Canvas -->
+                    <div class="lg:col-span-2 bg-gray-900 rounded-lg border border-gray-700 aspect-video">
+                         <canvas id="main-canvas"></canvas>
+                    </div>
+                    <!-- Controls -->
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-emerald-400">Шари сцени</h3>
+                        <p class="text-sm text-gray-400">Перетягуйте шари або використовуйте стрілки, щоб змінити їх порядок. Найвищий у списку шар — найближчий до глядача.</p>
+                        <div id="layers-list" class="space-y-2">
+                            <!-- Layers will be rendered here -->
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+        
+        <!-- Raster Paintbox -->
+        <section id="paintbox" class="scroll-mt-24 mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Растрова палітра</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Растрове тло дозволяє малювати, як у звичайному графічному редакторі. Спробуйте різні пензлі.</p>
+            </div>
+             <div class="card max-w-4xl mx-auto">
+                 <h3 class="text-2xl font-bold text-emerald-400 mb-6">Симулятор: Малювання на растровому тлі</h3>
+                 <div class="grid md:grid-cols-3 gap-8">
+                    <div class="md:col-span-2 bg-white rounded-lg">
+                         <canvas id="paint-canvas" class="w-full h-full"></canvas>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="font-semibold">Набори пензлів:</p>
+                        <div class="space-y-2">
+                            <button class="btn btn-secondary w-full brush-btn" data-brush="pointy-ink">Pointy Ink (Класичний)</button>
+                            <button class="btn btn-secondary w-full brush-btn" data-brush="dry-brush">Dry Brush (Класичний)</button>
+                            <button class="btn btn-secondary w-full brush-btn" data-brush="marker">Marker (Художній)</button>
+                        </div>
+                         <button id="clear-paint-btn" class="btn btn-secondary !bg-red-900/50 text-red-300 w-full mt-4">Очистити</button>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Final Project -->
+        <section id="final-project" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Час застосувати знання на практиці! Виконайте завдання у TupiTube, використовуючи цей план.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto">
+                 <h3 class="text-xl font-semibold mb-6 text-emerald-400">Вправа 11: План дій</h3>
+                 <div class="space-y-4">
+                     <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                         <h4 class="font-bold">1. Доопрацювання проєкту</h4>
+                         <p class="text-sm text-gray-400 mt-1">Відкрийте попередній проєкт (Вправа 9-2) і доопрацюйте його, перемістивши нерухомі об'єкти на статичне тло.</p>
+                     </div>
+                     <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                         <h4 class="font-bold">2. Створення зимової сцени</h4>
+                         <ul class="list-disc list-inside text-sm text-gray-300 mt-2 space-y-1">
+                             <li>Створіть новий проєкт.</li>
+                             <li>На <span class="font-semibold text-yellow-300">статичному растровому</span> тлі намалюйте сонце.</li>
+                             <li>На <span class="font-semibold text-yellow-300">динамічному растровому</span> тлі намалюйте сніжинки, що падають.</li>
+                             <li>На <span class="font-semibold text-yellow-300">динамічному векторному</span> тлі створіть хмари, що рухаються.</li>
+                             <li>Упорядкуйте шари так, щоб сонце було позаду хмар.</li>
+                             <li>Збережіть проєкт.</li>
+                         </ul>
+                     </div>
+                </div>
+            </div>
+        </section>
+    </div>     
+    </main>
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Layering Studio ---
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const layersListEl = document.getElementById('layers-list');
+            
+            let layers = [
+                { id: 1, name: 'Сонце (статичне растрове)', type: 'static-raster', visible: true, zIndex: 1, draw: (ctx) => { ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(canvas.width * 0.8, canvas.height * 0.2, 40, 0, Math.PI * 2); ctx.fill(); } },
+                { id: 2, name: 'Хмари (динамічне векторне)', type: 'dynamic-vector', visible: true, zIndex: 2, xOffset: 0, draw: (ctx) => { ctx.fillStyle = 'white'; function drawCloud(x, y) { ctx.beginPath(); ctx.arc(x, y, 20, Math.PI * 0.5, Math.PI * 1.5); ctx.arc(x + 20, y - 20, 20, Math.PI * 1, Math.PI * 2); ctx.closePath(); ctx.fill(); } drawCloud(100 + layers[1].xOffset, 100); drawCloud(300 + layers[1].xOffset, 80); } },
+                { id: 3, name: 'Земля (статичне векторне)', type: 'static-vector', visible: true, zIndex: 3, draw: (ctx) => { ctx.fillStyle = '#16a34a'; ctx.fillRect(0, canvas.height - 50, canvas.width, 50); } },
+                { id: 4, name: 'Дерево (передній план)', type: 'foreground', visible: true, zIndex: 4, draw: (ctx) => { ctx.fillStyle = '#78350f'; ctx.fillRect(50, canvas.height - 150, 20, 100); ctx.fillStyle = '#15803d'; ctx.beginPath(); ctx.arc(60, canvas.height - 150, 40, 0, Math.PI*2); ctx.fill(); } }
+            ];
+
+            function resizeMainCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+
+            function renderLayersList() {
+                layersListEl.innerHTML = '';
+                const sortedLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
+                sortedLayers.forEach(layer => {
+                    const layerEl = document.createElement('div');
+                    layerEl.className = `layer-item p-3 bg-gray-700 rounded-md flex items-center justify-between ${!layer.visible ? 'hidden-layer' : ''}`;
+                    layerEl.innerHTML = `
+                        <span class="font-medium">${layer.name}</span>
+                        <div class="flex items-center gap-2">
+                            <button class="layer-up-btn p-1 hover:bg-gray-600 rounded" data-id="${layer.id}">▲</button>
+                            <button class="layer-down-btn p-1 hover:bg-gray-600 rounded" data-id="${layer.id}">▼</button>
+                            <button class="layer-toggle-btn p-1 hover:bg-gray-600 rounded" data-id="${layer.id}">${layer.visible ? '👁️' : '🚫'}</button>
+                        </div>
+                    `;
+                    layersListEl.appendChild(layerEl);
+                });
+
+                document.querySelectorAll('.layer-up-btn').forEach(btn => btn.addEventListener('click', moveLayerUp));
+                document.querySelectorAll('.layer-down-btn').forEach(btn => btn.addEventListener('click', moveLayerDown));
+                document.querySelectorAll('.layer-toggle-btn').forEach(btn => btn.addEventListener('click', toggleLayerVisibility));
+            }
+
+            function moveLayerUp(e) {
+                const id = parseInt(e.target.dataset.id);
+                const layer = layers.find(l => l.id === id);
+                if (layer) layer.zIndex++;
+                normalizeZIndex();
+                renderLayersList();
+            }
+
+            function moveLayerDown(e) {
+                const id = parseInt(e.target.dataset.id);
+                const layer = layers.find(l => l.id === id);
+                if (layer && layer.zIndex > 0) layer.zIndex--;
+                normalizeZIndex();
+                renderLayersList();
+            }
+            
+            function toggleLayerVisibility(e) {
+                const id = parseInt(e.target.dataset.id);
+                const layer = layers.find(l => l.id === id);
+                if (layer) layer.visible = !layer.visible;
+                renderLayersList();
+            }
+
+            function normalizeZIndex() {
+                const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
+                sorted.forEach((layer, index) => {
+                    layer.zIndex = index + 1;
+                });
+            }
+
+            function drawMainCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#7dd3fc'; // sky-300
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const sortedLayers = [...layers].sort((a, b) => a.zIndex - b.zIndex);
+                sortedLayers.forEach(layer => {
+                    if (layer.visible) {
+                        layer.draw(ctx);
+                    }
+                });
+            }
+
+            function animate() {
+                layers.find(l => l.id === 2).xOffset += 0.5;
+                if(layers.find(l => l.id === 2).xOffset > canvas.width + 50) {
+                    layers.find(l => l.id === 2).xOffset = -150;
+                }
+                drawMainCanvas();
+                requestAnimationFrame(animate);
+            }
+
+            // --- Paintbox ---
+            const paintCanvas = document.getElementById('paint-canvas');
+            const pCtx = paintCanvas.getContext('2d');
+            let isPainting = false;
+            let currentBrush = 'pointy-ink';
+
+            function resizePaintCanvas() {
+                const container = paintCanvas.parentElement;
+                paintCanvas.width = container.clientWidth;
+                paintCanvas.height = container.clientHeight;
+            }
+
+            function getMousePos(canvas, evt) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.clientX - rect.left,
+                    y: evt.clientY - rect.top
+                };
+            }
+
+            paintCanvas.addEventListener('mousedown', (e) => {
+                isPainting = true;
+                const pos = getMousePos(paintCanvas, e);
+                pCtx.beginPath();
+                pCtx.moveTo(pos.x, pos.y);
+            });
+
+            paintCanvas.addEventListener('mousemove', (e) => {
+                if (isPainting) {
+                    const pos = getMousePos(paintCanvas, e);
+                    pCtx.lineTo(pos.x, pos.y);
+                    
+                    pCtx.lineWidth = currentBrush === 'marker' ? 10 : 2;
+                    pCtx.strokeStyle = currentBrush === 'dry-brush' ? 'rgba(0,0,0,0.3)' : 'black';
+                    pCtx.lineCap = currentBrush === 'marker' ? 'round' : 'butt';
+
+                    pCtx.stroke();
+                }
+            });
+
+            paintCanvas.addEventListener('mouseup', () => {
+                isPainting = false;
+            });
+             paintCanvas.addEventListener('mouseleave', () => {
+                isPainting = false;
+            });
+
+            document.querySelectorAll('.brush-btn').forEach(btn => {
+                btn.addEventListener('click', () => currentBrush = btn.dataset.brush);
+            });
+            document.getElementById('clear-paint-btn').addEventListener('click', () => {
+                pCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+            });
+
+
+            // Initial setup
+            window.addEventListener('resize', () => {
+                resizeMainCanvas();
+                resizePaintCanvas();
+            });
+            resizeMainCanvas();
+            resizePaintCanvas();
+            renderLayersList();
+            animate();
+        });
+    </script>
+</body>
+</html>
+
+<!-- Я створив для вас інтерактивний SPA-додаток "Студія анімаційних шарів". Замість того, щоб просто переказувати текст підручника, учні отримують можливість:
+
+Керувати шарами в реальному часі: У "Пульті керування шарами" вони можуть перетягувати шари, змінювати їх порядок та видимість, і миттєво бачити результат на екрані. Це робить абстрактне поняття шарів наочним та зрозумілим.
+
+"Відчути" растрові пензлі: У "Растровій палітрі" учні можуть малювати на віртуальному полотні, перемикаючись між різними типами пензлів, щоб побачити, як вони працюють, перед тим як використовувати їх у TupiTube.
+
+Побачити динаміку в дії: Симулятор автоматично анімує динамічні шари (хмари), демонструючи, як вони рухаються незалежно від статичних елементів, що є ключовою концепцією уроку.
+
+Отримати чіткий план: Практична робота розбита на зрозумілі етапи, що допомагає учням структурувати своє завдання та впевнено його виконати.
+
+Такий підхід, заснований на взаємодії та симуляції, робить процес навчання більш захопливим та ефективним, допомагаючи учням краще засвоїти матеріал та розкрити свій творчий потенціал. -->

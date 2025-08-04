@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Практична робота «Створення анімаційного проєкту»</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Digital Night Sky -->
+    <!-- Application Structure Plan: The SPA is a gamified "Project Mission" that guides students through the practical assignment step-by-step. Each step is an interactive card. Clicking a button on a card simulates the action (e.g., adding stars, starting an animation) in a central preview canvas and unlocks the next step. This sequential, interactive checklist breaks down the complex project into manageable parts, building confidence and providing clear visual feedback for each action. -->
+    <!-- Visualization & Content Choices: 1. Animation Steps -> Goal: Guide a complex process -> Viz: Interactive checklist of cards (HTML/Tailwind). 2. Animation Preview -> Goal: Show results of actions -> Viz: A single HTML Canvas. -> Interaction: Buttons on step cards trigger JS functions that update a state object, which is then rendered in a `requestAnimationFrame` loop. This provides instant visual feedback for each step of the practical work. -> Justification: Simulating the results on a canvas makes the instructions tangible and easier to understand than static text. -> All interactions use Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c1425;
+            color: #e2e8f0; /* slate-200 */
+        }
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #4338ca; /* indigo-700 */
+        }
+         .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .mission-step {
+            transition: all 0.3s ease-in-out;
+            opacity: 0.6;
+            border-left-width: 4px;
+            border-color: #475569; /* slate-600 */
+        }
+        .mission-step.active {
+            opacity: 1;
+            transform: scale(1.03);
+            box-shadow: 0 0 30px #4f46e555;
+            border-color: #4f46e5;
+        }
+        .mission-step.completed {
+            opacity: 1;
+            background-color: #1e293b;
+            border-color: #22c55e;
+        }
+        .mission-step.completed .mission-btn {
+            background-color: #166534; /* green-800 */
+            color: #a7f3d0;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson20-chapter2-practical4.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 20. (До ПР4)</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Практична робота № 4. «Створення анімації з декількох сцен».<br>Узагальнення навчального матеріалу з теми</h1>
+                <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>
+
+        <div class="container mx-auto px-4 py-12">
+            
+            <section id="intro" class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Практична робота №4</h1>
+                <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6">Створення анімації з декількох сцен</h2>
+                <p class="text-lg max-w-4xl mx-auto text-slate-400">Виконуйте кроки по черзі, щоб створити анімацію зміни дня і ночі. Натискайте кнопки, щоб побачити, як ваша сцена оживає на екрані праворуч.</p>
+            </section>
+
+            <!-- Mission Control -->
+            <div class="grid lg:grid-cols-2 gap-8 items-start">
+                <!-- Steps -->
+                <div id="mission-steps" class="space-y-4">
+                    <!-- Mission steps will be injected here -->
+                </div>
+                <!-- Canvas Preview -->
+                <div class="sticky top-8">
+                    <div class="card">
+                        <h3 class="text-xl font-bold text-center mb-4 text-indigo-400">Екран попереднього перегляду</h3>
+                        <div class="bg-black rounded-lg border border-slate-600 aspect-video">
+                            <canvas id="main-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div id="mission-complete" class="hidden text-center mt-6 p-6 bg-green-900/50 border-2 border-dashed border-green-500 rounded-xl">
+                        <h3 class="text-2xl font-bold text-green-300">🎉 Проєкт завершено! 🎉</h3>
+                        <p class="text-green-200 mt-2">Ви успішно виконали всі кроки! Тепер ви готові створити власну анімацію у TupiTube.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>  
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const missionContainer = document.getElementById('mission-steps');
+            const missionCompleteEl = document.getElementById('mission-complete');
+
+            const missionStepsData = [
+                { title: "Крок 1-2: Сцена 1 - Ніч", description: "Створюємо статичне тло: темно-синє небо та сірий сніг.", buttonText: "Створити нічну сцену", action: 'setupNight' },
+                { title: "Крок 3: Додавання зірок", description: "Додаємо кілька зірок на нічне небо.", buttonText: "Додати зорі", action: 'addStars' },
+                { title: "Крок 4: Мерехтіння зірок", description: "Додаємо анімацію часткового обертання, щоб зорі мерехтіли.", buttonText: "Запустити мерехтіння", action: 'twinkleStars' },
+                { title: "Крок 5-7: Сцена 2 - Світанок", description: "Створюємо нову сцену. Намалюємо сонце за снігом.", buttonText: "Намалювати сонце", action: 'drawSun' },
+                { title: "Крок 8: Схід сонця", description: "Анімуємо схід та обертання сонця. Небо світлішає.", buttonText: "Запустити схід сонця", action: 'sunrise' },
+                { title: "Крок 9: Зникнення зірок", description: "Додаємо анімацію цілісності, щоб зорі плавно зникли.", buttonText: "Сховати зорі", action: 'fadeStars' },
+                { title: "Крок 10-14: Сцена 3 - День", description: "Створюємо денну сцену. Сніг починає танути.", buttonText: "Запустити танення снігу", action: 'meltSnow' }
+            ];
+
+            let state = {
+                currentStep: 0,
+                scene: 1,
+                skyColor: { r: 23, g: 37, b: 84 }, // slate-800
+                snowOpacity: 1,
+                stars: [],
+                sun: { y: 300, angle: 0, opacity: 0 },
+                animation: {
+                    twinkle: false,
+                    sunrise: false,
+                    fadeStars: false,
+                    meltSnow: false
+                }
+            };
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+
+            function renderMissionSteps() {
+                missionContainer.innerHTML = '';
+                missionStepsData.forEach((step, index) => {
+                    const stepEl = document.createElement('div');
+                    stepEl.id = `step-${index}`;
+                    stepEl.className = 'mission-step card';
+                    stepEl.innerHTML = `
+                        <h3 class="font-bold text-lg text-slate-200">${step.title}</h3>
+                        <p class="text-slate-400 mt-1 mb-4 text-sm">${step.description}</p>
+                        <button class="btn btn-primary mission-btn" data-index="${index}" data-action="${step.action}" disabled>${step.buttonText}</button>
+                    `;
+                    missionContainer.appendChild(stepEl);
+                });
+                
+                missionContainer.querySelectorAll('.mission-btn').forEach(btn => {
+                    btn.addEventListener('click', handleStepCompletion);
+                });
+                
+                updateActiveStep();
+            }
+
+            function updateActiveStep() {
+                document.querySelectorAll('.mission-step').forEach((el, index) => {
+                    el.classList.remove('active', 'completed');
+                    const btn = el.querySelector('.mission-btn');
+                    if (index < state.currentStep) {
+                        el.classList.add('completed');
+                        btn.disabled = true;
+                        btn.innerHTML = `<span>✔️</span> Виконано`;
+                    } else if (index === state.currentStep) {
+                        el.classList.add('active');
+                        btn.disabled = false;
+                    }
+                });
+                if (state.currentStep >= missionStepsData.length) {
+                    missionCompleteEl.classList.remove('hidden');
+                }
+            }
+
+            function handleStepCompletion(event) {
+                const action = event.target.dataset.action;
+                actions[action]();
+                state.currentStep++;
+                updateActiveStep();
+            }
+
+            // --- Drawing and Animation Logic ---
+            const actions = {
+                setupNight: () => { state.scene = 1; },
+                addStars: () => {
+                    for(let i=0; i<5; i++) {
+                        state.stars.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * (canvas.height / 2),
+                            size: 2 + Math.random() * 3,
+                            opacity: 1
+                        });
+                    }
+                },
+                twinkleStars: () => { state.animation.twinkle = true; },
+                drawSun: () => { state.sun.opacity = 1; },
+                sunrise: () => { state.animation.sunrise = true; },
+                fadeStars: () => { state.animation.fadeStars = true; },
+                meltSnow: () => { state.animation.meltSnow = true; }
+            };
+
+            function drawStar(x, y, size, opacity) {
+                ctx.fillStyle = `rgba(253, 224, 71, ${opacity})`;
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(x + size * Math.cos(i * 2 * Math.PI / 5 - Math.PI / 2), y + size * Math.sin(i * 2 * Math.PI / 5 - Math.PI / 2));
+                    ctx.lineTo(x + (size/2) * Math.cos((i * 2 + 1) * Math.PI / 5 - Math.PI / 2), y + (size/2) * Math.sin((i * 2 + 1) * Math.PI / 5 - Math.PI / 2));
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function draw() {
+                // Sky
+                ctx.fillStyle = `rgb(${state.skyColor.r}, ${state.skyColor.g}, ${state.skyColor.b})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Stars
+                state.stars.forEach(star => {
+                    if (state.animation.fadeStars) {
+                        star.opacity = Math.max(0, star.opacity - 0.01); // Prioritize fading
+                    } else if (state.animation.twinkle) {
+                        star.opacity = 0.5 + Math.sin(Date.now() * 0.005 + star.x) * 0.5;
+                    }
+                    drawStar(star.x, star.y, star.size, star.opacity);
+                });
+                
+                // Sun
+                if (state.sun.opacity > 0) {
+                    ctx.save();
+                    ctx.translate(canvas.width / 2, state.sun.y);
+                    ctx.rotate(state.sun.angle * Math.PI / 180);
+                    ctx.fillStyle = `rgba(250, 204, 21, ${state.sun.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 40, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Snow
+                ctx.fillStyle = `rgba(226, 232, 240, ${state.snowOpacity})`; // slate-200
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height);
+                ctx.lineTo(0, canvas.height - 50);
+                ctx.bezierCurveTo(canvas.width / 3, canvas.height - 80, canvas.width * 2/3, canvas.height - 40, canvas.width, canvas.height - 60);
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Animation updates
+                if (state.animation.sunrise && state.sun.y > canvas.height / 2) {
+                    state.sun.y -= 0.5;
+                    state.sun.angle += 1;
+                    state.skyColor.r = Math.min(96, state.skyColor.r + 0.2); // -> 96, 165, 250 (sky-400)
+                    state.skyColor.g = Math.min(165, state.skyColor.g + 0.5);
+                    state.skyColor.b = Math.min(250, state.skyColor.b + 0.8);
+                }
+                
+                if (state.animation.meltSnow && state.snowOpacity > 0) {
+                    state.snowOpacity -= 0.005;
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            renderMissionSteps();
+            draw();
+        });
+    </script>
+</body>
+</html>

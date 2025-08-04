@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Методи опрацювання списків</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+<!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+<!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 5: «Алгоритми та програми». Урок № 51. (До § 36)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Методи опрацювання списків</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний урок для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="review" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивне повторення</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+<!-- Tab Contents -->
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li><b>Освітня:</b> Ознайомити з методами `insert()`, `pop()`, `remove()`, `index()`, `count()`, `sort()`, `reverse()`; навчити використовувати їх для вставлення, видалення, пошуку, підрахунку, сортування та перевертання елементів списку; ознайомити з функціями `list()` та `join()`.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне та аналітичне мислення, формувати вміння застосовувати знання для розв'язання задач, розвивати навички налагодження.</li>
+                            <li><b>Виховна:</b> Виховувати самостійність, відповідальність, акуратність, інтерес до ефективної організації даних.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li>Пояснювати призначення та використовувати методи списків.</li>
+                            <li>Вставляти елементи у список за індексом.</li>
+                            <li>Видаляти елементи за індексом або значенням.</li>
+                            <li>Знаходити індекс першого входження елемента.</li>
+                            <li>Підраховувати кількість входжень елемента.</li>
+                            <li>Сортувати елементи списку за зростанням/спаданням.</li>
+                            <li>Перевертати порядок елементів у списку.</li>
+                            <li>Перетворювати рядки у списки символів/слів та списки у рядки.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (для пояснення методів та прикладів).</li>
+                            <li>Дошка, крейда/маркер.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика (сортування, послідовності).</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="review-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Як створити два списки для зберігання пов'язаних даних (напр., країни та столиці)?</li>
+                            <li>Який цикл найкраще підходить для перебору елементів списку, коли кількість елементів відома?</li>
+                            <li>Як порівняти введену користувачем відповідь зі столицею без урахування регістру?</li>
+                            <li>Як реалізувати умову завершення гри після певної кількості помилок?</li>
+                            <li>Чому важливо, щоб списки країн та столиць мали однакову довжину?</li>
+                            <li>Як вивести різні повідомлення залежно від кількості помилок гравця?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema5-4.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+                
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Інтерактивне повторення та закріплення</h3>
+                    <div class="space-y-4" id="accordion">
+                        <!-- Accordion Item 1: insert(), pop(), remove() -->
+                        <div>
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                                <span>1. Вставлення та видалення елементів (insert(), pop(), remove())</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                                <p class="mb-4 text-sm text-slate-600">Введіть список (напр., `1,5,7,5,31,-5`).</p>
+                                <input type="text" id="list-manip-input" class="p-2 border rounded w-full mb-4" value="1,5,7,5,31,-5">
+                                
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `insert(index, value)`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                    <input type="number" id="insert-index" class="p-2 border rounded w-full sm:w-1/3" placeholder="Індекс">
+                                    <input type="text" id="insert-value" class="p-2 border rounded w-full sm:w-1/3" placeholder="Значення">
+                                    <button id="run-insert-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Вставити</button>
+                                </div>
+                                <div id="insert-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-insert-result"></span></div>
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `pop(index)`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                    <input type="number" id="pop-index" class="p-2 border rounded w-full sm:w-2/3" placeholder="Індекс (не обов'язково)">
+                                    <button id="run-pop-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Видалити (pop)</button>
+                                </div>
+                                <div id="pop-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-pop-result"></span></div>
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `remove(value)`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                    <input type="text" id="remove-value" class="p-2 border rounded w-full sm:w-2/3" placeholder="Значення">
+                                    <button id="run-remove-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Видалити (remove)</button>
+                                </div>
+                                <div id="remove-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-remove-result"></span></div>
+                                <div id="manip-error" class="mt-2 text-red-600 text-sm"></div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 2: index(), count() -->
+                        <div>
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                                <span>2. Пошук та підрахунок елементів (index(), count())</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                                <p class="mb-4 text-sm text-slate-600">Введіть список та значення для пошуку/підрахунку.</p>
+                                <input type="text" id="list-search-input" class="p-2 border rounded w-full mb-4" value="1,5,7,5,31,-5">
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `index(value)`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                    <input type="text" id="index-search-value" class="p-2 border rounded w-full sm:w-2/3" placeholder="Значення">
+                                    <button id="run-index-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Знайти індекс</button>
+                                </div>
+                                <div id="index-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-index-result"></span></div>
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `count(value)`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                    <input type="text" id="count-search-value" class="p-2 border rounded w-full sm:w-2/3" placeholder="Значення">
+                                    <button id="run-count-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Підрахувати</button>
+                                </div>
+                                <div id="count-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-count-result"></span></div>
+                                <div id="search-error" class="mt-2 text-red-600 text-sm"></div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 3: sort(), reverse() -->
+                        <div>
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                                <span>3. Сортування та перевертання (sort(), reverse())</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                                <p class="mb-4 text-sm text-slate-600">Введіть список чисел або рядків.</p>
+                                <input type="text" id="list-sort-input" class="p-2 border rounded w-full mb-4" value="2,3,7,15,1,9">
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `sort()`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                    <button id="run-sort-asc-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-1/2">Сортувати за зростанням</button>
+                                    <button id="run-sort-desc-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-1/2">Сортувати за спаданням</button>
+                                </div>
+                                <div id="sort-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-sort-result"></span></div>
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `reverse()`:</h4>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                    <button id="run-reverse-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Перевернути</button>
+                                </div>
+                                <div id="reverse-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-reverse-result"></span></div>
+                                <div id="sort-reverse-error" class="mt-2 text-red-600 text-sm"></div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 4: list() (split) and join() -->
+                        <div>
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-slate-100 hover:bg-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+                                <span>4. Перетворення рядків у списки та навпаки (list(), join())</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-slate-50 rounded-b-lg">
+                                <h4 class="font-medium text-slate-700 mb-2">Функція `list(string)`:</h4>
+                                <p class="mb-4 text-sm text-slate-600">Розбиває рядок на список символів.</p>
+                                <div class="flex flex-col sm:flex-row gap-3 items-center mb-4">
+                                    <input type="text" id="string-to-list-input" class="p-2 border rounded w-full sm:w-2/3" placeholder="Введіть рядок (напр., Python)">
+                                    <button id="run-string-to-list-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Перетворити</button>
+                                </div>
+                                <div id="string-to-list-result" class="p-3 bg-white border rounded font-mono text-slate-800 mb-4">Результат: <span id="display-string-to-list-result"></span></div>
+
+                                <h4 class="font-medium text-slate-700 mb-2">Метод `separator.join(list)`:</h4>
+                                <p class="mb-4 text-sm text-slate-600">Об'єднує елементи списку в рядок за допомогою роздільника.</p>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label for="list-to-string-input" class="block text-sm font-medium text-slate-700">Список (напр., 'P','y','t','h','o','n'):</label>
+                                        <input type="text" id="list-to-string-input" class="p-2 border rounded w-full" value="'P','y','t','h','o','n'">
+                                    </div>
+                                    <div>
+                                        <label for="join-separator-input" class="block text-sm font-medium text-slate-700">Роздільник (напр., '-'):</label>
+                                        <input type="text" id="join-separator-input" class="p-2 border rounded w-full" value="">
+                                    </div>
+                                </div>
+                                <button id="run-list-to-string-btn" class="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full">Об'єднати</button>
+                                <div id="list-to-string-result" class="mt-4 p-3 bg-white border rounded font-mono text-slate-800">Результат: <span id="display-list-to-string-result"></span></div>
+                                <div id="convert-error" class="mt-2 text-red-600 text-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Практична робота: Маніпуляції зі списком чисел</h3>
+                    <p class="text-slate-600 mb-6">Створіть список чисел, відсортуйте його, знайдіть найбільший та найменший елемент, видаліть певний елемент та виведіть оновлений список.</p>
+                    <div class="grid lg:grid-cols-2 gap-6">
+                        <div>
+                            <label for="python-list-methods-practice-code-input" class="block text-sm font-medium text-slate-700 mb-2">Ваш Python-код:</label>
+                            <textarea id="python-list-methods-practice-code-input" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-100" placeholder="Введіть ваш код тут...">
+# Практична робота: Маніпуляції зі списком чисел
+
+# 1. Створення списку чисел
+my_numbers = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+print("Початковий список:", my_numbers)
+
+# 2. Сортування списку за зростанням
+# Створюємо копію списку для сортування, щоб не змінювати оригінал
+sorted_numbers_asc = sorted(my_numbers)
+print("Відсортований список (зростання):", sorted_numbers_asc)
+
+# 3. Знаходження найбільшого та найменшого елемента
+# Використовуємо вбудовані функції min() та max() для зручності
+min_val = min(my_numbers)
+max_val = max(my_numbers)
+print("Найменший елемент: ", min_val)
+print("Найбільший елемент: ", max_val)
+
+# 4. Видалення певного елемента (наприклад, числа 5)
+element_to_remove = 5
+# Створюємо копію списку для видалення, щоб не змінювати оригінал
+numbers_after_removal = my_numbers[:] # Створення зрізу - це копія
+if element_to_remove in numbers_after_removal:
+    numbers_after_removal.remove(element_to_remove)
+    print("Список після видалення", element_to_remove,":", numbers_after_removal)
+else:
+    print("Елемент", element_to_remove, "не знайдено у списку (оригінал без змін).")
+
+# 5. Перевернути список
+# Створюємо копію списку для перевертання
+reversed_numbers = my_numbers[::-1] # Створення зрізу з кроком -1 - це перевернута копія
+print("Список після перевертання:", reversed_numbers)
+
+# Оригінальний список залишається незмінним
+print("Оригінальний список (незмінний):", my_numbers)
+                            </textarea>
+                            <button id="run-list-methods-practice-btn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">Виконати код</button>
+                        </div>
+                        <div>
+                            <label for="python-list-methods-practice-output" class="block text-sm font-medium text-slate-700 mb-2">Вивід програми:</label>
+                            <pre id="python-list-methods-practice-output" class="w-full p-3 border rounded font-mono text-sm h-96 bg-slate-800 text-green-300 overflow-auto"></pre>
+                        </div>
+                    </div>
+                    <div id="python-list-methods-practice-error" class="mt-4 text-red-600 font-medium"></div>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                    <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який метод вставляє елемент за заданим індексом?</div><div class="flip-card-back bg-indigo-200">`insert(index, value)`.</div></div></div>
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Чим відрізняються `pop()` та `remove()`?</div><div class="flip-card-back bg-indigo-200">`pop()` видаляє за індексом, `remove()` — за значенням.</div></div></div>
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Як відсортувати список за спаданням?</div><div class="flip-card-back bg-indigo-200">`list.sort(reverse=True)`.</div></div></div>
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Який метод перетворює список символів у рядок?</div><div class="flip-card-back bg-indigo-200">`separator.join(list)`.</div></div></div>
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Що повертає `list.index(x)`, якщо `x` немає у списку?</div><div class="flip-card-back bg-indigo-200">Викликає помилку `ValueError`.</div></div></div>
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100">Чи змінюють методи `sort()` та `reverse()` оригінальний список?</div><div class="flip-card-back bg-indigo-200">Так, вони змінюють список на місці.</div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 36 (стор. 217-219).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати завдання із прикладів № 1 і № 2 (стор. 218).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 36: <a href="https://ua.izzi.digital/DOS/750894/932594.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932594.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 36, стор. 217-221)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 36: <a href="https://ua.izzi.digital/DOS/750894/932594.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932594.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+<!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Accordion logic
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Close other accordions
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        // Open this one
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 4, 3, 2], // ГР1, ГР2 - Найважливіша (4), ГР3 - Дуже важлива (3), ГР4 - Важлива (2)
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => {
+                                    if (v === 4) return 'Найважливіша';
+                                    if (v === 3) return 'Дуже важлива';
+                                    if (v === 2) return 'Важлива';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'};
+                                    return l[c.parsed.y] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Helper function to parse list input (e.g., "1,2,3" -> [1,2,3] or "'a','b'" -> ['a','b'])
+            function parseListInput(inputString) {
+                if (!inputString) return [];
+                try {
+                    const parsed = JSON.parse(inputString.replace(/'/g, '"'));
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    // Fallback to comma-separated values
+                }
+
+                return inputString.split(',').map(item => {
+                    item = item.trim();
+                    if (item.startsWith("'") && item.endsWith("'")) {
+                        return item.substring(1, item.length - 1);
+                    }
+                    if (item.startsWith('"') && item.endsWith('"')) {
+                        return item.substring(1, item.length - 1);
+                    }
+                    if (/^-?\d+(\.\d+)?$/.test(item)) {
+                        return parseFloat(item);
+                    }
+                    return item;
+                });
+            }
+
+            // Helper function to convert list to string for display
+            function listToStringDisplay(list) {
+                return JSON.stringify(list).replace(/"/g, "'");
+            }
+
+            // Accordion 1: insert(), pop(), remove() Logic
+            const listManipInput = document.getElementById('list-manip-input');
+            const insertIndexInput = document.getElementById('insert-index');
+            const insertValueInput = document.getElementById('insert-value');
+            const runInsertBtn = document.getElementById('run-insert-btn');
+            const displayInsertResult = document.getElementById('display-insert-result');
+
+            const popIndexInput = document.getElementById('pop-index');
+            const runPopBtn = document.getElementById('run-pop-btn');
+            const displayPopResult = document.getElementById('display-pop-result');
+
+            const removeValueInput = document.getElementById('remove-value');
+            const runRemoveBtn = document.getElementById('run-remove-btn');
+            const displayRemoveResult = document.getElementById('display-remove-result');
+
+            const manipError = document.getElementById('manip-error');
+
+            runInsertBtn.addEventListener('click', () => {
+                manipError.textContent = '';
+                displayInsertResult.textContent = '';
+                let originalList = parseListInput(listManipInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                const index = parseInt(insertIndexInput.value);
+                let value = insertValueInput.value.trim();
+
+                if (isNaN(index)) {
+                    manipError.textContent = 'Будь ласка, введіть дійсний індекс для вставки.';
+                    return;
+                }
+                if (value === '') {
+                    manipError.textContent = 'Будь ласка, введіть значення для вставки.';
+                    return;
+                }
+
+                if (/^-?\d+(\.\d+)?$/.test(value)) {
+                    value = parseFloat(value);
+                } else if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"'))) {
+                    value = value.substring(1, value.length - 1);
+                }
+
+                myListCopy.splice(index, 0, value); // JS splice for insert on copy
+                displayInsertResult.textContent = listToStringDisplay(myListCopy);
+                // listManipInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+            });
+
+            runPopBtn.addEventListener('click', () => {
+                manipError.textContent = '';
+                displayPopResult.textContent = '';
+                let originalList = parseListInput(listManipInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                const index = popIndexInput.value.trim() === '' ? -1 : parseInt(popIndexInput.value); // Default to last element if no index
+
+                if (myListCopy.length === 0) {
+                    manipError.textContent = 'Список порожній, нічого видаляти.';
+                    return;
+                }
+
+                let removedValue;
+                if (index === -1 || isNaN(index)) { // pop() without index or invalid index
+                    removedValue = myListCopy.pop();
+                } else {
+                    const effectiveIndex = index < 0 ? myListCopy.length + index : index;
+                    if (effectiveIndex < 0 || effectiveIndex >= myListCopy.length) {
+                        manipError.textContent = 'Індекс поза межами списку.';
+                        return;
+                    }
+                    removedValue = myListCopy.splice(effectiveIndex, 1)[0];
+                }
+                displayPopResult.textContent = `Видалено: ${JSON.stringify(removedValue)}, Новий список: ${listToStringDisplay(myListCopy)}`;
+                // listManipInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+            });
+
+            runRemoveBtn.addEventListener('click', () => {
+                manipError.textContent = '';
+                displayRemoveResult.textContent = '';
+                let originalList = parseListInput(listManipInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                let valueToRemove = removeValueInput.value.trim();
+
+                if (valueToRemove === '') {
+                    manipError.textContent = 'Будь ласка, введіть значення для видалення.';
+                    return;
+                }
+
+                if (/^-?\d+(\.\d+)?$/.test(valueToRemove)) {
+                    valueToRemove = parseFloat(valueToRemove);
+                } else if ((valueToRemove.startsWith("'") && valueToRemove.endsWith("'")) || (valueToRemove.startsWith('"') && valueToRemove.endsWith('"'))) {
+                    valueToRemove = valueToRemove.substring(1, valueToRemove.length - 1);
+                }
+                
+                const indexToRemove = myListCopy.indexOf(valueToRemove);
+                if (indexToRemove > -1) {
+                    myListCopy.splice(indexToRemove, 1);
+                    displayRemoveResult.textContent = `Видалено перше входження '${valueToRemove}', Новий список: ${listToStringDisplay(myListCopy)}`;
+                } else {
+                    displayRemoveResult.textContent = `'${valueToRemove}' не знайдено у списку. Список без змін: ${listToStringDisplay(myListCopy)}`;
+                }
+                // listManipInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+            });
+
+            // Accordion 2: index(), count() Logic
+            const listSearchInput = document.getElementById('list-search-input');
+            const indexSearchValueInput = document.getElementById('index-search-value');
+            const runIndexBtn = document.getElementById('run-index-btn');
+            const displayIndexResult = document.getElementById('display-index-result');
+
+            const countSearchValueInput = document.getElementById('count-search-value');
+            const runCountBtn = document.getElementById('run-count-btn');
+            const displayCountResult = document.getElementById('display-count-result');
+            const searchError = document.getElementById('search-error');
+
+            runIndexBtn.addEventListener('click', () => {
+                searchError.textContent = '';
+                displayIndexResult.textContent = '';
+                let myList = parseListInput(listSearchInput.value); // Always read original
+                let valueToFind = indexSearchValueInput.value.trim();
+
+                if (valueToFind === '') {
+                    searchError.textContent = 'Будь ласка, введіть значення для пошуку індексу.';
+                    return;
+                }
+
+                if (/^-?\d+(\.\d+)?$/.test(valueToFind)) {
+                    valueToFind = parseFloat(valueToFind);
+                } else if ((valueToFind.startsWith("'") && valueToFind.endsWith("'")) || (valueToFind.startsWith('"') && valueToFind.endsWith('"'))) {
+                    valueToFind = valueToFind.substring(1, valueToFind.length - 1);
+                }
+
+                const index = myList.indexOf(valueToFind);
+                if (index > -1) {
+                    displayIndexResult.textContent = index;
+                } else {
+                    searchError.textContent = `'${valueToFind}' не знайдено у списку (ValueError).`;
+                    displayIndexResult.textContent = 'Помилка';
+                }
+            });
+
+            runCountBtn.addEventListener('click', () => {
+                searchError.textContent = '';
+                displayCountResult.textContent = '';
+                let myList = parseListInput(listSearchInput.value); // Always read original
+                let valueToCount = countSearchValueInput.value.trim();
+
+                if (valueToCount === '') {
+                    searchError.textContent = 'Будь ласка, введіть значення для підрахунку.';
+                    return;
+                }
+
+                if (/^-?\d+(\.\d+)?$/.test(valueToCount)) {
+                    valueToCount = parseFloat(valueToCount);
+                } else if ((valueToCount.startsWith("'") && valueToCount.endsWith("'")) || (valueToCount.startsWith('"') && valueToCount.endsWith('"'))) {
+                    valueToCount = valueToCount.substring(1, valueToCount.length - 1);
+                }
+
+                let count = 0;
+                for (const item of myList) {
+                    if (item === valueToCount) {
+                        count++;
+                    }
+                }
+                displayCountResult.textContent = count;
+            });
+
+            // Accordion 3: sort(), reverse() Logic
+            const listSortInput = document.getElementById('list-sort-input');
+            const runSortAscBtn = document.getElementById('run-sort-asc-btn');
+            const runSortDescBtn = document.getElementById('run-sort-desc-btn');
+            const displaySortResult = document.getElementById('display-sort-result');
+
+            const runReverseBtn = document.getElementById('run-reverse-btn');
+            const displayReverseResult = document.getElementById('display-reverse-result');
+            const sortReverseError = document.getElementById('sort-reverse-error');
+
+            runSortAscBtn.addEventListener('click', () => {
+                sortReverseError.textContent = '';
+                displaySortResult.textContent = '';
+                let originalList = parseListInput(listSortInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                try {
+                    // Custom sort for mixed types (numbers first, then strings) and proper number sorting
+                    myListCopy.sort((a, b) => {
+                        if (typeof a === 'number' && typeof b === 'number') {
+                            return a - b;
+                        }
+                        if (typeof a === 'string' && typeof b === 'string') {
+                            return a.localeCompare(b);
+                        }
+                        return 0; // Keep original order for mixed types or other types
+                    });
+                    displaySortResult.textContent = listToStringDisplay(myListCopy);
+                    // listSortInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+                } catch (e) {
+                    sortReverseError.textContent = `Помилка сортування: ${e.message}`;
+                }
+            });
+
+            runSortDescBtn.addEventListener('click', () => {
+                sortReverseError.textContent = '';
+                displaySortResult.textContent = '';
+                let originalList = parseListInput(listSortInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                try {
+                    myListCopy.sort((a, b) => {
+                        if (typeof a === 'number' && typeof b === 'number') {
+                            return b - a; // Descending for numbers
+                        }
+                        if (typeof a === 'string' && typeof b === 'string') {
+                            return b.localeCompare(a); // Descending for strings
+                        }
+                        return 0;
+                    });
+                    displaySortResult.textContent = listToStringDisplay(myListCopy);
+                    // listSortInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+                } catch (e) {
+                    sortReverseError.textContent = `Помилка сортування: ${e.message}`;
+                }
+            });
+
+            runReverseBtn.addEventListener('click', () => {
+                sortReverseError.textContent = '';
+                displayReverseResult.textContent = '';
+                let originalList = parseListInput(listSortInput.value); // Get original
+                let myListCopy = [...originalList]; // Create a copy
+                myListCopy.reverse();
+                displayReverseResult.textContent = listToStringDisplay(myListCopy);
+                // listSortInput.value = listToStringDisplay(myListCopy); // REMOVED: Do not update original input
+            });
+
+            // Accordion 4: list() (split) and join() Logic
+            const stringToListInput = document.getElementById('string-to-list-input');
+            const runStringToListBtn = document.getElementById('run-string-to-list-btn');
+            const displayStringToListResult = document.getElementById('display-string-to-list-result');
+
+            const listToStringInput = document.getElementById('list-to-string-input');
+            const joinSeparatorInput = document.getElementById('join-separator-input');
+            const runListToStringBtn = document.getElementById('run-list-to-string-btn');
+            const displayListToStringResult = document.getElementById('display-list-to-string-result');
+            const convertError = document.getElementById('convert-error');
+
+            runStringToListBtn.addEventListener('click', () => {
+                convertError.textContent = '';
+                displayStringToListResult.textContent = '';
+                const text = stringToListInput.value;
+                const charList = Array.from(text); // Converts string to array of characters
+                displayStringToListResult.textContent = listToStringDisplay(charList);
+            });
+
+            runListToStringBtn.addEventListener('click', () => {
+                convertError.textContent = '';
+                displayListToStringResult.textContent = '';
+                let myList = parseListInput(listToStringInput.value);
+                const separator = joinSeparatorInput.value;
+                try {
+                    const result = myList.join(separator); // JS join method
+                    displayListToStringResult.textContent = `'${result}'`;
+                } catch (e) {
+                    convertError.textContent = `Помилка об'єднання: ${e.message}`;
+                }
+            });
+
+            // Practice work: List Methods Practice Python Simulator Logic
+            const pythonListMethodsPracticeCodeInput = document.getElementById('python-list-methods-practice-code-input');
+            const runListMethodsPracticeBtn = document.getElementById('run-list-methods-practice-btn');
+            const pythonListMethodsPracticeOutput = document.getElementById('python-list-methods-practice-output');
+            const pythonListMethodsPracticeError = document.getElementById('python-list-methods-practice-error');
+
+            runListMethodsPracticeBtn.addEventListener('click', async () => {
+                console.log("Запуск Python-симулятора для практичної роботи з методами списків...");
+                const code = pythonListMethodsPracticeCodeInput.value;
+                pythonListMethodsPracticeOutput.textContent = '';
+                pythonListMethodsPracticeError.textContent = '';
+
+                try {
+                    let output_buffer = [];
+                    const print = (...args) => output_buffer.push(args.map(arg => {
+                        if (Array.isArray(arg)) return JSON.stringify(arg).replace(/"/g, "'"); // Lists as ['a', 'b']
+                        return arg;
+                    }).join(' '));
+                    const input = (prompt_msg) => ''; // Not used in this specific practice code
+                    const len = (arr) => arr.length;
+                    const range = (start, end, step = 1) => {
+                        let arr = [];
+                        if (step > 0) {
+                            for (let i = start; i < end; i += step) arr.push(i);
+                        } else {
+                            for (let i = start; i > end; i += step) arr.push(i);
+                        }
+                        return arr;
+                    };
+                    
+                    // Directly execute the provided Python-like logic in JS
+                    let my_numbers = [5, 2, 8, 1, 9, 3, 7, 4, 6];
+                    print("Початковий список:", my_numbers);
+
+                    let sorted_numbers_asc = [...my_numbers].sort((a,b) => a - b); // Simulate sorted()
+                    print("Відсортований список (зростання):", sorted_numbers_asc);
+
+                    let min_val = Math.min(...my_numbers); // Simulate min()
+                    let max_val = Math.max(...my_numbers); // Simulate max()
+                    print(`Найменший елемент: ${min_val}`);
+                    print(`Найбільший елемент: ${max_val}`);
+
+                    let element_to_remove = 5;
+                    let numbers_after_removal = [...my_numbers]; // Simulate slice for copy
+                    const index_to_remove = numbers_after_removal.indexOf(element_to_remove);
+                    if (index_to_remove !== -1) {
+                        numbers_after_removal.splice(index_to_remove, 1); // Simulate remove()
+                        print(`Список після видалення ${element_to_remove}:`, numbers_after_removal);
+                    } else {
+                        print(`Елемент ${element_to_remove} не знайдено у списку (оригінал без змін).`);
+                    }
+
+                    let reversed_numbers = [...my_numbers].reverse(); // Simulate [::-1] or .reverse() on copy
+                    print("Список після перевертання:", reversed_numbers);
+
+                    print("Оригінальний список (незмінний):", my_numbers);
+
+
+                    pythonListMethodsPracticeOutput.textContent = output_buffer.join('\n');
+
+                } catch (e) {
+                    pythonListMethodsPracticeError.textContent = `Помилка виконання: ${e.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

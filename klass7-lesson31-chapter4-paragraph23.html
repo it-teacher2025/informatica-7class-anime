@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Автозаповнення та автозавершення</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic Teal -->
+    <!-- Application Structure Plan: A tab-based SPA for a non-linear, user-friendly learning experience. The structure (About, Theory, Practice, Self-Check, Homework) allows users to jump to any section. The centerpiece is the "Autofill Simulator" on the Theory tab. This interactive element allows students to experiment with different autofill scenarios, turning abstract rules into tangible results, which is more effective for learning than static text. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata: Goal: Inform. Method: Styled cards with Unicode icons. Justification: Quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Visually represents the priority of each learning group.
+        - Autofill Concept: Goal: Explore/Understand. Method: "Autofill Simulator" built with HTML/JS. Interaction: Users input starting values and select a scenario (e.g., drag one cell, drag two cells, drag with Ctrl). The resulting series is dynamically generated and displayed with an explanation. Justification: Promotes active learning and discovery.
+        - Practical Work (Exercise 23): Goal: Apply. Method: An interactive HTML table where each step of the exercise can be executed with a button click, populating the table. Justification: Focuses on the outcome and application of the concepts without tedious manual entry.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards. Justification: A simple and engaging self-assessment tool.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #0d9488; background-color: #0d9488; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Styling for simulator output cells */
+        .sim-output-cell { background-color: white; border: 1px solid #e5e7eb; padding: 0.5rem; text-align: center; font-family: monospace; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 31. (До § 23)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Автозаповнення та автозавершення</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+        <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практика</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><b>Освітня:</b> Ознайомити з функціями автозаповнення та автозавершення, навчити генерувати послідовності та створювати власні списки.</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне мислення, вміння ефективно використовувати засоби автоматизації.</li>
+                        <li><b>Виховна:</b> Формувати інтерес до оптимізації робочих процесів та відповідальність при роботі з даними.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Пояснювати призначення автозаповнення та автозавершення.</li>
+                        <li>Використовувати маркер для копіювання та генерування серій.</li>
+                        <li>Створювати власні списки автозаповнення.</li>
+                        <li>Використовувати автозавершення для швидкого введення тексту.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення функцій та демонстрації прийомів роботи).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-teal-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (числові послідовності).</li>
+                        <li>Українська мова/Література (списки, словники).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Яке посилання називають відносним?</li>
+                            <li>Як записують абсолютне посилання?</li>
+                            <li>Що станеться з посиланням #REF!?</li>
+                            <li>Поясніть різницю між E$58 та $E58.</li>
+                            <li>Для чого іменувати клітинки?</li>
+                            <li>Яка клавіша допомагає змінювати тип посилання?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-2 text-center text-teal-600">Симулятор автозаповнення</h3>
+                <p class="text-center text-gray-600 mb-6">Експериментуйте з різними даними та подивіться, як працює автозаповнення.</p>
+                <div class="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg border">
+                    <div class="grid md:grid-cols-2 gap-8 items-start">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">1. Введіть початкові значення</label>
+                                <div class="flex gap-2 mt-1">
+                                    <input type="text" id="sim-input-1" value="1" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                    <input type="text" id="sim-input-2" value="3" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">2. Оберіть дію</label>
+                                <div class="grid grid-cols-1 gap-2 mt-1">
+                                    <button data-sim="drag_one" class="w-full bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 transition">Протягнути одну клітинку</button>
+                                    <button data-sim="drag_one_ctrl" class="w-full bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 transition">Протягнути одну клітинку + Ctrl</button>
+                                    <button data-sim="drag_two" class="w-full bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 transition">Протягнути дві клітинки</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-md border border-teal-200">
+                            <h4 class="font-bold text-lg text-gray-800">Результат:</h4>
+                            <div id="sim-output" class="mt-2 grid grid-cols-1 gap-px bg-gray-200"></div>
+                            <p class="mt-4 text-sm text-gray-600" id="sim-explanation"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+               <div class="bg-white p-6 rounded-xl shadow-md">
+                   <h3 class="text-2xl font-bold mb-4 text-teal-600">Практична робота: Вправа 23</h3>
+                   <p class="text-gray-600 mb-6">Завдання: Ознайомитися з автозаповненням і автозавершенням під час уведення даних.</p>
+                   <div class="overflow-x-auto">
+                       <table id="practice-table" class="min-w-full border-collapse text-center">
+                             <thead><tr class="bg-gray-100"><th class="border p-2">A</th><th class="border p-2">B</th><th class="border p-2">C</th><th class="border p-2">D</th><th class="border p-2">E</th></tr></thead>
+                             <tbody></tbody>
+                       </table>
+                   </div>
+                   <div class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                       <button data-task="task1" class="practice-btn bg-teal-500 text-white py-2 px-2 rounded-md hover:bg-teal-600 transition text-sm">Завдання 1 (A)</button>
+                       <button data-task="task2" class="practice-btn bg-teal-500 text-white py-2 px-2 rounded-md hover:bg-teal-600 transition text-sm">Завдання 2 (B)</button>
+                       <button data-task="task3" class="practice-btn bg-teal-500 text-white py-2 px-2 rounded-md hover:bg-teal-600 transition text-sm">Завдання 3 (C)</button>
+                       <button data-task="task4" class="practice-btn bg-teal-500 text-white py-2 px-2 rounded-md hover:bg-teal-600 transition text-sm">Завдання 4 (D)</button>
+                       <button data-task="task5" class="practice-btn bg-teal-500 text-white py-2 px-2 rounded-md hover:bg-teal-600 transition text-sm">Завдання 5 (E)</button>
+                   </div>
+               </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-teal-600">Питання для самоперевірки</h3>
+                <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Що таке автозаповнення?</div><div class="flip-card-back bg-teal-200">Функція, що дозволяє заповнювати суміжні клітинки даними за списками або правилами.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Як створити новий список автозаповнення?</div><div class="flip-card-back bg-teal-200">Через меню Файл → Параметри → Додатково → Редагувати користувацькі списки.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Як заповнити стовпець числами з кроком 5?</div><div class="flip-card-back bg-teal-200">Ввести в перші дві клітинки числа з різницею 5 (напр. 5 і 10), виділити їх і протягнути маркер.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Як скопіювати одне й те саме число?</div><div class="flip-card-back bg-teal-200">Виділити клітинку з числом і протягнути маркер автозаповнення (без Ctrl).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Що таке автозавершення?</div><div class="flip-card-back bg-teal-200">Функція, що автоматично пропонує завершення для повторюваних текстових даних у стовпці.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-teal-100">Наведіть приклад вбудованого списку.</div><div class="flip-card-back bg-teal-200">Дні тижня (Понеділок, Вівторок...), місяці (Січень, Лютий...).</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-teal-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 23 (стор. 142-145).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 23 (стор. 145-146).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/1B1lGr6c4Us?si=CZzPmOHqCwthqoP3" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/1B1lGr6c4Us</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 23: <a href="https://ua.izzi.digital/DOS/750894/932393.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932393.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>            
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 23, стор. 142-146)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 23: <a href="https://ua.izzi.digital/DOS/750894/932393.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932393.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic: Manages active tabs and displays corresponding content
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab; // Get the data-tab attribute value
+                    // Deactivate all tab buttons and hide all tab contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Activate the clicked tab button and display its content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic: Toggles the 'active' class on click for 3D flip effect
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+
+            // Simulator Logic: Demonstrates different autofill behaviors
+            const simInput1 = document.getElementById('sim-input-1');
+            const simInput2 = document.getElementById('sim-input-2');
+            const simOutput = document.getElementById('sim-output'); // Container for output cells
+            const simExplanation = document.getElementById('sim-explanation'); // Explanation text
+
+            // Event listener for autofill simulation buttons (drag one, drag one + Ctrl, drag two)
+            document.querySelectorAll('[data-sim]').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const simType = e.target.dataset.sim; // Type of simulation to run
+                    const val1 = simInput1.value.trim(); // First input value
+                    const val2 = simInput2.value.trim(); // Second input value
+                    let result = []; // Array to store generated series values
+                    let explanation = ''; // Explanation message for the result
+
+                    // Check if input values are numeric
+                    const isNumeric1 = !isNaN(parseFloat(val1)) && isFinite(val1);
+                    const isNumeric2 = !isNaN(parseFloat(val2)) && isFinite(val2);
+
+                    switch (simType) {
+                        case 'drag_one':
+                            // Simulates dragging a single cell: copies its value repeatedly
+                            for (let i = 0; i < 8; i++) { // Generate 8 output cells
+                                result.push(val1);
+                            }
+                            explanation = `<b>Результат:</b> Копіювання. Оскільки виділена одна клітинка, її значення просто копіюється.`;
+                            break;
+                        case 'drag_one_ctrl':
+                            // Simulates dragging a single cell with Ctrl pressed:
+                            // For numbers, creates a series with step 1. For text, it copies.
+                            if (isNumeric1) {
+                                let start = parseFloat(val1);
+                                for (let i = 0; i < 8; i++) result.push(start + i);
+                                explanation = `<b>Результат:</b> Створення послідовності. Утримання Ctrl для однієї числової клітинки створює послідовність з кроком 1.`;
+                            } else {
+                                result = Array(8).fill(val1);
+                                explanation = `<b>Результат:</b> Копіювання. Ctrl не впливає на автозаповнення нечислових даних.`;
+                            }
+                            break;
+                        case 'drag_two':
+                            // Simulates dragging two selected cells:
+                            // For numbers, creates a series based on the step between them. For text, repeats the pattern.
+                            if (isNumeric1 && isNumeric2) {
+                                let start = parseFloat(val1);
+                                let step = parseFloat(val2) - start; // Calculate the step
+                                for (let i = 0; i < 8; i++) result.push(start + (i * step));
+                                explanation = `<b>Результат:</b> Послідовність за зразком. Програма визначила крок (${step.toFixed(2)}) між першими двома клітинками і продовжила послідовність.`;
+                            } else {
+                                // If not both numeric, repeat the two values as a pattern
+                                for (let i = 0; i < 4; i++) { // Generate 4 pairs for 8 cells
+                                    result.push(val1, val2);
+                                }
+                                explanation = `<b>Результат:</b> Повторення зразка. Для нечислових даних програма повторює виділений діапазон.`;
+                            }
+                            break;
+                    }
+                    // Render the generated results into the output grid cells
+                    simOutput.innerHTML = result.map(v => `<div class="sim-output-cell">${v}</div>`).join('');
+                    simExplanation.innerHTML = explanation; // Display the detailed explanation
+                });
+            });
+            // Trigger a default simulation (dragging two cells) when the page loads
+            document.querySelector('[data-sim="drag_two"]').click();
+
+            // Practice Table Logic: Populating table based on tasks
+            const practiceTableBody = document.querySelector('#practice-table tbody');
+            const practiceButtons = document.querySelectorAll('.practice-btn');
+            // Initialize a 2D array to hold table data (12 rows x 5 columns)
+            const tableData = Array(12).fill(null).map(() => Array(5).fill(''));
+            
+            /**
+             * Renders the current state of the tableData array into the HTML table.
+             */
+            function renderTable() {
+                practiceTableBody.innerHTML = ''; // Clear existing table rows
+                tableData.forEach(rowData => {
+                    const row = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const cell = document.createElement('td');
+                        cell.className = 'border p-2 h-10'; // Apply basic styling
+                        cell.textContent = cellData; // Set cell content
+                        row.appendChild(cell);
+                    });
+                    practiceTableBody.appendChild(row); // Append row to table body
+                });
+            }
+            renderTable(); // Initial render of the empty/default table
+
+            // Event listener for practice task buttons
+            practiceButtons.forEach(button => {
+                button.addEventListener('click', e => {
+                    const task = e.target.dataset.task; // Get the specific task from data-task attribute
+                    // Perform actions based on the selected task
+                    switch(task) {
+                        case 'task1': // Task 1: Populate column A with numbers from 1 to 12
+                            for(let i=0; i<12; i++) tableData[i][0] = i + 1;
+                            break;
+                        case 'task2': // Task 2: Populate column B with numbers from 200 down to 2, step -2
+                            for(let i=0; i<12; i++) tableData[i][1] = 200 - (i * 2);
+                            break;
+                        case 'task3': // Task 3: Populate column C with a repeating sequence (autocomplete simulation)
+                            // This simulates the behavior of auto-completion for known text patterns
+                            const c_data = ['півень', 'півень', 'півонія', 'півень', 'півонія', 'півонія', 'півень', 'півень', 'півонія', 'півень', 'півонія', 'півонія'];
+                            for(let i=0; i<tableData.length; i++) {
+                                tableData[i][2] = c_data[i] !== undefined ? c_data[i] : ''; // Ensure no out-of-bounds
+                            }
+                            break;
+                        case 'task4': // Task 4: Populate column D with months of the year
+                            const months = ['січень', 'лютий', 'березень', 'квітень', 'травень', 'червень', 'липень', 'серпень', 'вересень', 'жовтень', 'листопад', 'грудень'];
+                            for(let i=0; i<tableData.length; i++) tableData[i][3] = months[i];
+                            break;
+                        case 'task5': // Task 5: Populate column E with planets
+                            const planets = ['Меркурій', 'Венера', 'Земля', 'Марс', 'Юпітер', 'Сатурн', 'Уран', 'Нептун', '', '', '', '']; // Extended to 12 elements with empty for full column
+                            for(let i=0; i<tableData.length; i++) {
+                                tableData[i][4] = planets[i] !== undefined ? planets[i] : ''; // Fill up to 12, leave others empty
+                            }
+                            break;
+                    }
+                    renderTable(); // Re-render the table to show changes
+                });
+            });
+
+            // Chart.js for NUШ results visualization (already present and functional)
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2], // Importance levels: 4: Найважливіша, 3: Дуже важлива, 2: Важлива
+                        backgroundColor: ['rgba(13, 148, 136, 0.7)', 'rgba(153, 226, 218, 0.7)', 'rgba(45, 212, 191, 0.7)', 'rgba(153, 226, 218, 0.7)'],
+                        borderColor: ['rgba(13, 148, 136, 1)', 'rgba(153, 226, 218, 1)', 'rgba(45, 212, 191, 1)', 'rgba(153, 226, 218, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

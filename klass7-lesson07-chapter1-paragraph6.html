@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .nav-link.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .card { background-color: #fff; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-align: center; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .btn-primary { background-color: #3b82f6; color: #fff; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .btn-secondary { background-color: #eef2ff; color: #4f46e5; }
+        .btn-secondary:hover { background-color: #e0e7ff; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal.visible { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s; }
+        .modal.visible .modal-content { transform: scale(1); }
+        .mission-step[data-completed="true"] { border-left-color: #22c55e; background-color: #f0fdf4; }
+
+        /* Стилі для Теоретичного блоку */
+        
+        /* Стилі для перевірки знань */
+        .height-learn { height: 600px; }
+        .height280 { height: 280px; }
+
+        .source { padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 1: «Служби Інтернету». Урок № 7. (До § 6)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Використання інтернет-ресурсів. Гіперпосилання в листах</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з поняттями "гіперпосилання" та "хмарні сервіси" (хмарний диск, онлайн-перекладач); навчити додавати гіперпосилання до тексту електронного листа (на веб-сторінку, на фрагмент тексту); пояснити переваги використання хмарних сервісів для зберігання та спільної роботи з даними; навчити використовувати онлайн-перекладачі для тексту та мовлення.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне мислення при структуруванні інформації за допомогою посилань; формувати вміння інтегрувати різні цифрові інструменти для вирішення завдань (пошта + хмара + перекладач); розвивати навички ефективного пошуку та використання онлайн-ресурсів.</li>
+                            <li><b>Виховна:</b> Виховувати акуратність при роботі з посиланнями та хмарними даними; формувати інтерес до використання сучасних технологій для навчання та комунікації; заохочувати до самостійного вивчення функціоналу інтернет-сервісів.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати, що таке гіперпосилання та хмарні сервіси.</li>
+                            <li>Вставляти гіперпосилання на веб-сторінку або фрагмент тексту в електронний лист.</li>
+                            <li>Відкривати та використовувати хмарний диск (Google Диск).</li>
+                            <li>Завантажувати файли на хмарний диск.</li>
+                            <li>Використовувати онлайн-перекладачі для перекладу тексту та прослуховування його.</li>
+                            <li>Ефективно комбінувати можливості електронної пошти та інших інтернет-сервісів</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (на основі наданих скріншотів з підручника).</li>
+                            <li>Веб-браузери (Google Chrome, Mozilla Firefox, Microsoft Edge тощо).</li>
+                            <li>Власні електронні поштові скриньки учнів (Gmail)</li>
+                            <li>Доступ до Google Диска та Google Перекладача</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Українська мова (текст листа, переклад).</li>
+                            <li>Англійська мова (переклад, використання онлайн-ресурсів).</li>
+                            <li>Географія/Історія (пошук інформації про країни).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Назвіть правила етикету електронного листування.</li>
+                            <li>Назвіть правила безпечного листування. Яких із них ви до тримуєтеся?</li>
+                            <li>Що таке спам? Назвіть правила захисту від спаму.</li>
+                            <li>Що таке фішинг? Як убезпечити пошту від фішингу?</li>
+                            <li>Чому не варто писати текст електронного листа великими літерами?</li>
+                            <li>Що таке смайлики і коли їх слід застосовувати?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema1-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 32)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">	
+                    <div class="container mx-auto px-4 flex justify-between items-center py-3">
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">🌐 Майстерня Інтернету</h1>
+                        <nav class="hidden md:flex space-x-6">
+                            <a href="#hyperlinks" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Гіперпосилання</a>
+                            <a href="#cloud" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Хмарний Диск</a>
+                            <a href="#translator" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Перекладач</a>
+                            <a href="#mission" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Фінальна Місія</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-12">        
+                    <section id="intro" class="text-center mb-20">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Відкрийте силу Інтернет-ресурсів</h2>
+                        <p class="text-lg max-w-3xl mx-auto text-slate-600">Навчіться ділитися посиланнями, зберігати файли у хмарі та перекладати будь-який текст за секунди. Пройдіть наші інтерактивні симулятори, щоб стати впевненим користувачем!</p>
+                    </section>
+
+                    <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-10">
+                        <section id="hyperlinks" class="scroll-mt-24 card">
+                            <h3 class="text-2xl font-bold mb-1 flex items-center gap-2">
+                                <span class="text-3xl">🔗</span>
+                                Майстерня Гіперпосилань
+                            </h3>
+                            <p class="text-slate-500 mb-6">Діліться не файлами, а посиланнями! Напишіть текст, виділіть його та перетворіть на гіперпосилання.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg">
+                                <div id="email-editor" contenteditable="true" class="w-full min-h-[100px] p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Натисніть тут і почніть писати. Наприклад: "Раджу переглянути цікавий мультфільм про життя пса". Потім виділіть частину тексту.</div>
+                                <div class="mt-3 text-right">
+                                    <button id="insert-link-btn" class="btn btn-primary" disabled>Вставити посилання</button>
+                                </div>
+                            </div>
+                            <p id="link-feedback" class="text-center mt-3 h-5 font-medium text-green-600"></p>
+                        </section>
+
+                        <section id="cloud" class="scroll-mt-24 card">
+                            <h3 class="text-2xl font-bold mb-1 flex items-center gap-2">
+                                <span class="text-3xl">☁️</span>
+                                Дослідник Хмарного Диска
+                            </h3>
+                            <p class="text-slate-500 mb-6">Хмарний диск — це ваша флешка в Інтернеті. Давайте "завантажимо" на нього декілька файлів.</p>
+                            <div class="bg-slate-50 p-4 rounded-lg">
+                                <div id="cloud-files" class="grid grid-cols-3 gap-4 min-h-[100px]">
+                                    </div>
+                                <div class="mt-3 text-right">
+                                    <button id="upload-file-btn" class="btn btn-secondary">Завантажити файл</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="translator" class="scroll-mt-24 card lg:col-span-2">
+                            <h3 class="text-2xl font-bold mb-1 flex items-center gap-2">
+                                <span class="text-3xl">🌍</span>
+                                Лабораторія Перекладу
+                            </h3>
+                            <p class="text-slate-500 mb-6">Спілкуйтеся зі світом без мовних бар'єрів. Вставте текст і отримайте його переклад.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <textarea id="translate-input" class="w-full p-3 border border-slate-300 rounded-md h-32" placeholder="Введіть текст для перекладу..."></textarea>
+                                <div id="translate-output" class="w-full p-3 bg-slate-100 rounded-md h-32"></div>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button id="translate-btn" class="btn btn-primary">Перекласти</button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section id="mission" class="scroll-mt-24 mt-20">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-slate-900 mb-4">Фінальна Місія: Створення Презентації</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-slate-600">Час застосувати всі отримані навички! Виконайте кроки, щоб зібрати матеріали для презентації про дружню країну.</p>
+                        </div>
+                        <div class="card max-w-4xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-6">Вправа 6: Покроковий план</h3>
+                            <div class="space-y-4">
+                                </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">1. Що таке гіперпосилання?</div><div class="flip-card-back bg-green-200">Гіперпосилання — це зв’язаний з адресою ресурсу об'єкт сторінки, клацання якого здійснюється для переходу до цього ресурсу. Воно може бути оформлене у вигляді тексту або зображення.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">2. Як додати гіперпосилання до фрагмента тексту листа?</div><div class="flip-card-back bg-green-200 height280">Щоб додати гіперпосилання до фрагмента тексту, потрібно:<br>1. Виділити в листі фрагмент тексту та натиснути значок «Вставити посилання» (виглядає як ланцюг).<br>2. У вікні, що з’явилося, ввести скопійовану адресу (Ctrl+V).<br><br>Примітка: Перед цим потрібно скопіювати адресу потрібного ресурсу з адресного рядка браузера.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">3. Наведіть кілька прикладів використання хмарних сервісів.</div><div class="flip-card-back bg-green-200 height280">Приклади використання хмарних сервісів:<br>- Зберігання даних у віддалених сховищах, таких як Dropbox, SkyDrive, Google Drive та інші.<br>- Використання вебпрограм, таких як Office Web Apps (Office 365), Google-Apps.<br>- Користування елементами дистанційної освіти.<br>- Телекомунікаційні засоби, як Skype, Viber, Zoom.<br>- Використання ресурсів віддалених серверів для обчислень.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">4. Що таке хмарний диск і як його відкрити?</div><div class="flip-card-back bg-green-200 height280">Хмарний диск — це сховище даних, розташоване на віддаленому сервері в інтернеті.<br><br>Щоб відкрити хмарний диск (наприклад, Google Drive):<br>1. Зайдіть до свого облікового запису Google.<br>2. Натисніть на кнопку «Додатки Google».<br>3. Виберіть зі списку додаток «Диск».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">5. Як створити на хмарному диску презентацію?</div><div class="flip-card-back bg-green-200 height280">Щоб створити презентацію на хмарному диску Google, потрібно:<br>1. Відкрити Google Диск.<br>2. Натиснути на кнопку «Створити».<br>3. Зі списку, що відкриється, обрати «Google Презентації».<br><br>На Google Диску також можна створювати текстові документи, таблиці та форми.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">6. Як перекласти іншою мовою текст та/або прослухати його за допомогою онлайн-перекладача?</div><div class="flip-card-back bg-green-200 height280">Для перекладу тексту іншою мовою за допомогою онлайн-перекладача:<br>1. Відкрийте сервіс «Google Перекладач».<br>2. Введіть текст, який потрібно перекласти, або скористайтеся голосовим введенням, натиснувши значок мікрофона.<br>3. Після перекладу можна прослухати текст, натиснувши значок «Прослуховування тексту» (вигляд динаміка).</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 37)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 6 (стор. 33-36).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 6 (стор. 37).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/6L2II8CJC1I?si=exBUQBT2BEGsl4tr" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/6L2II8CJC1I</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 6: <a href="https://ua.izzi.digital/DOS/750894/751733.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751733.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 6, стор. 33-37)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 6: <a href="https://ua.izzi.digital/DOS/750894/751733.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751733.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <div id="link-modal" class="modal">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-xl max-w-sm w-full relative">
+            <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl font-bold" onclick="toggleModal('link-modal', false)">&times;</button>
+            <h3 class="text-xl font-bold mb-4">Вставити посилання</h3>
+            <div class="mb-4">
+                <label for="link-text" class="block text-gray-700 text-sm font-bold mb-2">Текст посилання:</label>
+                <input type="text" id="link-text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" readonly>
+            </div>
+            <div class="mb-6">
+                <label for="link-url" class="block text-gray-700 text-sm font-bold mb-2">URL-адреса:</label>
+                <input type="url" id="link-url" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="https://example.com">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-secondary" onclick="toggleModal('link-modal', false)">Скасувати</button>
+                <button id="save-link-btn" class="btn btn-primary">Зберегти</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // --- Hyperlink Workshop ---
+            const editor = document.getElementById('email-editor');
+            const insertLinkBtn = document.getElementById('insert-link-btn');
+            // const linkModal = document.getElementById('link-modal'); // Цей рядок тепер не потрібен, оскільки linkModal використовується через toggleModal
+            const linkTextInput = document.getElementById('link-text');
+            const linkUrlInput = document.getElementById('link-url');
+            const saveLinkBtn = document.getElementById('save-link-btn');
+            let selectedRange;
+
+            editor.addEventListener('mouseup', checkSelection);
+            editor.addEventListener('keyup', checkSelection);
+
+            function checkSelection() {
+                const selection = window.getSelection();
+                insertLinkBtn.disabled = selection.toString().trim().length === 0;
+            }
+
+            // Функція toggleModal вже існує у вашому коді, але я залишив її тут для повноти
+            window.toggleModal = (modalId, show) => {
+                document.getElementById(modalId).classList.toggle('visible', show);
+            };
+
+            insertLinkBtn.addEventListener('click', () => {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    selectedRange = selection.getRangeAt(0);
+                    linkTextInput.value = selectedRange.toString();
+                    toggleModal('link-modal', true);
+                }
+            });
+
+            saveLinkBtn.addEventListener('click', () => {
+                if (selectedRange) {
+                    editor.focus();
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(selectedRange);
+                    
+                    const url = linkUrlInput.value;
+                    if (url) {
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.textContent = selectedRange.toString();
+                        a.className = "text-blue-600 underline";
+                        a.target = "_blank";
+                        selectedRange.deleteContents();
+                        selectedRange.insertNode(a);
+                    }
+                    toggleModal('link-modal', false);
+                    document.getElementById('link-feedback').textContent = "Посилання успішно створено!";
+                    setTimeout(() => document.getElementById('link-feedback').textContent = "", 3000);
+                }
+            });
+            
+            // --- Cloud Drive Explorer ---
+            const cloudFilesEl = document.getElementById('cloud-files');
+            const uploadFileBtn = document.getElementById('upload-file-btn');
+            const sampleFiles = [
+                { name: 'Прапор.png', icon: '🖼️' },
+                { name: 'Гімн.mp3', icon: '🎵' },
+                { name: 'Текст.docx', icon: '📄' }
+            ];
+            let uploadedFiles = [];
+            
+            function renderCloudFiles() {
+                cloudFilesEl.innerHTML = '';
+                uploadedFiles.forEach(file => {
+                    cloudFilesEl.innerHTML += `
+                        <div class="p-3 text-center bg-white rounded-lg shadow-sm">
+                            <div class="text-4xl">${file.icon}</div>
+                            <p class="text-sm truncate mt-2">${file.name}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            uploadFileBtn.addEventListener('click', () => {
+                if(sampleFiles.length > 0) {
+                    const fileToUpload = sampleFiles.shift();
+                    uploadedFiles.push(fileToUpload);
+                    renderCloudFiles();
+                }
+                if (sampleFiles.length === 0) {
+                    uploadFileBtn.disabled = true;
+                    uploadFileBtn.textContent = "Все завантажено";
+                }
+            });
+
+            // --- Translation Lab ---
+            const translateInput = document.getElementById('translate-input');
+            const translateOutput = document.getElementById('translate-output');
+            const translateBtn = document.getElementById('translate-btn');
+            const translations = {
+                "Hello, world!": "Привіт, світе!",
+                "Glory to Ukraine!": "Слава Україні!",
+                "A dog lived.": "Жив був пес."
+            };
+            translateInput.placeholder = `Введіть текст для перекладу...\nНаприклад: ${Object.keys(translations).join('\n')}`;
+
+            translateBtn.addEventListener('click', () => {
+                const text = translateInput.value.trim();
+                translateOutput.textContent = translations[text] || "Переклад для цього тексту не знайдено в симуляторі.";
+            });
+
+            // --- Final Mission ---
+            const missionContainer = document.querySelector('#mission .space-y-4');
+            const missionSteps = [
+                { id: 'step1', title: 'Крок 1: Знайдіть прапор', description: 'Знайдіть в Інтернеті зображення прапора дружньої до України країни.', button: 'Імітувати пошук прапора', result: '<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/255px-Flag_of_Canada_%28Pantone%29.svg.png" class="h-16 mx-auto">' },
+                { id: 'step2', title: 'Крок 2: Знайдіть гімн', description: 'Знайдіть текст державного гімну цієї країни мовою оригіналу.', button: 'Імітувати пошук гімну', result: '<p class="text-sm text-center">O Canada! Our home and native land! True patriot love in all of us command.</p>' },
+                { id: 'step3', title: 'Крок 3: Перекладіть гімн', description: 'Використовуючи онлайн-перекладач, перекладіть текст гімну українською.', button: 'Імітувати переклад', result: '<p class="text-sm text-center">О, Канадо! Наш дім і рідна земля! Справжня патріотична любов в усіх нас.</p>' },
+                { id: 'step4', title: 'Крок 4: Створіть презентацію', description: 'Тепер використайте зібрані матеріали, щоб створити презентацію у своєму Google Диску.', button: 'Завдання виконано!', result: '<p class="text-sm text-center font-semibold text-green-600">Чудова робота! Ви готові до виконання практичної роботи!</p>' }
+            ];
+
+            missionSteps.forEach(step => {
+                const stepEl = document.createElement('div');
+                stepEl.id = step.id;
+                stepEl.className = 'mission-step p-5 bg-white rounded-lg shadow-sm border-l-4 border-slate-300 transition-all';
+                stepEl.innerHTML = `
+                    <h4 class="font-bold text-lg">${step.title}</h4>
+                    <p class="text-slate-600 mt-1 mb-4">${step.description}</p>
+                    <div class="result-container h-0 overflow-hidden transition-all duration-500"></div>
+                    <button class="btn btn-secondary mission-btn">${step.button}</button>
+                `;
+                missionContainer.appendChild(stepEl);
+
+                stepEl.querySelector('.mission-btn').addEventListener('click', () => {
+                    const resultContainer = stepEl.querySelector('.result-container');
+                    resultContainer.innerHTML = step.result;
+                    resultContainer.style.height = resultContainer.scrollHeight + 'px';
+                    stepEl.dataset.completed = "true";
+                    stepEl.querySelector('.mission-btn').disabled = true;
+                }, { once: true });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Векторне тло та колір в анімації</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .card {
+            background-color: #1f2937; /* gray-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #374151; /* gray-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+            background-color: #374151; /* gray-700 */
+            color: #e5e7eb; /* gray-200 */
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* gray-600 */
+        }
+        input[type="color"] {
+            /* -webkit-appearance: none; */
+            width: 48px;
+            height: 48px;
+            border: none;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            background-color: transparent;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid #4b5563;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson12-chapter2-paragraph10.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+            <!-- Main Content Area: Contains page-specific content -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 12. (До § 10)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Векторне тло анімації. Керування кольором</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">        
+        <section id="intro" class="text-center mb-24">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Арт-студія Аніматора</h1>
+            <p class="text-lg max-w-3xl mx-auto text-gray-400">Оживіть свої світи! Навчіться керувати кольором та створювати рухомі фони, щоб ваші анімації стали по-справжньому захопливими.</p>
+        </section>
+
+        <section id="color-lab" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Лабораторія Кольору</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Колір — це настрій вашої анімації. Поекспериментуйте з палітрою, щоб зрозуміти, як керувати штрихом, заповненням та прозорістю.</p>
+            </div>
+            <div class="card max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="flex items-center justify-center">
+                        <div id="color-preview" class="w-48 h-48 bg-white rounded-2xl transition-all" style="border: 10px solid black;"></div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <input type="color" id="stroke-color-picker" value="#000000">
+                            <div>
+                                <label for="stroke-color-picker" class="font-semibold block">Колір штриха (контуру)</label>
+                                <p class="text-sm text-gray-400">Оберіть колір для контуру фігури.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <input type="color" id="fill-color-picker" value="#ffffff">
+                            <div>
+                                <label for="fill-color-picker" class="font-semibold block">Колір заповнення</label>
+                                <p class="text-sm text-gray-400">Оберіть колір для внутрішньої частини фігури.</p>
+                            </div>
+                        </div>
+                        <div>
+                           <label for="opacity-slider" class="font-semibold block mb-2">Прозорість (щільність): <span id="opacity-value" class="text-indigo-400 font-bold">100%</span></label>
+                           <input id="opacity-slider" type="range" min="0" max="100" value="100" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="background-workshop" class="scroll-mt-24 mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Майстерня Фонів</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Фон — це сцена для ваших персонажів. Навчіться створювати статичні пейзажі та динамічні сцени, що рухаються.</p>
+            </div>
+            <div class="card max-w-5xl mx-auto">
+                <h3 class="text-2xl font-bold text-indigo-400 mb-6">Симулятор: Статичне та Динамічне тло</h3>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-gray-900 rounded-lg border border-gray-700 aspect-video">
+                        <canvas id="bg-canvas" width="700" height="400"></canvas>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="font-semibold">Керування тлом:</p>
+                        <div>
+                            <label class="font-medium">Режим тла:</label>
+                            <div class="flex gap-2 mt-2">
+                               <button id="static-bg-btn" class="btn btn-secondary w-full">Статичне</button>
+                               <button id="dynamic-bg-btn" class="btn btn-secondary w-full">Динамічне</button>
+                            </div>
+                        </div>
+                        <div id="dynamic-controls" class="hidden space-y-4 pt-4 border-t border-gray-700">
+                            <p class="font-semibold">Налаштування руху:</p>
+                            <div>
+                                <label for="speed-slider" class="block mb-1 text-sm">Швидкість руху: <span id="speed-value" class="font-bold">1</span></label>
+                                <input id="speed-slider" type="range" min="0.5" max="5" value="1" step="0.5" class="w-full">
+                            </div>
+                            <p class="text-sm text-indigo-300">Зверніть увагу: автомобіль стоїть на місці, а рух тла (хмар) створює ілюзію, ніби він їде!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final-project" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                <p class="text-md max-w-2xl mx-auto text-gray-400 mt-2">Час застосувати знання на практиці! Виконайте завдання у TupiTube, використовуючи цей план.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto">
+                <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 10: План дій</h3>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                        <h4 class="font-bold">1. Анімація "Снігопад"</h4>
+                        <ul class="list-disc list-inside text-sm text-gray-300 mt-2 space-y-1">
+                            <li>Створіть новий проєкт зі світло-синім тлом.</li>
+                            <li>На <span class="font-semibold text-yellow-300">статичному</span> векторному тлі намалюйте світло-сірий сніговий покрив.</li>
+                            <li>Перейдіть у режим <span class="font-semibold text-yellow-300">динамічного</span> векторного тла.</li>
+                            <li>Намалюйте кілька білих сніжинок.</li>
+                            <li>Налаштуйте параметри динамічного тла так, щоб сніжинки рухались вниз.</li>
+                            <li>Збережіть проєкт.</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                        <h4 class="font-bold">2. Анімація "Хмари"</h4>
+                        <ul class="list-disc list-inside text-sm text-gray-300 mt-2 space-y-1">
+                            <li>Створіть новий проєкт зі світло-блакитним тлом.</li>
+                            <li>Перейдіть у режим <span class="font-semibold text-yellow-300">динамічного</span> векторного тла.</li>
+                            <li>Намалюйте кілька білих хмар.</li>
+                            <li>Налаштуйте параметри динамічного тла так, щоб хмари рухались праворуч.</li>
+                            <li>Збережіть проєкт.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    </main>
+   
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Color Lab ---
+            const strokePicker = document.getElementById('stroke-color-picker');
+            const fillPicker = document.getElementById('fill-color-picker');
+            const opacitySlider = document.getElementById('opacity-slider');
+            const opacityValue = document.getElementById('opacity-value');
+            const colorPreview = document.getElementById('color-preview');
+
+            function updateColorPreview() {
+                const stroke = strokePicker.value;
+                const fill = fillPicker.value;
+                const opacity = opacitySlider.value / 100;
+                
+                colorPreview.style.borderColor = stroke;
+                colorPreview.style.backgroundColor = fill;
+                colorPreview.style.opacity = opacity;
+                opacityValue.textContent = `${Math.round(opacity * 100)}%`;
+            }
+
+            strokePicker.addEventListener('input', updateColorPreview);
+            fillPicker.addEventListener('input', updateColorPreview);
+            opacitySlider.addEventListener('input', updateColorPreview);
+
+            // Call once to set initial state
+            updateColorPreview();
+
+            // --- Background Workshop ---
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            const staticBtn = document.getElementById('static-bg-btn');
+            const dynamicBtn = document.getElementById('dynamic-bg-btn');
+            const dynamicControls = document.getElementById('dynamic-controls');
+            const speedSlider = document.getElementById('speed-slider');
+            const speedValue = document.getElementById('speed-value');
+
+            let animationMode = 'static';
+            let animationId;
+            let clouds = [
+                { x: 100, y: 50, size: 30 },
+                { x: 250, y: 80, size: 40 },
+                { x: 450, y: 60, size: 25 },
+                { x: 550, y: 100, size: 35 }
+            ];
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                draw(); // Redraw after resizing
+            }
+
+            function drawCloud(x, y, size) {
+                ctx.beginPath();
+                ctx.arc(x, y, size, Math.PI * 0.5, Math.PI * 1.5);
+                ctx.arc(x + size, y - size, size, Math.PI * 1, Math.PI * 2);
+                ctx.arc(x + size * 2, y, size, Math.PI * 1.5, Math.PI * 0.5);
+                ctx.closePath();
+                ctx.fillStyle = 'white';
+                ctx.fill();
+            }
+
+            function drawCar() {
+                const carY = canvas.height - 70;
+                // Body
+                ctx.fillStyle = '#ef4444'; // red-500
+                ctx.fillRect(canvas.width / 2 - 75, carY, 150, 40);
+                ctx.fillRect(canvas.width / 2 - 50, carY - 30, 100, 30);
+                // Wheels
+                ctx.fillStyle = '#1f2937'; // gray-800
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2 - 50, carY + 40, 15, 0, Math.PI * 2);
+                ctx.arc(canvas.width / 2 + 50, carY + 40, 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            function drawGround() {
+                ctx.fillStyle = '#4b5563'; // gray-600
+                ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Sky
+                ctx.fillStyle = '#38bdf8'; // sky-400
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Clouds
+                clouds.forEach(cloud => {
+                    drawCloud(cloud.x, cloud.y, cloud.size);
+                });
+                
+                drawGround();
+                drawCar();
+            }
+            
+            function animate() {
+                if (animationMode === 'dynamic') {
+                    let speed = parseFloat(speedSlider.value);
+                    clouds.forEach(cloud => {
+                        cloud.x += speed;
+                        if (cloud.x > canvas.width + cloud.size * 2) {
+                            cloud.x = -cloud.size * 2;
+                        }
+                    });
+                    draw(); // Draw only if in dynamic mode
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+
+            staticBtn.addEventListener('click', () => {
+                animationMode = 'static';
+                dynamicControls.classList.add('hidden');
+                staticBtn.classList.add('btn-primary');
+                dynamicBtn.classList.remove('btn-primary');
+                cancelAnimationFrame(animationId); // Stop animation
+                draw(); // Redraw once for static view
+            });
+
+            dynamicBtn.addEventListener('click', () => {
+                animationMode = 'dynamic';
+                dynamicControls.classList.remove('hidden');
+                dynamicBtn.classList.add('btn-primary');
+                staticBtn.classList.remove('btn-primary');
+                // Only start animation if not already running or if it was stopped
+                if (!animationId) { 
+                    animate(); 
+                } else {
+                    cancelAnimationFrame(animationId); // Cancel previous if exists
+                    animate(); // Start new animation
+                }
+            });
+            
+            speedSlider.addEventListener('input', () => {
+                speedValue.textContent = speedSlider.value;
+            });
+
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initial setup
+            resizeCanvas();
+            // Do not call animate() directly here. Let the buttons control it.
+            // Ensure the static button is highlighted initially
+            staticBtn.classList.add('btn-primary');
+        });
+    </script>
+</body>
+</html>

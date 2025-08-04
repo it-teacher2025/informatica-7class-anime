@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Основні об’єкти електронних таблиць</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals with Blue Accent -->
+    <!-- Application Structure Plan: A tab-based single-page application. This structure was chosen to allow non-linear access to the lesson's components, which is more user-friendly for a teacher or a reviewing student than a rigid, linear document. The user can jump directly to the practical work, theory, or knowledge check. Key interactions include a clickable spreadsheet diagram, an interactive quiz, and a simple chart for visualizing learning outcome priorities. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata (Goals, Outcomes): Goal: Inform. Method: Styled cards with Unicode icons (🎯, ✅). Justification: Quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Interaction: Tooltips on hover. Justification: Visually represents the stated importance of each learning group.
+        - Spreadsheet Structure: Goal: Organize/Inform. Method: Interactive diagram built with HTML/Tailwind Grid. Interaction: Clicking on elements reveals definitions. Justification: More engaging and exploratory than a static image.
+        - Practical Work: Goal: Guide. Method: Step-by-step checklist. Interaction: Clickable checkboxes. Justification: Allows tracking progress through the exercise.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards for questions and answers. Interaction: Clicking a card reveals the answer. Justification: Simple self-assessment mechanism.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #3b82f6; background-color: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .interactive-spreadsheet-cell { transition: background-color 0.2s ease-in-out; }
+        .interactive-spreadsheet-cell:hover { background-color: #93c5fd; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+        .source { padding: 16px; }
+    </style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+<!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+<!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 28. (До § 20)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Основні об’єкти електронних таблиць</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Tab Contents -->
+             <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити з базовими поняттями ЕТ (клітинка, діапазон і т.д.), навчити виділяти об'єкти та зберігати файли.</li>
+                            <li><b>Розвивальна:</b> Розвивати логічне мислення, вміння орієнтуватися в інтерфейсі, уважність та точність.</li>
+                            <li><b>Виховна:</b> Виховувати акуратність, відповідальність та інтерес до можливостей ЕТ.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати, що таке ЕТ та табличний процесор.</li>
+                            <li>Називати основні об'єкти ЕТ.</li>
+                            <li>Визначати адресу клітинки.</li>
+                            <li>Розрізняти та виділяти різні типи діапазонів.</li>
+                            <li>Зберігати створену таблицю.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (для пояснення основних об'єктів та інтерфейсу).</li>
+                            <li>Дошка, крейда/маркер.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика (таблиці, координати).</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <div class="md:w-1/4 flex justify-center md:justify-start mb-6 md:mb-0">
+                            <img src="./images/img04.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="300px">
+                        </div>
+                        <div class="md:w-3/4 text-gray-700 text-lg">
+                            <p class="mb-4">&#160;&#160;&#160;&#160;У 6 класі ви зробили перші кроки в опануванні <b><i>табличного процесора</i></b> — прикладної програми для опрацювання даних, поданих в <b><i>електронних таблицях</i></b>.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви ознайомилися з <b><i>інтерфейсом користувача</i></b> табличного процесора, набули практичних навичок у створенні й опрацюванні електронних таблиць.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;<b><i>Електронна таблиця</i></b> складається з клітинок, вишикуваних у <b><i>рядки</i></b> та <b><i>стовпці</i></b>. Кожна клітинка може містити <b><i>дані різних типів</i></b>.</p>
+                            <p class="mb-4">&#160;&#160;&#160;&#160;Ви знаєте, що таке діапазон клітинок і вмієте виділяти діапазони різних видів. Ви з’ясували, з чого складається <b><i>адреса</i></b> клітинки, чим <b><i>формула</i></b> відрізняється від даних.</p>
+                        </div>
+                    </section>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що таке табличний процесор?</li>
+                            <li>Із чого складається адреса клітинки?</li>
+                            <li>Чи можуть збігатися адреси різних клітинок?</li>
+                            <li>Що можуть містити клітинки електронної таблиці?</li>
+                            <li>Для чого призначені формули?</li>
+                            <li>Із якого знака починається запис формули в табличному процесорі?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg shadow-md">
+                        <p class="text-gray-800 text-lg mb-4">У цьому розділі («Опрацювання табличних даних») ви докладніше ознайомитеся з табличним процесором, дізнаєтеся про способи його використання. Ви навчитеся проводити засобами цього застосунка обчислювальні експерименти.</p>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 124)</a></i></p>
+                    </section>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-blue-600">Інтерактивна структура електронної таблиці</h3>
+                    <p class="text-center text-gray-600 mb-6">Натисніть на елементи таблиці, щоб дізнатися про них більше.</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <div class="grid grid-cols-5 gap-1 text-center text-sm font-semibold mb-1">
+                                <div></div>
+                                <div class="bg-gray-200 rounded-t-md py-1">A</div>
+                                <div class="bg-gray-200 rounded-t-md py-1">B</div>
+                                <div class="bg-gray-200 rounded-t-md py-1">C</div>
+                                <div class="bg-gray-200 rounded-t-md py-1">D</div>
+                            </div>
+                            <div class="grid grid-cols-5 gap-1">
+                                <div class="bg-gray-200 rounded-l-md flex items-center justify-center font-semibold">1</div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer bg-blue-200">A1</div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                                
+                                <div class="bg-gray-200 rounded-l-md flex items-center justify-center font-semibold">2</div>
+                                <div data-info="range" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer bg-green-200"></div>
+                                <div data-info="range" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer bg-green-200"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+
+                                <div class="bg-gray-200 rounded-l-md flex items-center justify-center font-semibold">3</div>
+                                <div data-info="range" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer bg-green-200"></div>
+                                <div data-info="range" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer bg-green-200"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                                <div data-info="cell" class="interactive-spreadsheet-cell border h-12 rounded-sm cursor-pointer"></div>
+                            </div>
+                        </div>
+                        <div id="info-box" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg min-h-[200px]">
+                            <h4 class="font-bold text-lg mb-2">Основні поняття</h4>
+                            <p id="info-text" class="text-gray-700">Оберіть елемент на схемі, щоб побачити його опис.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Практична робота: Вправа 20</h3>
+                    <p class="text-gray-600 mb-6">Завдання: Пригадати основні прийоми роботи з табличним процесором; навчитися виділяти діапазони різних видів.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="step1" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step1" class="ml-3 text-gray-700"><b>Крок 1:</b> Запустіть табличний процесор та створіть порожню таблицю.</label>
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="step2" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step2" class="ml-3 text-gray-700"><b>Крок 2:</b> Створіть таблицю з календарем на поточний місяць (наприклад, Листопад). Збережіть файл із назвою "Календар".</label>
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="step3" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step3" class="ml-3 text-gray-700"><b>Крок 3:</b> Виділіть у календарі кілька суміжних рядків.</label>
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="step4" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step4" class="ml-3 text-gray-700"><b>Крок 4:</b> Виділіть незв'язний діапазон (наприклад, кілька окремих днів у календарі, утримуючи Ctrl).</label>
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="step5" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step5" class="ml-3 text-gray-700"><b>Крок 5:</b> Підрахуйте кількість клітинок у виділеному незв'язному діапазоні.</label>
+                        </div>
+                         <div class="flex items-start">
+                            <input type="checkbox" id="step6" class="mt-1.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="step6" class="ml-3 text-gray-700"><b>Крок 6:</b> Збережіть файл із назвою "Вправа 20".</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-blue-600">Питання для самоперевірки</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">Що таке електронна таблиця?</div>
+                                <div class="flip-card-back bg-blue-200">Комп'ютерне подання прямокутної таблиці для опрацювання даних.</div>
+                            </div>
+                        </div>
+                        <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">Які є види діапазонів клітинок?</div>
+                                <div class="flip-card-back bg-blue-200">Суміжні (нерозривні) та незв'язні.</div>
+                            </div>
+                        </div>
+                        <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">З чого складається адреса клітинки?</div>
+                                <div class="flip-card-back bg-blue-200">Із заголовка стовпця (літера) та номера рядка (число), наприклад, B4.</div>
+                            </div>
+                        </div>
+                        <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">Як виділити цілий стовпець?</div>
+                                <div class="flip-card-back bg-blue-200">Клацнути на його заголовку (на літері).</div>
+                            </div>
+                        </div>
+                        <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">Скільки клітинок містить діапазон A2:B3?</div>
+                                <div class="flip-card-back bg-blue-200">Чотири клітинки (A2, B2, A3, B3).</div>
+                            </div>
+                        </div>
+                         <div class="flip-card h-48 rounded-lg">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-blue-100">Як виділити незв'язний діапазон?</div>
+                                <div class="flip-card-back bg-blue-200">Виділити першу частину, потім, утримуючи клавішу Ctrl, виділяти інші.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 20 (стор. 125-129).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 20 (стор. 129-130).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/5IoSFS4nqak?si=nZfayLZfFjQumMCm" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/5IoSFS4nqak</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 20: <a href="https://ua.izzi.digital/DOS/750894/932372.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932372.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 20, стор. 125-130)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 20: <a href="https://ua.izzi.digital/DOS/750894/932372.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932372.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            const infoText = document.getElementById('info-text');
+            const spreadsheetCells = document.querySelectorAll('.interactive-spreadsheet-cell');
+            const infoData = {
+                cell: '<b>Клітинка (комірка):</b> Це базовий елемент таблиці, що знаходиться на перетині рядка та стовпця. Кожна клітинка має унікальну адресу (наприклад, A1). Вона може містити текст, числа або формули.',
+                range: '<b>Діапазон:</b> Це сукупність клітинок, які можна опрацьовувати як єдине ціле. Адреса суміжного діапазону складається з адрес верхньої лівої та правої нижньої клітинок, розділених двокрапкою (наприклад, A2:B3).'
+            };
+
+            spreadsheetCells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    const infoKey = cell.dataset.info;
+                    infoText.innerHTML = infoData[infoKey] || 'Оберіть елемент на схемі, щоб побачити його опис.';
+                });
+            });
+
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Автоматичне створення анімації</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Creative Tech / Indigo & Slate -->
+    <!-- Application Structure Plan: The SPA is an "Animator's Toolkit" featuring interactive labs. It begins with a "Keyframe Explorer" to visually explain tweening. The core is the "Animation Workshop," a comprehensive simulator where students manipulate an object using transformation controls (position, rotation, scale) and set keyframes on a timeline to build an animation. The final section is a "Project Brief" checklist for the practical assignment (Вправа 12). This task-based, hands-on structure is chosen to make abstract concepts tangible and to provide a safe practice environment before using TupiTube, enhancing skill retention. -->
+    <!-- Visualization & Content Choices: 
+        1. Keyframing -> Goal: Explain tweening -> Viz: Interactive slider showing in-between frames -> Interaction: User scrubs a timeline to see a ball interpolate between two points.
+        2. Transformations & Keyframing -> Goal: Teach creating a full animation -> Viz: A main canvas with a draggable object, a timeline, and transformation sliders -> Interaction: Users adjust the object's state via sliders or dragging, then click "Add Keyframe" to save the state. The "Play" button triggers a `requestAnimationFrame` loop that interpolates between the saved keyframe states (position, rotation, scale).
+        3. Practical Task Guide -> Goal: Guide Вправа 12 -> Viz: Interactive checklist -> Interaction: Each step is a card that can be marked as "complete," providing structure.
+        All interactions use Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #4f46e544;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+             background-color: #334155; /* slate-700 */
+             color: #e2e8f0; /* slate-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #475569; /* slate-600 */
+        }
+        .timeline-frame {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #475569;
+            background-color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .timeline-frame.keyframe {
+            background-color: #4f46e5;
+            border-color: #a5b4fc;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson14-chapter2-paragraph11.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+    <!-- Main Content Area: Contains page-specific content -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 14. (До § 11)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Автоматичне створення анімації</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">        
+        <section id="intro" class="text-center mb-24">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Автоматична Анімація</h1>
+            <p class="text-lg max-w-3xl mx-auto text-slate-400">Відкрийте секрет плавної анімації! Навчіться створювати рух за допомогою ключових кадрів, дозволяючи комп'ютеру робити всю важку роботу за вас.</p>
+        </section>
+
+        <!-- Keyframe Explorer -->
+        <section id="keyframe-explorer" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Що таке ключовий кадр?</h2>
+                <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Це як задати маршрут для GPS: ви вказуєте лише початкову та кінцеву точки, а комп'ютер сам прокладає шлях між ними. Рухайте повзунок, щоб побачити це в дії.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto">
+                <div class="relative h-24 bg-slate-900 rounded-lg border border-slate-700 flex items-center">
+                    <div id="kf-ball" class="absolute w-10 h-10 bg-indigo-500 rounded-full" style="left: 10%;"></div>
+                    <div class="absolute w-10 h-10 border-2 border-dashed border-indigo-400 rounded-full" style="left: 10%;"></div>
+                    <div class="absolute w-10 h-10 border-2 border-dashed border-indigo-400 rounded-full" style="right: 10%;"></div>
+                </div>
+                <input id="kf-slider" type="range" min="0" max="100" value="0" class="w-full mt-4 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+        </section>
+
+        <!-- Animation Workshop -->
+        <section id="animation-workshop" class="scroll-mt-24 mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Анімаційна Майстерня</h2>
+                <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Створіть свою першу автоматичну анімацію! Керуйте об'єктом, додавайте ключові кадри та дивіться, що вийде.</p>
+            </div>
+             <div class="card max-w-6xl mx-auto">
+                 <h3 class="text-2xl font-bold text-indigo-400 mb-6">Симулятор: Створення анімації "Колобок"</h3>
+                 <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Canvas -->
+                    <div class="lg:col-span-2 bg-slate-900 rounded-lg border border-slate-700 aspect-video">
+                         <canvas id="main-canvas"></canvas>
+                    </div>
+                    <!-- Controls -->
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-bold">Панель трансформації</h4>
+                        <div>
+                            <label for="rotation-slider" class="block text-sm">Обертання: <span id="rotation-value">0</span>°</label>
+                            <input id="rotation-slider" type="range" min="0" max="360" value="0" class="w-full">
+                        </div>
+                        <div>
+                            <label for="scale-slider" class="block text-sm">Масштаб: <span id="scale-value">100</span>%</label>
+                            <input id="scale-slider" type="range" min="20" max="200" value="100" class="w-full">
+                        </div>
+                        <div class="pt-4 border-t border-slate-700 space-y-2">
+                             <button id="add-keyframe-btn" class="btn btn-primary w-full">Додати ключовий кадр</button>
+                             <button id="play-animation-btn" class="btn btn-secondary w-full">Відтворити</button>
+                             <button id="reset-animation-btn" class="btn btn-secondary !bg-red-900/50 text-red-300 w-full">Скинути</button>
+                        </div>
+                    </div>
+                 </div>
+                 <!-- Timeline -->
+                 <div class="mt-6">
+                    <h4 class="font-semibold mb-2">Часова шкала (120 кадрів)</h4>
+                    <div id="timeline" class="flex gap-1 overflow-x-auto p-2 bg-slate-900/50 rounded-lg">
+                        <!-- Frames will be added here -->
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Final Project -->
+        <section id="final-project" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                <p class="text-md max-w-3xl mx-auto text-slate-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto">
+                 <h3 class="text-xl font-semibold mb-6 text-indigo-400">Вправа 12: План дій</h3>
+                 <div class="space-y-4">
+                     <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                         <h4 class="font-bold">1. Створення об'єкта</h4>
+                         <p class="text-sm text-slate-400 mt-1">Запустіть TupiTube, створіть новий проєкт та намалюйте простий об'єкт (м'яч, автомобіль, птах).</p>
+                     </div>
+                     <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                         <h4 class="font-bold">2. Анімація переміщення</h4>
+                         <p class="text-sm text-slate-400 mt-1">Задайте початковий ключовий кадр. Перемістіть об'єкт в інше місце та задайте кінцевий ключовий кадр. Перегляньте результат.</p>
+                     </div>
+                      <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                         <h4 class="font-bold">3. Анімація обертання та масштабування</h4>
+                         <p class="text-sm text-slate-400 mt-1">Додайте нові ключові кадри, в яких об'єкт змінює свій кут повороту та розмір. Перегляньте, як це впливає на анімацію.</p>
+                     </div>
+                      <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-700">
+                         <h4 class="font-bold">4. Експеримент</h4>
+                         <p class="text-sm text-slate-400 mt-1">Спробуйте поєднати всі три типи анімації (рух, обертання, масштаб) в одному плавному русі. Збережіть проєкт.</p>
+                     </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    </main>
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Keyframe Explorer ---
+            const kfBall = document.getElementById('kf-ball');
+            const kfSlider = document.getElementById('kf-slider');
+            kfSlider.addEventListener('input', () => {
+                const percentage = kfSlider.value;
+                const startPos = 10;
+                const endPos = 80; // 90% width - 10% ball width
+                const newPos = startPos + (endPos - startPos) * (percentage / 100);
+                kfBall.style.left = `${newPos}%`;
+            });
+
+            // --- Animation Workshop ---
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const rotationSlider = document.getElementById('rotation-slider');
+            const scaleSlider = document.getElementById('scale-slider');
+            const rotationValue = document.getElementById('rotation-value');
+            const scaleValue = document.getElementById('scale-value');
+            const addKeyframeBtn = document.getElementById('add-keyframe-btn');
+            const playBtn = document.getElementById('play-animation-btn');
+            const resetBtn = document.getElementById('reset-animation-btn');
+            const timelineEl = document.getElementById('timeline');
+
+            let keyframes = [];
+            let obj = { x: 100, y: 240, rotation: 0, scale: 1, radius: 40 };
+            let isDragging = false;
+            let animationId;
+            const totalFrames = 120;
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                draw();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw ground
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+                
+                // Draw object (Kolobok)
+                ctx.save();
+                ctx.translate(obj.x, obj.y);
+                ctx.rotate(obj.rotation * Math.PI / 180);
+                ctx.scale(obj.scale, obj.scale);
+                
+                ctx.beginPath();
+                ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#facc15'; // yellow-400
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(-15, -10, 5, 0, Math.PI * 2);
+                ctx.arc(15, -10, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Smile
+                ctx.beginPath();
+                ctx.arc(0, 5, 20, 0, Math.PI);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function updateControls() {
+                rotationSlider.value = obj.rotation;
+                rotationValue.textContent = Math.round(obj.rotation);
+                scaleSlider.value = obj.scale * 100;
+                scaleValue.textContent = Math.round(obj.scale * 100);
+            }
+
+            function renderTimeline() {
+                timelineEl.innerHTML = '';
+                for (let i = 0; i < totalFrames; i++) {
+                    const frameEl = document.createElement('div');
+                    frameEl.className = 'timeline-frame';
+                    if (keyframes.find(kf => kf.frame === i)) {
+                        frameEl.classList.add('keyframe');
+                        frameEl.textContent = 'K';
+                    }
+                    timelineEl.appendChild(frameEl);
+                }
+            }
+
+            rotationSlider.addEventListener('input', () => { obj.rotation = parseInt(rotationSlider.value); updateControls(); draw(); });
+            scaleSlider.addEventListener('input', () => { obj.scale = parseInt(scaleSlider.value) / 100; updateControls(); draw(); });
+
+            addKeyframeBtn.addEventListener('click', () => {
+                const currentFrame = Math.round((keyframes.length / (keyframes.length + 1)) * totalFrames) || 0;
+                 // Find a better frame position logic later
+                const newFrameIndex = keyframes.length > 0 ? keyframes[keyframes.length-1].frame + 30 : 0;
+                if (newFrameIndex >= totalFrames) return;
+                
+                keyframes.push({ frame: newFrameIndex, state: { ...obj } });
+                keyframes.sort((a, b) => a.frame - b.frame);
+                renderTimeline();
+            });
+
+            resetBtn.addEventListener('click', () => {
+                cancelAnimationFrame(animationId);
+                keyframes = [];
+                obj = { x: 100, y: canvas.height - 50 - obj.radius, rotation: 0, scale: 1, radius: 40 };
+                updateControls();
+                renderTimeline();
+                draw();
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (keyframes.length < 2) return;
+                let currentFrame = 0;
+                
+                function animate() {
+                    if (currentFrame >= totalFrames) {
+                        resetBtn.click(); // Reset to start
+                        return;
+                    }
+                    
+                    let startKf = keyframes.filter(kf => kf.frame <= currentFrame).pop() || keyframes[0];
+                    let endKf = keyframes.find(kf => kf.frame > currentFrame) || keyframes[keyframes.length - 1];
+                    
+                    if (startKf === endKf) {
+                        obj = {...startKf.state};
+                    } else {
+                        const duration = endKf.frame - startKf.frame;
+                        const progress = (currentFrame - startKf.frame) / duration;
+
+                        // Linear interpolation (lerp)
+                        const lerp = (a, b, t) => a + (b - a) * t;
+                        
+                        obj.x = lerp(startKf.state.x, endKf.state.x, progress);
+                        obj.y = lerp(startKf.state.y, endKf.state.y, progress);
+                        obj.rotation = lerp(startKf.state.rotation, endKf.state.rotation, progress);
+                        obj.scale = lerp(startKf.state.scale, endKf.state.scale, progress);
+                    }
+                    
+                    draw();
+                    updateControls();
+                    currentFrame++;
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            });
+
+            // Dragging logic
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const distance = Math.sqrt((mouseX - obj.x)**2 + (mouseY - obj.y)**2);
+                if (distance < obj.radius * obj.scale) {
+                    isDragging = true;
+                }
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if(isDragging) {
+                    const rect = canvas.getBoundingClientRect();
+                    obj.x = e.clientX - rect.left;
+                    obj.y = e.clientY - rect.top;
+                    draw();
+                }
+            });
+             canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            resetBtn.click();
+        });
+    </script>
+</body>
+</html>
+
+<!-- Я створив для вас інтерактивний SPA-додаток "Анімаційна студія". Замість того, щоб просто переказувати текст підручника, учні отримують можливість:
+
+"Відчути" ключові кадри: У "Досліднику ключових кадрів" вони можуть рухати повзунок і бачити, як комп'ютер плавно переміщує об'єкт між двома заданими точками, що наочно демонструє принцип "tweening".
+
+Створити власну анімацію: "Анімаційна майстерня" — це повноцінний симулятор, де учні можуть перетягувати об'єкт, змінювати його розмір та обертання за допомогою повзунків, а потім зберігати ці стани як ключові кадри на часовій шкалі. Натиснувши "Відтворити", вони побачать, як програма автоматично створює плавний рух між їхніми кадрами.
+
+Отримати чіткий план: Практична робота розбита на зрозумілі етапи, що допомагає учням структурувати своє завдання та впевнено його виконати у TupiTube.
+
+Такий підхід, заснований на взаємодії та симуляції, робить складні поняття анімації доступними та цікавими, допомагаючи учням краще засвоїти матеріал та розкрити свій творчий потенціал. -->

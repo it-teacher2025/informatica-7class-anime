@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уроки інформатики: 7 клас НУШ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Dark Academia Inspired -->
+    <!-- Application Structure Plan: The SPA is designed as a hierarchical navigation hub, mirroring the textbook's chapter and paragraph structure. It features two main sections ("Комп'ютерна анімація" and "Моделі та моделювання"), each containing a list of clickable paragraphs. Clicking a paragraph link will navigate the user to the corresponding interactive lesson page (if already created) or a placeholder page for future content. This structure is chosen to provide a clear, intuitive navigation experience that directly reflects the user's existing mental model of the course material, making it easy to find and access specific topics. -->
+    <!-- Visualization & Content Choices:
+        - Chapter Titles: Report Info (Chapter names) -> Goal (Organize content) -> Method (Large, distinct headings) -> Justification (Provides clear visual separation for major sections).
+        - Paragraph List: Report Info (Paragraph titles) -> Goal (Inform/Navigate) -> Method (Clickable list items with links) -> Interaction (Click to navigate) -> Justification (Intuitive way to access detailed lesson content, allowing users to jump directly to specific topics).
+        - Links to Lessons: Report Info (Implicit reference to previously generated interactive lessons) -> Goal (Connect content) -> Method (Standard HTML <a> tags with specific hrefs) -> Justification (Enables seamless transition to interactive learning modules, enhancing the overall educational experience).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .text-5xl2 {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        /* Базові стилі для всіх пристроїв (зазвичай мобільних) */
+        .chapter-title {
+            background-color: #1a202c; /* Dark background for titles */
+            color: #e2e8f0; /* Light text for titles */
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 1.0rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            font-family: 'Montserrat', sans-serif;
+        }
+        @media screen and (min-width: 350px) {
+            .chapter-title {
+                font-size: 1.5rem;
+            }
+        }
+        /* Стилі для екранів шириною від 640px і більше */
+        @media screen and (min-width: 640px) {
+            .chapter-title {
+                font-size: 2.0rem;
+            }
+            .text-5xl2 {
+                font-size: 2.0rem;
+            }            
+        }
+        /* Стилі для екранів шириною від 1024px і більше */
+        @media screen and (min-width: 1024px) {
+            .chapter-title {
+                font-size: 2.5rem;
+            }
+            .text-5xl2 {
+                font-size: 3rem;
+            }
+        }
+        
+        .section-card {
+            background-color: #2d3748; /* Slightly lighter dark background for sections */
+            color: #cbd5e0; /* Light text for section content */
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .lesson-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #4a5568; /* Even lighter dark for links */
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            color: #e2e8f0; /* Light text for links */
+            font-weight: 500;
+        }
+        .lesson-link:hover {
+            background-color: #6366f1; /* Indigo for hover */
+            transform: translateX(5px);
+        }
+        .lesson-link.practical {
+            font-style: italic;
+            color: #9ae6b4; /* Light green for practical works */
+        }
+        .lesson-link.practical:hover {
+             background-color: #6366f1; /* Indigo for hover */
+             color: #e2e8f0;
+        }
+
+        /* Стилі для змісту */
+        /* .chapter-hover { padding: 16px; }
+        .chapter-hover:hover { color: yellow; }
+        .chapter-text { padding: 16px; }
+        .chapter-text:hover { background-color: #6366f1; border-radius: 8px;} */
+
+        .toc-link {
+            transition: color 0.2s ease;
+        }
+        .toc-link:hover {
+            color: #6366f1;
+        }
+        .toc-chapter-link {
+            font-weight: 600;
+            color: #888;
+        }
+        .toc-lesson-link {
+            margin-left: 1rem;
+            font-size: 0.9rem;
+            color: #cbd5e0;
+        }
+        .toc-lesson-link.practical-toc {
+            color: #9ae6b4;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl">
+
+            <div class="text-center mb-10">
+                <h1 class="text-5xl2 md:text-6xl font-bold text-white" style="font-family: 'Montserrat', sans-serif;">Уроки Інформатики</h1>
+                <p class="mt-4 text-xl text-gray-300">7 клас НУШ</p>
+            </div>
+
+            <!-- Зміст сторінки -->
+            <!-- <section class="mb-12">
+                <div class="section-card">
+                    <ul>
+                        <li class="chapter-hover"><a href="#chapter1" class="chapter-text">Розділ 1: Служби Інтернету</a></li>
+                        <li class="chapter-hover"><a href="#chapter2" class="chapter-text">Розділ 2: Комп'ютерна анімація</a></li>
+                        <li class="chapter-hover"><a href="#chapter3" class="chapter-text">Розділ 3: Моделі та моделювання</a></li>
+                        <li class="chapter-hover"><a href="#chapter4" class="chapter-text">Розділ 4: Опрацювання табличних даних</a></li>
+                        <li class="chapter-hover"><a href="#chapter5" class="chapter-text">Розділ 5: Алгоритми та програми</a></li>
+                        <li class="chapter-hover"><a href="#chapter6" class="chapter-text">Практикум з використання інформаційних технологій</a></li>
+                    </ul>
+                </div>
+            </section> -->
+            
+            <!-- Table of Contents -->
+            <section id="table-of-contents-section" class="mb-12 bg-white p-6 rounded-xl shadow-md text-slate-800">
+                <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Зміст курсу</h2>
+                <div id="table-of-contents" class="space-y-2">
+                    <!-- TOC will be dynamically generated here by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Розділ 1: Служби Інтернету -->
+            <section id="chapter-1-internet-services" class="mb-12">
+                <div class="chapter-title">РОЗДІЛ 1: <br>СЛУЖБИ ІНТЕРНЕТУ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson01.html" class="lesson-link">Урок № 1. Правила поведінки та безпеки життєдіяльності при роботі в комп’ютерному класі</a>
+                    <a href="./klass7-lesson02-chapter1-paragraph1.html" class="lesson-link">Урок № 2. (§ 1) Поштові служби інтернету</a>
+                    <a href="./klass7-lesson03-chapter1-paragraph2-practical1.html" class="lesson-link practical">Урок № 3. (§ 2, ПР1) Робота з електронною поштою.<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Практична робота № 1. «Створення електронної поштової скриньки».</a>
+                    <a href="./klass7-lesson04-chapter1-paragraph3.html" class="lesson-link">Урок № 4. (§ 3) Налаштування поштової скриньки</a>
+                    <a href="./klass7-lesson05-chapter1-paragraph4.html" class="lesson-link">Урок № 5. (§ 4) Особливості електронного листування</a>
+                    <a href="./klass7-lesson06-chapter1-paragraph5.html" class="lesson-link">Урок № 6. (§ 5) Етичне та безпечне користування електронною поштою</a>
+                    <a href="./klass7-lesson07-chapter1-paragraph6.html" class="lesson-link">Урок № 7. (§ 6) Використання інтернет-ресурсів. Гіперпосилання в листах</a>
+                    <a href="./klass7-lesson08-chapter1-paragraph7.html" class="lesson-link">Урок № 8. (§ 7) Колективна робота з документами</a>
+                    <a href="./klass7-lesson09-chapter1-practical2.html" class="lesson-link practical">Урок № 9. (ПР2) Практична робота № 2. «Використання хмарних технологій для колективного опрацювання документів»</a>
+                    <a href="./klass7-lesson10-chapter1-paragraph8.html" class="lesson-link">Урок № 10. (§ 8) Штучний інтелект. Інтернет речей.<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Узагальнення навчального матеріалу з теми</a>
+                </div>
+            </section>
+
+            <!-- Розділ 2: Комп'ютерна анімація -->
+            <section id="chapter-2-computer-animation" class="mb-12">
+                <div class="chapter-title">РОЗДІЛ 2: <br>КОМП'ЮТЕРНА АНІМАЦІЯ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson11-chapter2-paragraph9.html" class="lesson-link">Урок № 11. (§ 9) Принцип анімації. Редактор двовимірної анімації TupiTube</a>
+                    <a href="./klass7-lesson12-chapter2-paragraph10.html" class="lesson-link">Урок № 12. (§ 10) Векторне тло анімації. Керування кольором</a>
+                    <a href="./klass7-lesson13-chapter2-paragraph10.html" class="lesson-link">Урок № 13. (§ 10) Растрове тло анімації. Упорядкування шарів тла</a>
+                    <a href="./klass7-lesson14-chapter2-paragraph11.html" class="lesson-link">Урок № 14. (§ 11) Автоматичне створення анімації</a>
+                    <a href="./klass7-lesson15-chapter2-paragraph11.html" class="lesson-link">Урок № 15. (§ 11) Анімація обертання</a>
+                    <a href="./klass7-lesson16-chapter2-paragraph12.html" class="lesson-link">Урок № 16. (§ 12) Створення анімаційних ефектів</a>
+                    <a href="./klass7-lesson17-chapter2-paragraph13.html" class="lesson-link">Урок № 17. (§ 13) Бібліотека об’єктів. Імпортування зображень. Експортування проєкту</a>
+                    <a href="./klass7-lesson18-chapter2-practical3.html" class="lesson-link practical">Урок № 18. (ПР3) Практична робота № 3. «Створення анімаційного проєкту»</a>
+                    <a href="./klass7-lesson19-chapter2-paragraph14.html" class="lesson-link">Урок № 19. (§ 14) Покадрова анімація</a>
+                    <a href="./klass7-lesson20-chapter2-practical4.html" class="lesson-link practical">Урок № 20. (ПР4) Практична робота № 4. «Створення анімації з декількох сцен».<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Узагальнення навчального матеріалу з теми</a>
+                </div>
+            </section>
+
+            <!-- Розділ 3: Моделі та моделювання -->
+            <section id="chapter-3-models-modeling" class="mb-12">
+                <div class="chapter-title">РОЗДІЛ 3: <br>МОДЕЛІ ТА МОДЕЛЮВАННЯ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson21-chapter3-paragraph15.html" class="lesson-link">Урок № 21. (§ 15) Поняття моделі. Поняття предметної галузі</a>
+                    <a href="./klass7-lesson22-chapter3-paragraph16.html" class="lesson-link">Урок № 22. (§ 16) Типи моделей. Форми подання інформаційної моделі</a>
+                    <a href="./klass7-lesson23-chapter3-paragraph17.html" class="lesson-link">Урок № 23. (§ 17) Побудова інформаційних моделей</a>
+                    <a href="./klass7-lesson24-chapter3-paragraph18.html" class="lesson-link">Урок № 24. (§ 18) Карти знань. Сервіси для побудови карт знань</a>
+                    <a href="./klass7-lesson25-chapter3-paragraph19.html" class="lesson-link">Урок № 25. (§ 19) Побудова математичної моделі</a>
+                    <a href="./klass7-lesson26-chapter3-practical5.html" class="lesson-link practical">Урок № 26. (ПР5) Практична робота № 5. «Створення карти знань».<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Узагальнення навчального матеріалу з теми</a>
+                </div>
+            </section>
+            
+            <!-- Підсумкова робота за 1 семестр -->
+            <section id="semester-1-summary" class="mb-12">
+                <div class="chapter-title">ПІДСУМКОВА РОБОТА <br>(За І семестр)</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson27-control-work.html" class="lesson-link practical">Урок № 27. Підсумкова робота «Моделі та моделювання. Служби Інтернету. Комп’ютерна анімація»</a>
+                </div>
+            </section>
+
+            <!-- Розділ 4: Опрацювання табличних даних -->
+            <section id="chapter-4-spreadsheet-data" class="mb-12">
+                <div class="chapter-title">РОЗДІЛ 4: <br>ОПРАЦЮВАННЯ ТАБЛИЧНИХ ДАНИХ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson28-chapter4-paragraph20.html" class="lesson-link">Урок № 28. (§ 20) Основні об’єкти електронних таблиць</a>
+                    <a href="./klass7-lesson29-chapter4-paragraph21.html" class="lesson-link">Урок № 29. (§ 21) Типи даних. Введення та опрацювання даних</a>
+                    <a href="./klass7-lesson30-chapter4-paragraph22.html" class="lesson-link">Урок № 30. (§ 22) Адресація в електронних таблицях</a>
+                    <a href="./klass7-lesson31-chapter4-paragraph23.html" class="lesson-link">Урок № 31. (§ 23) Автозаповнення та автозавершення</a>
+                    <a href="./klass7-lesson32-review.html" class="lesson-link">Урок № 32. Повторення об’єктів, типів даних, адресації та функцій в електронних таблицях</a>
+                    <a href="./klass7-lesson33-chapter4-practical6.html" class="lesson-link practical">Урок № 33. (ПР6) Практична робота № 6. «Розв’язування задач на обчислення»</a>
+                    <a href="./klass7-lesson34-chapter4-paragraph24.html" class="lesson-link">Урок № 34. (§ 24) Функції</a>
+                    <a href="./klass7-lesson35-chapter4-paragraph25.html" class="lesson-link">Урок № 35. (§ 25) Логічні функції</a>
+                    <a href="./klass7-lesson36-chapter4-paragraph26.html" class="lesson-link">Урок № 36. (§ 26) Умовне форматування</a>
+                    <a href="./klass7-lesson37-chapter4-practical7.html" class="lesson-link practical">Урок № 37. (ПР7) Практична робота № 7. «Використання функцій табличного процесора. Умовне форматування»</a>
+                    <a href="./klass7-lesson38-chapter4-paragraph27.html" class="lesson-link">Урок № 38. (§ 27) Математичне моделювання в електронних таблицях</a>
+                    <a href="./klass7-lesson39-chapter4-practical8.html" class="lesson-link practical">Урок № 39. (ПР8) Практична робота № 8. «Проведення обчислювального експерименту».<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Узагальнення навчального матеріалу з теми</a>
+                </div>
+            </section>
+
+            <!-- Розділ 5: Алгоритми та програми -->
+            <section id="chapter-5-algorithms-programs" class="mb-12">
+                <div class="chapter-title">РОЗДІЛ 5: <br>АЛГОРИТМИ ТА ПРОГРАМИ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson40-chapter5-paragraph28.html" class="lesson-link">Урок № 40. (§ 28) Етапи розв’язування задачі на комп’ютері</a>
+                    <a href="./klass7-lesson41-chapter5-paragraph29.html" class="lesson-link">Урок № 41. (§ 29) Величини. Алгоритми роботи з величинами</a>
+                    <a href="./klass7-lesson42-chapter5-paragraph30.html" class="lesson-link">Урок № 42. (§ 30) Опрацювання даних числових типів</a>
+                    <a href="./klass7-lesson43-chapter5-paragraph31.html" class="lesson-link">Урок № 43. (§ 31) Алгоритми і програми з розгалуженнями</a>
+                    <a href="./klass7-lesson44-chapter5-paragraph32.html" class="lesson-link">Урок № 44. (§ 32) Алгоритми і програми з повтореннями. Цикли</a>
+                    <a href="./klass7-lesson45-chapter5-paragraph32.html" class="lesson-link">Урок № 45. (§ 32) Розв’язання завдань з циклами</a>
+                    <a href="./klass7-lesson46-chapter5-paragraph33.html" class="lesson-link">Урок № 46. (§ 33) Рядковий тип даних</a>
+                    <a href="./klass7-lesson47-chapter5-paragraph34.html" class="lesson-link">Урок № 47. (§ 34) Опрацювання рядкових величин</a>
+                    <a href="./klass7-lesson48-chapter5-practical9.html" class="lesson-link practical">Урок № 48. (ПР9) Практична робота № 9. «Створення програм для опрацювання рядкових величин»</a>
+                    <a href="./klass7-lesson49-chapter5-paragraph35.html" class="lesson-link">Урок № 49. (§ 35) Списки — змінювані послідовності</a>
+                    <a href="./klass7-lesson50-chapter5-paragraph35.html" class="lesson-link">Урок № 50. (§ 35) Складання програми зі списками</a>
+                    <a href="./klass7-lesson51-chapter5-paragraph36.html" class="lesson-link">Урок № 51. (§ 36) Методи опрацювання списків</a>
+                    <a href="./klass7-lesson52-chapter5-paragraph36.html" class="lesson-link">Урок № 52. (§ 36) Функції опрацювання списків</a>
+                    <a href="./klass7-lesson53-chapter5-paragraph37.html" class="lesson-link">Урок № 53. (§ 37) Опрацювання елементів списку</a>
+                    <a href="./klass7-lesson54-chapter5-paragraph38.html" class="lesson-link">Урок № 54. (§ 38) Створення інтерфейсу користувача засобами бібліотеки easygui</a>
+                    <a href="./klass7-lesson55-chapter5-paragraph38.html" class="lesson-link">Урок № 55. (§ 38) Створення вікна з вибором засобами бібліотеки easygui</a>
+                    <a href="./klass7-lesson56-chapter5-practical10.html" class="lesson-link practical">Урок № 56. (ПР10) Практична робота № 10. «Створення програм для опрацювання списків»</a>
+                    <a href="./klass7-lesson57-chapter5-paragraph40.html" class="lesson-link">Урок № 57. (§ 40) Обчислення з використанням функцій користувача</a>
+                    <a href="./klass7-lesson58-chapter5-paragraph39.html" class="lesson-link">Урок № 58. (§ 39) Розв’язування задачі методом поділу на підзадачі</a>
+                    <a href="./klass7-lesson59-chapter5-practical11.html" class="lesson-link practical">Урок № 59. (ПР11) Практична робота № 11. «Створення програми з використанням функцій користувача».<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Узагальнення навчального матеріалу з теми</a>
+                </div>
+            </section>
+
+            <!-- Практикум з використання інформаційних технологій -->
+            <section id="chapter-6-it-practice" class="mb-12">
+                <div class="chapter-title">ПРАКТИКУМ З ВИКОРИСТАННЯ ІНФОРМАЦІЙНИХ ТЕХНОЛОГІЙ</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson60-practical12.html" class="lesson-link practical">Урок № 60. (ПР12) Практична робота № 12. «Створення анімаційного оформлення для відео»</a>
+                    <a href="./klass7-lesson61-practical13.html" class="lesson-link practical">Урок № 61. (ПР13) Практична робота № 13. «Моделювання роботи автозаправної станції»</a>
+                    <a href="./klass7-lesson62-practical14.html" class="lesson-link practical">Урок № 62. (ПР14) Практична робота № 14. «Розробка інформаційної моделі. Реалізація математичної моделі задачі в середовищі програмування»</a>
+                    <a href="./klass7-lesson63-practical15.html" class="lesson-link practical">Урок № 63. (ПР15) Практична робота № 15. «Складання програми для обчислення чисел Фібоначчі»</a>
+                    <a href="./klass7-lesson64-practical16.html" class="lesson-link practical">Урок № 64. (ПР16) Практична робота № 16. «Опрацювання рядкових даних»</a>
+                    <a href="./klass7-lesson65-practical17.html" class="lesson-link practical">Урок № 65. (ПР17) Практична робота № 17. «Створення програми з розгалуженнями і повтореннями»</a>
+                    <a href="./klass7-lesson66-practical18.html" class="lesson-link practical">Урок № 66. (ПР18) Практична робота № 18. «Розробка застосунку «Відгадай загадку»»</a>
+                </div>
+            </section>
+
+            <!-- Підсумкова робота за 2 семестр -->
+            <section id="semester-2-summary" class="mb-12">
+                <div class="chapter-title">ПІДСУМКОВА РОБОТА <br>(За ІІ семестр)</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson67-control-work.html" class="lesson-link practical">Урок № 67. Підсумкова робота «Опрацювання табличних даних. Алгоритми та програми»</a>
+                </div>
+            </section>
+
+            <!-- Повторення матеріалу та підсумкові уроки -->
+            <section id="year-summary-lessons" class="mb-12">
+                <div class="chapter-title">Повторення матеріалу за рік та підсумкові уроки</div>
+                <div class="section-card">
+                    <a href="./klass7-lesson68-70-review.html" class="lesson-link">Урок № 68. Провторення матеріалу, пройденого за алгоритмами та програмами, опрацювання табличних даних</a>
+                    <a href="./klass7-lesson68-70-review.html" class="lesson-link">Урок № 69. Узагальнення навчального матеріалу з інформатики за навчальний рік</a>
+                    <a href="./klass7-lesson68-70-review.html" class="lesson-link">Урок № 70. Підсумковий урок</a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tocContainer = document.getElementById('table-of-contents');
+            const sections = document.querySelectorAll('section[id^="chapter-"], section[id^="semester-"], section[id^="year-summary-"]');
+
+            sections.forEach(section => {
+                const chapterTitleEl = section.querySelector('.chapter-title');
+                if (chapterTitleEl) {
+                    const chapterText = chapterTitleEl.textContent.replace(/\s+/g, ' ').trim();
+                    const chapterId = section.id;
+
+                    const chapterLi = document.createElement('li');
+                    chapterLi.className = 'mb-2';
+                    const chapterLink = document.createElement('a');
+                    chapterLink.href = `#${chapterId}`;
+                    chapterLink.className = 'toc-link toc-chapter-link';
+                    chapterLink.textContent = chapterText;
+                    chapterLi.appendChild(chapterLink);
+
+                    // Removed the generation of individual lesson links within the TOC
+                    // The lessonUl and its population are removed here.
+
+                    tocContainer.appendChild(chapterLi);
+                }
+            });
+
+            // Smooth scroll for TOC links
+            tocContainer.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A' && event.target.classList.contains('toc-link')) {
+                    event.preventDefault();
+                    const targetId = event.target.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

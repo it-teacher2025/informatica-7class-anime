@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .card {
+            background-color: #1f2937; /* gray-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #374151; /* gray-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #be185d; /* pink-700 */
+            color: #fff;
+            box-shadow: 0 0 20px #be185d44;
+        }
+        .btn-primary:hover {
+            background-color: #9d174d; /* pink-800 */
+        }
+        .btn-secondary {
+             background-color: #374151; /* gray-700 */
+             color: #e5e7eb; /* gray-200 */
+        }
+        .btn-secondary:hover {
+             background-color: #4b5563; /* gray-600 */
+        }
+        .library-item { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .library-item:hover { transform: scale(1.05); box-shadow: 0 0 15px #be185d55; }
+        .progress-bar { transition: width 1s ease-in-out; }
+
+        /* Стилі для Теоретичного блоку */
+
+        /* Стилі для перевірки знань */
+        .height-learn { height: 640px; }
+        .height300 { height: 300px; }
+        .source { padding: 16px; color: #334155; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 17. (До § 13)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Бібліотека об’єктів. Імпортування зображень. Експортування проєкту</h1>
+            <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з поняттям "Бібліотека об’єктів" у TupiTube та її перевагами; навчити додавати власні об'єкти до бібліотеки та використовувати їх; пояснити, як імпортувати різні типи зображень (растрові, векторні) та файли (звукові, відео) у проєкт; навчити експортувати анімаційний проєкт у відеофайл; ознайомити з можливістю публікації анімації в спільноті TupiTube.</li>
+                            <li><b>Розвивальна:</b> Розвивати навички планування та організації робочого простору в анімаційному редакторі; формувати вміння раціонально використовувати ресурси (бібліотека об'єктів); розвивати логічне мислення при виборі оптимальних параметрів експорту; сприяти розвитку творчого мислення через використання різноманітних ресурсів (зображення, звук, відео) в анімації.</li>
+                            <li><b>Виховна:</b> Виховувати акуратність та системність у роботі з файлами та проектами; формувати інтерес до можливостей поширення власної творчості; заохочувати до самостійного вивчення додаткових функцій програмного забезпечення.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Використовувати бібліотеку об'єктів для збереження та повторного використання елементів анімації.</li>
+                            <li>Додавати власні об'єкти до бібліотеки.</li>
+                            <li>Імпортувати растрові та векторні зображення, а також звукові та відеофайли у проєкт TupiTube.</li>
+                            <li>Експортувати анімаційний проєкт у формат відеофайлу (наприклад, MP4).</li>
+                            <li>Заповнювати дані для публікації анімації в онлайн-спільноті TupiTube.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок узагальнення, систематизації знань та формування практичних умінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим редактором TupiTube.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням підручника, прикладів об'єктів у бібліотеці, кроків імпорту та експорту).</li>
+                            <li>Заздалегідь підготовлені зображення, звукові файли для імпорту (за потреби).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Образотворче мистецтво (композиція, використання зображень).</li>
+                            <li>Музичне мистецтво (звук в анімації).</li>
+                            <li>Англійська мова (інтерфейс програми, назви файлів).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Як додати до об’єкта декілька анімаційних ефектів?</li>
+                            <li>На який кут має повертатися об’єкт на кожному кадрі, щоб в анімації із 720 кадрів він здійснив 5 обертів?</li>
+                            <li>Які параметри задають для анімації масштабування?</li>
+                            <li>Які параметри задають для анімації зсуву?</li>
+                            <li>Які параметри задають для анімації щільності?</li>
+                            <li>Які параметри задають для анімації розмальовування?</li>
+                            <li>Поясніть, чим відрізняється векторний передній план від векторного тла.</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema2-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 75)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="container mx-auto px-4 py-12">        
+                    <section id="intro" class="text-center mb-24">
+                        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Студія: від Ідеї до Прем'єри</h1>
+                        <p class="text-lg max-w-3xl mx-auto text-gray-400">Навчіться використовувати готові зображення та ділитися своїми анімаціями зі світом. Пройдіть симуляцію, щоб стати справжнім режисером!</p>
+                    </section>
+
+                    <!-- Library & Export Grid -->
+                    <div class="grid lg:grid-cols-2 gap-8 items-start">
+                        
+                        <!-- Asset Library -->
+                        <section id="library" class="space-y-8">
+                            <div class="text-center">
+                                <h2 class="text-3xl font-bold text-white">1. Бібліотека Об'єктів</h2>
+                                <p class="text-gray-400 mt-1">Створюйте та зберігайте об'єкти, щоб використовувати їх у різних сценах.</p>
+                            </div>
+                            <div class="card">
+                                <h3 class="text-xl font-bold text-pink-400 mb-4">Симулятор: Проєкт "Грибний дощ"</h3>
+                                <div id="library-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-4 min-h-[150px] bg-gray-900/50 p-4 rounded-lg">
+                                    <!-- Library items will be rendered here -->
+                                </div>
+                                <div class="flex flex-wrap gap-3 mt-6">
+                                    <button id="add-mushroom-btn" class="btn btn-secondary">Створити Гриб 🍄</button>
+                                    <button id="add-tree-btn" class="btn btn-secondary">Створити Дерево 🌳</button>
+                                    <button id="add-drop-btn" class="btn btn-secondary">Створити Краплю 💧</button>
+                                    <button id="import-btn" class="btn btn-secondary">Імпортувати 🖼️</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Export Terminal -->
+                        <section id="export" class="space-y-8">
+                            <div class="text-center">
+                                <h2 class="text-3xl font-bold text-white">2. Експортування Проєкту</h2>
+                                <p class="text-gray-400 mt-1">Коли анімація готова, її потрібно перетворити на відеофайл.</p>
+                            </div>
+                            <div class="card">
+                                <h3 class="text-xl font-bold text-pink-400 mb-4">Симулятор: Експорт у Відео</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="format-select" class="block text-sm font-medium mb-1">Формат відео:</label>
+                                        <select id="format-select" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md">
+                                            <option>Відео MP4</option>
+                                            <option>Відео AVI</option>
+                                            <option>GIF</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Сцени для експорту:</label>
+                                        <div class="p-3 bg-gray-900/50 rounded-md min-h-[50px]">
+                                            <p>Сцена 1: Грибний дощ</p>
+                                        </div>
+                                    </div>
+                                    <button id="export-btn" class="btn btn-primary w-full">Експортувати</button>
+                                    <div id="progress-container" class="w-full bg-gray-700 rounded-full h-2.5 hidden">
+                                        <div id="progress-bar" class="bg-pink-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                                    </div>
+                                    <p id="export-feedback" class="text-center h-5 font-semibold text-green-400"></p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Publishing Hub -->
+                    <section id="publishing" class="mt-16">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-white">3. Публікація в Спільноті</h2>
+                            <p class="text-gray-400 mt-1">Поділіться своєю роботою з іншими аніматорами!</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-bold text-pink-400 mb-4">Симулятор: Публікація ролика</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="publish-title" class="block text-sm font-medium mb-1">Заголовок:</label>
+                                    <input type="text" id="publish-title" value="Грибний дощ" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="publish-hashtags" class="block text-sm font-medium mb-1">Хештеги (ключові слова):</label>
+                                    <input type="text" id="publish-hashtags" value="#анімація #дощ #гриби #TupiTube" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md">
+                                    <p class="text-xs text-gray-400 mt-1">Хештеги допомагають іншим людям знайти вашу роботу.</p>
+                                </div>
+                                <button id="publish-btn" class="btn btn-primary w-full">Опублікувати</button>
+                                <p id="publish-feedback" class="text-center h-5 font-semibold text-green-400"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Final Project -->
+                    <section id="final-project" class="scroll-mt-24 mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                            <p class="text-md max-w-3xl mx-auto text-gray-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-6 text-pink-400">Вправа 13: План дій</h3>
+                            <div id="checklist" class="space-y-4">
+                                <!-- Checklist items will be injected here -->
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">1. Які переваги надає використання бібліотеки об’єктів?</div><div class="flip-card-back bg-green-900">Використання бібліотеки об'єктів дозволяє уникнути необхідності малювати всі об’єкти вручну. Якщо певний об'єкт потрібно використати декілька разів, його можна зберегти в бібліотеці і потім просто використовувати як готовий елемент.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">2. Як у TupiTube відкрити панель Бібліотека?</div><div class="flip-card-back bg-green-900">Панель Бібліотека відкривається натисканням кнопки з зображенням книги на лівій панелі застосунку TupiTube.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 height300">3. Яка послідовність додавання до бібліотеки власного об’єкта?</div><div class="flip-card-back bg-green-900 height300">Щоб додати власний об’єкт до бібліотеки:<br>1. Створити об’єкт на робочому полі, переконавшись, що він на окремому кадрі та шарі.<br>2. Вибрати інструмент «Вибір об’єкта» і виділити об'єкт.<br>3. Викликати контекстне меню і обрати команду «Додати до бібліотеки».<br>4. У діалоговому вікні, що з’явиться, ввести назву об’єкта та натиснути «ОК».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700">4. Які об’єкти можна додавати до бібліотеки?</div><div class="flip-card-back bg-green-900">До бібліотеки можна додавати різні типи об’єктів, зокрема:<br>- Окремі растрові та векторні зображення.<br>- Послідовності зображень.<br>- Звукові файли.<br>- Кадри з відеофайлів.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 height300">5. Опишіть послідовність експортування анімації у відеофайл.</div><div class="flip-card-back bg-green-900 height300">Для експортування анімації у відеофайл необхідно:<br>1. Вибрати команду «Експортувати проект» в меню.<br>2. У лівій частині вікна експорту обрати «Відео», а потім один із форматів (наприклад, Відео MP4) і натиснути «Далі».<br>3. У списку в лівій частині вікна обрати сцену, яку потрібно експортувати.<br>4. Задати ім’я файлу та місце для збереження, після чого натиснути кнопку «Експортувати».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 height300">6. Як опублікувати власну анімацію в спільноті TupiTube?</div><div class="flip-card-back bg-green-900 height300">Щоб опублікувати анімацію в спільноті TupiTube, потрібно:<br>1. В меню «Публікування» обрати, що саме публікується: анімаційний ролик чи окремий кадр.<br>2. Авторизуватися, ввівши ім’я користувача та пароль.<br>3. Ввести відповідні дані для публікації: заголовок, теги та короткий опис.<br>4. Натиснути кнопку «Опублікувати».<br>5. Після розгляду модераторами, анімаційний ролик з'явиться в стрічці новин на сайті TupiTube.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 80)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 13 (стор. 76-79).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 13 (стор. 80).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/Z28IbRnlxms?si=-ngn5viusmU3HHfh" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/Z28IbRnlxms</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 13: <a href="https://ua.izzi.digital/DOS/750894/838205.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838205.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 13, стор. 76-80)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 13: <a href="https://ua.izzi.digital/DOS/750894/838205.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838205.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx1 = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [2, 4, 3, 1],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+// --- Library ---
+            const libraryGrid = document.getElementById('library-grid');
+            const libraryItems = [];
+
+            function renderLibrary() {
+                libraryGrid.innerHTML = '';
+                libraryItems.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'library-item bg-gray-700 rounded-lg flex flex-col items-center justify-center p-2 aspect-square';
+                    itemEl.innerHTML = `
+                        <div class="text-4xl">${item.icon}</div>
+                        <p class="text-xs text-center mt-1">${item.name}</p>
+                    `;
+                    libraryGrid.appendChild(itemEl);
+                });
+            }
+
+            document.getElementById('add-mushroom-btn').addEventListener('click', () => {
+                if (!libraryItems.find(i => i.name === 'Гриб')) {
+                    libraryItems.push({ name: 'Гриб', icon: '🍄' });
+                    renderLibrary();
+                }
+            });
+            document.getElementById('add-tree-btn').addEventListener('click', () => {
+                 if (!libraryItems.find(i => i.name === 'Дерево')) {
+                    libraryItems.push({ name: 'Дерево', icon: '🌳' });
+                    renderLibrary();
+                }
+            });
+            document.getElementById('add-drop-btn').addEventListener('click', () => {
+                 if (!libraryItems.find(i => i.name === 'Крапля')) {
+                    libraryItems.push({ name: 'Крапля', icon: '💧' });
+                    renderLibrary();
+                }
+            });
+            document.getElementById('import-btn').addEventListener('click', () => {
+                 if (!libraryItems.find(i => i.name === 'Фото лісу')) {
+                    libraryItems.push({ name: 'Фото лісу', icon: '🏞️' });
+                    renderLibrary();
+                }
+            });
+
+            // --- Export ---
+            const exportBtn = document.getElementById('export-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const exportFeedback = document.getElementById('export-feedback');
+
+            exportBtn.addEventListener('click', () => {
+                exportBtn.disabled = true;
+                exportFeedback.textContent = '';
+                progressContainer.classList.remove('hidden');
+                progressBar.style.width = '0%';
+
+                setTimeout(() => { progressBar.style.width = '100%'; }, 100);
+                
+                setTimeout(() => {
+                    exportFeedback.textContent = '✅ Відеофайл "Грибний дощ.mp4" успішно експортовано!';
+                    progressContainer.classList.add('hidden');
+                    exportBtn.disabled = false;
+                }, 1200);
+            });
+
+            // --- Publishing ---
+            const publishBtn = document.getElementById('publish-btn');
+            const publishFeedback = document.getElementById('publish-feedback');
+            publishBtn.addEventListener('click', () => {
+                publishFeedback.textContent = 'Публікація...';
+                setTimeout(() => {
+                    publishFeedback.textContent = '✅ Ваша анімація відправлена на модерацію!';
+                }, 1000);
+            });
+
+            // --- Checklist ---
+            const checklistContainer = document.getElementById('checklist');
+            const checklistItems = [
+                "Запустіть TupiTube, створіть проєкт 'Грибний дощ'.",
+                "Намалюйте гриб, згрупуйте його та додайте до бібліотеки з назвою 'гриб 1'.",
+                "Намалюйте два кущики трави та додайте до бібліотеки.",
+                "Намалюйте дерево та додайте до бібліотеки.",
+                "Намалюйте краплю води та додайте до бібліотеки.",
+                "Збережіть проєкт."
+            ];
+
+            checklistItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'p-4 rounded-lg bg-gray-900/50 border border-gray-700 flex items-center gap-4';
+                div.innerHTML = `
+                    <div class="flex-shrink-0 h-8 w-8 rounded-full border-2 border-pink-500 flex items-center justify-center font-bold text-pink-400">${index + 1}</div>
+                    <span class="text-slate-300">${item}</span>
+                `;
+                checklistContainer.appendChild(div);
+            });
+        });
+    </script>
+</body>
+</html>

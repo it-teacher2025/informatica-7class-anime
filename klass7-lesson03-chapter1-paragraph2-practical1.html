@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #343a40;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #0d6efd; border-bottom-color: #0d6efd; }
+        .card { background-color: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); }
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-weight: 600; text-align: center; transition: background-color 0.3s, transform 0.3s; cursor: pointer; }
+        .btn-primary { background-color: #0d6efd; color: #fff; }
+        .btn-primary:hover { background-color: #0b5ed7; transform: translateY(-2px); }
+        .interactive-hotspot { position: absolute; border: 2px dashed #0d6efd; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
+        .interactive-hotspot:hover { background-color: rgba(13, 110, 253, 0.2); }
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 999; }
+        #modal-content { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; }
+        .checklist-item input:checked + span { text-decoration: line-through; color: #6c757d; }
+
+        /* Стилі для Теоретичного блоку */
+
+        /* Стилі для перевірки знань */
+        .height-learn { height: 900px; }
+        .height300 { height: 300px; }
+        .height420 { height: 420px; }
+
+        .source { padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 1: «Служби Інтернету». Урок № 3. (До § 2, ПР1)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Робота з електронною поштою.<br>Практична робота № 1. «Створення електронної поштової скриньки»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Закріпити знання про призначення та структуру електронної пошти; навчити здійснювати вхід та вихід з поштової скриньки; сформувати практичні навички створення та надсилання електронних листів з текстовим повідомленням та вкладеним файлом; ознайомити з основними папками поштової скриньки.</li>
+                            <li><b>Розвивальна:</b> Розвивати навички ефективної навігації в веб-інтерфейсах; формувати вміння дотримуватися алгоритму дій при виконанні практичних завдань; розвивати уважність до деталей (правильність введення адреси, прикріплення файлів).</li>
+                            <li><b>Виховна:</b> Виховувати відповідальне ставлення до використання власних облікових записів та особистих даних; формувати обережність при роботі в Інтернеті (вихід з облікового запису); заохочувати до самостійного розв'язання практичних завдань.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Виконувати вхід та вихід з власної електронної поштової скриньки.</li>
+                            <li>Створювати нове електронне повідомлення.</li>
+                            <li>Вводити адреси одержувачів (Кому, Копія, Прихована копія).</li>
+                            <li>Заповнювати поле "Тема" листа.</li>
+                            <li>Набирати текст повідомлення та форматувати його.</li>
+                            <li>Прикріплювати файл до електронного листа.</li>
+                            <li>Надсилати електронне повідомлення.</li>
+                            <li>Орієнтуватися в основних папках поштової скриньки ("Вхідні", "Надіслані", "Спам", "Чернетки").</li>
+                            <li>Застосовувати правила безпеки при роботі з електронною поштою (вихід з облікового запису).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок формування практичних умінь та навичок (урок-практикум).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням скріншотів з підручника).</li>
+                            <li>Веб-браузери (Google Chrome, Mozilla Firefox, Microsoft Edge тощо).</li>
+                            <li>Власні електронні поштові скриньки учнів (створені на попередньому уроці або вдома).</li>
+                            <li>Заготовлені невеликі графічні файли (зображення) для вкладення, доступні на комп'ютерах.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Українська мова (оформлення тексту листа, етикет листування).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Назвіть відомі вам служби інтернету.</li>
+                            <li>Які функції виконує поштовий сервер?</li>
+                            <li>Яка структура електронної адреси?</li>
+                            <li>Як створити надійний пароль?</li>
+                            <li>Для чого може знадобитися телефон або адреса додаткової скриньки після реєстрації на поштовому сервері?</li>
+                            <li>Що з наведеного можна змінити після створення поштової скриньки: назву скриньки, прізвище та ім’я користувача / користувачки, пароль?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema1-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 11)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+                    <div class="container mx-auto px-4 flex justify-between items-center py-3">
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">✉️ Робота з E-mail</h1>
+                        <nav class="hidden md:flex space-x-6">
+                            <a href="#login" class="nav-link text-gray-600 hover:text-blue-600 font-medium border-b-2 border-transparent">Вхід</a>
+                            <a href="#interface" class="nav-link text-gray-600 hover:text-blue-600 font-medium border-b-2 border-transparent">Інтерфейс</a>
+                            <a href="#compose" class="nav-link text-gray-600 hover:text-blue-600 font-medium border-b-2 border-transparent">Створення листа</a>
+                            <a href="#practice" class="nav-link text-gray-600 hover:text-blue-600 font-medium border-b-2 border-transparent">Практична робота</a>
+                            <a href="#quiz" class="nav-link text-gray-600 hover:text-blue-600 font-medium border-b-2 border-transparent">Перевірка</a>
+                        </nav>
+                        <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                        </button>
+                    </div>
+                    <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+                        <a href="#login" class="block text-center py-2 text-gray-700 hover:bg-gray-100">Вхід</a>
+                        <a href="#interface" class="block text-center py-2 text-gray-700 hover:bg-gray-100">Інтерфейс</a>
+                        <a href="#compose" class="block text-center py-2 text-gray-700 hover:bg-gray-100">Створення листа</a>
+                        <a href="#practice" class="block text-center py-2 text-gray-700 hover:bg-gray-100">Практична робота</a>
+                        <a href="#quiz" class="block text-center py-2 text-gray-700 hover:bg-gray-100">Перевірка</a>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-8">
+                    <section id="login" class="mb-20 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-gray-800 mb-4">Вхід до поштової скриньки</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-600">На минулому уроці ви дізналися, що таке електронна пошта. Тепер час навчитися нею користуватися! Давайте потренуємось входити до облікового запису в безпечному симуляторі.</p>
+                        </div>
+                        <div class="card max-w-md mx-auto">
+                            <h3 class="text-xl font-semibold mb-4 text-center">Симулятор входу</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="fake-email" class="block font-medium mb-1">Електронна пошта або телефон</label>
+                                    <input type="text" id="fake-email" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500" placeholder="student@gmail.com">
+                                </div>
+                                <div>
+                                    <label for="fake-password" class="block font-medium mb-1">Пароль</label>
+                                    <input type="password" id="fake-password" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
+                                </div>
+                                <button id="fake-login-btn" class="btn btn-primary w-full">Увійти</button>
+                            </div>
+                            <p id="login-feedback" class="text-center mt-4 font-medium min-h-[24px]"></p>
+                        </div>
+                    </section>
+                    
+                    <section id="interface" class="mb-20 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-gray-800">Знайомство з інтерфейсом</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-600">Коли ви входите до своєї пошти, ви бачите головне вікно. Воно схоже у всіх поштових служб. Натискайте на виділені області, щоб дізнатися, за що відповідає кожен елемент.</p>
+                        </div>
+                        <div class="card max-w-4xl mx-auto">
+                            <div class="relative bg-gray-50 p-4 border rounded-lg">
+                                <!-- Fake UI structure -->
+                                <div class="flex gap-4">
+                                    <div class="w-1/4">
+                                        <div class="p-3 rounded-full bg-blue-100 text-blue-800 font-bold mb-4">Написати</div>
+                                        <ul class="space-y-2">
+                                            <li class="p-2 rounded bg-blue-50 font-semibold">Вхідні (3)</li>
+                                            <li class="p-2 rounded hover:bg-gray-100">Надіслані</li>
+                                            <li class="p-2 rounded hover:bg-gray-100">Чернетки</li>
+                                            <li class="p-2 rounded hover:bg-gray-100">Спам</li>
+                                        </ul>
+                                    </div>
+                                    <div class="w-3/4">
+                                        <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                                            <h4 class="font-bold">Вхідні</h4>
+                                            <div class="text-sm text-gray-500">1-50 з 123</div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="p-3 bg-white border rounded-md shadow-sm font-bold">Від: Вчитель інформатики</div>
+                                            <div class="p-3 bg-white border rounded-md shadow-sm">Від: Однокласник</div>
+                                            <div class="p-3 bg-white border rounded-md shadow-sm">Від: Google</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Hotspots -->
+                                <div data-title="Написати" data-text="Ця кнопка відкриває вікно для створення нового електронного листа." class="interactive-hotspot" style="top: 25px; left: 3%; width: 23%; height: 45px;"></div>
+                                <div data-title="Папки" data-text="Тут знаходяться всі ваші листи, відсортовані за папками: 'Вхідні' (нові листи), 'Надіслані' (які ви відправили), 'Спам' (небажані листи) та інші." class="interactive-hotspot" style="top: 80px; left: 3%; width: 23%; height: 160px;"></div>
+                                <div data-title="Список листів" data-text="Це головна частина вікна, де ви бачите список отриманих листів. Нові або непрочитані листи зазвичай виділені жирним шрифтом." class="interactive-hotspot" style="top: 80px; left: 30%; width: 68%; height: 160px;"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="compose" class="mb-20 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-gray-800">Створення електронного листа</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-600">Написати лист дуже просто. Заповніть основні поля в симуляторі нижче, щоб побачити, як це працює. Це допоможе вам підготуватися до практичної роботи.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-4">Симулятор створення листа</h3>
+                            <div class="space-y-3 p-4 border rounded-lg bg-gray-50">
+                                <div>
+                                    <label for="compose-to" class="text-gray-600">Кому:</label>
+                                    <input id="compose-to" type="text" class="w-full p-2 mt-1 border-b bg-transparent" placeholder="адреса_отримувача@example.com">
+                                </div>
+                                <div>
+                                    <label for="compose-subject" class="text-gray-600">Тема:</label>
+                                    <input id="compose-subject" type="text" class="w-full p-2 mt-1 border-b bg-transparent" placeholder="Тема вашого листа">
+                                </div>
+                                <div>
+                                    <label for="compose-body" class="text-gray-600">Тіло листа:</label>
+                                    <textarea id="compose-body" rows="5" class="w-full p-2 mt-1 border rounded-md bg-white" placeholder="Напишіть своє повідомлення тут..."></textarea>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <button id="attach-btn" class="p-2 rounded-md hover:bg-gray-200">📎 Прикріпити файл</button>
+                                    <button class="btn btn-primary">Надіслати</button>
+                                </div>
+                                <p id="attach-feedback" class="text-sm text-green-600 font-medium min-h-[20px]"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="practice" class="mb-20 scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-gray-800">Практична робота</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-600">Час застосувати знання на практиці! Виконайте завдання, відмічаючи кожен крок. Це допоможе вам не заплутатися і успішно виконати роботу.</p>
+                        </div>
+                        <div class="card max-w-3xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-2">Завдання: Створення та надсилання листа</h3>
+                            <p class="mb-6 text-gray-600">Створіть електронну поштову скриньку на сервері gmail.com (якщо ще не створена); оформіть та надішліть листа зі вкладеним графічним файлом кільком особам.</p>
+                            <div class="space-y-4">
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">1. Відкрити браузер і зайти на сторінку створення облікового запису Google.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">2. Створити обліковий запис, ввівши потрібні дані.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">3. Увійти до поштової скриньки Gmail.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">4. Натиснути "Написати" і ввести текст: "Доброго дня. Це мій обліковий запис Google."</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">5. У рядку "Тема" вписати своє прізвище, ім'я та клас.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">6. Прикріпити до листа графічний файл з комп'ютера.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">7. У рядку "Одержувачі" вписати адресу вчителя та однокласника.</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-gray-700">8. Натиснути "Надіслати".</span>
+                                </label>
+                                <label class="checklist-item flex items-center p-3 rounded-lg bg-red-50 hover:bg-red-100 cursor-pointer">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                    <span class="ml-3 text-red-700 font-bold">9. Вийти з поштової скриньки. Завершити роботу.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="quiz" class="scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-gray-800">Перевірка знань</h2>
+                            <p class="text-lg max-w-3xl mx-auto text-gray-600">Закріпимо матеріал! Дайте відповідь на кілька запитань, щоб перевірити, як добре ви засвоїли тему.</p>
+                        </div>
+                        <div id="quiz-container" class="card max-w-2xl mx-auto">
+                            <!-- Quiz questions will be injected here by JS -->
+                            <div id="quiz-start">
+                                <p class="text-center mb-4">Тест складається з 3 питань.</p>
+                                <button id="start-quiz-btn" class="btn btn-primary w-full max-w-xs mx-auto block">Почати тест</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div id="modal-overlay" class="hidden"></div>
+                <div id="modal-content" class="card max-w-sm w-full hidden">
+                    <h3 id="modal-title" class="text-xl font-bold mb-2">,</h3>
+                    <p id="modal-text"></p>
+                    <button id="modal-close-btn" class="btn btn-primary mt-4 w-full">Зрозуміло</button>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height300">1. Опишіть переваги електронної пошти порівняно з «паперовою» поштою або з іншим засобом комунікації.</div><div class="flip-card-back bg-green-200 height300">Згідно з текстом, електронна пошта має такі переваги:<br>- Можливість безперешкодно відправити повідомлення на будь-яку поштову адресу.<br>- Можливість користування інтернет-сервісами залежить від електронної пошти; реєстрація на більшості з них передбачає наявність скриньки.<br>- Понад 50 років існування поштового сервісу свідчать про те, що електронна пошта є надійним засобом комунікації.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height420">2. Як увійти до власної поштової скриньки та як із неї вийти?</div><div class="flip-card-back bg-green-200 height420">Вхід до скриньки:<br>1. В адресному рядку браузера потрібно ввести адресу поштового сервера, на якому створено скриньку, або ж натиснути кнопку реєстрації/входу до скриньки.<br>2. Ввести назву скриньки (логін) або адресу скриньки.<br>3. Ввести пароль і натиснути кнопку «Увійти».<br><br>Вихід зі скриньки:<br>Після завершення роботи на чужому комп'ютері або обліковому записі, необхідно вийти з електронної пошти. Це робиться за допомогою кнопки «Вихід» або схожих команд, що зазвичай розташована окремо або відкривається за меню у вигляді ⋮, ≡ або ⚙️ та знаходиться у правому верхньому кутку вікна скриньки.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height300">3. Який порядок створення та надсилання електронного листа?</div><div class="flip-card-back bg-green-200 height300">Для створення та надсилання електронного листа потрібно:<br>1. Натиснути кнопку «Написати» або «Написати листа».<br>2. Набрати текст повідомлення в тілі листа.<br>3. Зазначити тему листа (поле «Тема») та адресу отримувача (поле «Кому»).<br>4. За потреби додати адреси інших отримувачів у поля «Кому», «Копія» або «Прихована копія».<br>5. Натиснути кнопку «Надіслати».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height300">4. Поміркуйте, навіщо в електронному листі потрібне поле Тема. Знайдіть відповідь в інтернеті.</div><div class="flip-card-back bg-green-200 height300">Поле «Тема» допомагає одержувачу швидко зрозуміти, про що йдеться в листі, ще до його відкриття. Це дозволяє йому пріоритезувати листи, фільтрувати спам і легше знаходити потрібну кореспонденцію пізніше. Гарно сформульована тема підвищує ймовірність того, що лист буде прочитаний.<br><br>Примітка: Інформація про призначення поля «Тема» не міститься у наданих скріншотах, тому для відповіді використовується інтернет-пошук, як зазначено в запитанні.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">5. Які стандартні папки існують у поштовій скриньці?</div><div class="flip-card-back bg-green-200">У поштовій скриньці існують такі стандартні папки:<br>- Вхідні — для отриманих листів.<br>- Відправлені — для надісланих листів.<br>- Видалені — для видалених листів.<br>- Спам — для небажаних листів.<br>- Чернетки — для ненадісланих листів.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height300">6. Як створити папку в поштовій скриньці і перемістити до неї листа?</div><div class="flip-card-back bg-green-200 height300">Згідно з наданим скріншотом, щоб створити папку і перемістити до неї лист, потрібно скористатися командою «Керування папками».<br>Щоб перемістити листа, його потрібно спочатку відкрити або позначити в списку прапорцем. Після цього лист можна перенести до потрібної папки:<br>- Перетягуванням теми листа на назву папки.<br>- За допомогою команди «Перемістити», що знаходиться над списком листів.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 16)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 2 (стор. 12-16).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 2 (стор. 17-18).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/FifMwyH6_IA?si=DNr1h4ggnJ37GA-g" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/FifMwyH6_IA</a></li>
+                                    <li>Виконати практичну роботу № 1 (стор. 17-18).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/NWFMZvLXbnI?si=vwSzifZcKZF__xI9" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/NWFMZvLXbnI</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 2: <a href="https://ua.izzi.digital/DOS/750894/751724.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751724.html</a></li>
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 1: <a href="https://ua.izzi.digital/DOS/750894/1073966.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1073966.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 2, стор. 12-17; ПР1, стор. 17-18)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 2: <a href="https://ua.izzi.digital/DOS/750894/751724.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751724.html</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 1: <a href="https://ua.izzi.digital/DOS/750894/1073966.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1073966.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [2, 3, 4, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // --- Navigation ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mobileMenu.classList.add('hidden');
+                    let target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('header nav a');
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 120) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active', 'text-blue-600');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active', 'text-blue-600');
+                    }
+                });
+            };
+
+            // --- Fake Login ---
+            const fakeLoginBtn = document.getElementById('fake-login-btn');
+            const loginFeedback = document.getElementById('login-feedback');
+            fakeLoginBtn.addEventListener('click', () => {
+                loginFeedback.textContent = 'Перевірка даних...';
+                loginFeedback.classList.remove('text-red-600');
+                loginFeedback.classList.add('text-gray-600');
+                setTimeout(() => {
+                    if(document.getElementById('fake-email').value && document.getElementById('fake-password').value) {
+                         loginFeedback.textContent = 'Успішний вхід! Перенаправлення...';
+                         loginFeedback.classList.remove('text-red-600', 'text-gray-600');
+                         loginFeedback.classList.add('text-green-600');
+                    } else {
+                         loginFeedback.textContent = 'Будь ласка, заповніть усі поля.';
+                         loginFeedback.classList.remove('text-green-600', 'text-gray-600');
+                         loginFeedback.classList.add('text-red-600');
+                    }
+                }, 1000);
+            });
+
+            // --- Interactive Interface ---
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            document.querySelectorAll('.interactive-hotspot').forEach(hotspot => {
+                hotspot.addEventListener('click', () => {
+                    modalTitle.textContent = hotspot.dataset.title;
+                    modalText.textContent = hotspot.dataset.text;
+                    modalOverlay.classList.remove('hidden');
+                    modalContent.classList.remove('hidden');
+                });
+            });
+
+            function closeModal() {
+                modalOverlay.classList.add('hidden');
+                modalContent.classList.add('hidden');
+            }
+            modalOverlay.addEventListener('click', closeModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            
+            // --- Compose Simulator ---
+            const attachBtn = document.getElementById('attach-btn');
+            const attachFeedback = document.getElementById('attach-feedback');
+            attachBtn.addEventListener('click', () => {
+                attachFeedback.textContent = 'Файл "my_picture.jpg" успішно прикріплено!';
+                setTimeout(() => { attachFeedback.textContent = ''; }, 3000);
+            });
+
+            // --- Quiz Logic ---
+            const quizData = [
+                {
+                    question: "Що робить кнопка з іконкою скріпки (📎) при написанні листа?",
+                    options: ["Видаляє лист", "Прикріплює файл", "Зберігає як чернетку"],
+                    correct: 1
+                },
+                {
+                    question: "В якій папці зазвичай знаходяться листи, які ви отримали?",
+                    options: ["Надіслані", "Спам", "Вхідні"],
+                    correct: 2
+                },
+                {
+                    question: "Чому важливо натискати 'Вихід' після роботи з поштою на чужому комп'ютері?",
+                    options: ["Щоб комп'ютер працював швидше", "Щоб ніхто інший не отримав доступ до вашої пошти", "Щоб видалити всі листи"],
+                    correct: 1
+                }
+            ];
+
+            const quizContainer = document.getElementById('quiz-container');
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            startQuizBtn.addEventListener('click', startQuiz);
+
+            function startQuiz() {
+                currentQuestionIndex = 0;
+                score = 0;
+                showQuestion();
+            }
+
+            function showQuestion() {
+                const q = quizData[currentQuestionIndex];
+                quizContainer.innerHTML = `
+                    <p class="font-semibold text-lg mb-4">${currentQuestionIndex + 1}. ${q.question}</p>
+                    <div class="space-y-3">
+                        ${q.options.map((option, index) => `
+                            <button data-index="${index}" class="quiz-option block w-full text-left p-3 border rounded-lg hover:bg-gray-100">${option}</button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            quizContainer.addEventListener('click', function(e) {
+                if(e.target.classList.contains('quiz-option')) {
+                    const selectedIndex = parseInt(e.target.dataset.index);
+                    const correctIndex = quizData[currentQuestionIndex].correct;
+                    
+                    if(selectedIndex === correctIndex) {
+                        score++;
+                        e.target.classList.add('bg-green-100', 'border-green-500');
+                    } else {
+                        e.target.classList.add('bg-red-100', 'border-red-500');
+                    }
+                    
+                    quizContainer.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+                    
+                    setTimeout(() => {
+                        currentQuestionIndex++;
+                        if(currentQuestionIndex < quizData.length) {
+                            showQuestion();
+                        } else {
+                            showResults();
+                        }
+                    }, 1200);
+                }
+            });
+
+            function showResults() {
+                quizContainer.innerHTML = `
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4">Тест завершено!</h3>
+                        <p class="text-xl mb-4">Ваш результат: <span class="font-bold">${score}</span> з ${quizData.length}</p>
+                        <p class="mb-6">${score === quizData.length ? 'Чудово! Ви все засвоїли!' : 'Непогано! Спробуйте ще раз, щоб покращити результат.'}</p>
+                        <button id="restart-quiz-btn" class="btn btn-primary">Спробувати ще раз</button>
+                    </div>
+                `;
+                document.getElementById('restart-quiz-btn').addEventListener('click', startQuiz);
+            }
+
+        });
+    </script>
+</body>
+</html>

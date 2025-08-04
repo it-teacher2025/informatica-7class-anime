@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Умовне форматування</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cool Blue -->
+    <!-- Application Structure Plan: A tab-based SPA for a structured, non-linear learning experience. The core interactive element is the "Formatting Lab" on the Theory tab. It allows students to apply various conditional formatting rules (greater than, text contains, color scales) to a sample data grid and see the results instantly. This active learning approach is more effective for understanding data visualization rules than static text. The practical work is also interactive, allowing students to apply the lesson's rules to a dataset with a button click. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata (Goals, Outcomes): Goal: Inform. Method: Styled cards with Unicode icons. Justification: Provides a quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Visually communicates the priority of each learning group.
+        - Conditional Formatting Concepts: Goal: Explore/Understand. Method: "Formatting Lab" simulator. Interaction: User clicks buttons to apply different formatting rules to a grid of cells. The UI dynamically updates cell styles (background color, text color) using JS. A reset button allows for easy experimentation. Justification: Makes the abstract concept of rule-based formatting tangible and interactive.
+        - Practical Work (Exercise 26): Goal: Apply. Method: An interactive HTML table. Interaction: A "Apply Formatting" button uses JS to apply the specific rules from the exercise (coloring cells for 1st, 2nd, 3rd place) to the pre-filled table. Justification: Focuses on the application and results of conditional formatting in a real-world context.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards. Justification: A simple and engaging self-assessment tool.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #3b82f6; background-color: #3b82f6; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        /* Specific styling for formatting lab cells */
+        .lab-cell { transition: all 0.3s ease-in-out; }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 36. (До § 26)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Умовне форматування</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практика</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з поняттям та призначенням умовного форматування, навчити застосовувати стандартні та власні правила.</li>
+                        <li><b>Розвивальна:</b> Розвивати візуальне та аналітичне мислення, вміння виділяти ключові дані за критеріями.</li>
+                        <li><b>Виховна:</b> Виховувати естетичний смак при оформленні таблиць, формувати інтерес до ефективної презентації даних.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати призначення умовного форматування.</li>
+                        <li>Застосовувати стандартні правила.</li>
+                        <li>Створювати власні правила на основі умов.</li>
+                        <li>Використовувати форматування для візуалізації даних.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення умовного форматування та демонстрації прийомів роботи).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (порівняння чисел, відсотки).</li>
+                        <li>Образотворче мистецтво/Дизайн (кольорові схеми, візуалізація).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Чим логічні функції відрізняються від математичних?</li>
+                            <li>Що робить функція IF?</li>
+                            <li>Коли функція AND повертає TRUE (ІСТИНА)?</li>
+                            <li>Коли функція OR повертає TRUE (ІСТИНА)?</li>
+                            <li>Наведіть приклад складного логічного виразу.</li>
+                            <li>Що таке вкладена функція IF?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-3.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-2 text-center text-blue-600">Лабораторія форматування</h3>
+                <p class="text-center text-slate-600 mb-6">Натисніть на кнопки, щоб застосувати різні правила умовного форматування до таблиці.</p>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1">
+                        <h4 class="font-semibold mb-2">Правила</h4>
+                        <div class="space-y-2">
+                            <button data-rule="greater_than_5" class="w-full text-left p-2 bg-slate-100 hover:bg-slate-200 rounded transition">Виділити > 5</button>
+                            <button data-rule="less_than_3" class="w-full text-left p-2 bg-slate-100 hover:bg-slate-200 rounded transition">Виділити < 3</button>
+                            <button data-rule="text_contains_A" class="w-full text-left p-2 bg-slate-100 hover:bg-slate-200 rounded transition">Текст містить "А"</button>
+                            <button data-rule="color_scale" class="w-full text-left p-2 bg-slate-100 hover:bg-slate-200 rounded transition">Кольорові шкали</button>
+                            <button data-rule="reset" class="w-full text-left p-2 bg-red-100 hover:bg-red-200 rounded transition font-semibold mt-4">Скинути форматування</button>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 bg-slate-50 p-4 rounded-lg border">
+                        <div id="lab-grid" class="grid grid-cols-4 gap-2 text-center">
+                            <!-- Cells will be generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+               <div class="bg-white p-6 rounded-xl shadow-md">
+                   <h3 class="text-2xl font-bold mb-4 text-blue-600">Практична робота: Вправа 26</h3>
+                   <p class="text-slate-600 mb-6">Завдання: Створити таблицю та унаочнити результати олімпіад за допомогою умовного форматування.</p>
+                   <div class="overflow-x-auto">
+                       <table id="olympiad-table" class="min-w-full border-collapse text-sm text-center">
+                             <thead>
+                                 <tr class="bg-slate-100">
+                                     <th class="border p-2">Рік</th>
+                                     <th class="border p-2">Математика</th>
+                                     <th class="border p-2">Фізика</th>
+                                     <th class="border p-2">Хімія</th>
+                                     <th class="border p-2">Біологія</th>
+                                     <th class="border p-2">Інформатика</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <!-- Data will be injected here by JS -->
+                             </tbody>
+                       </table>
+                   </div>
+                   <button id="format-olympiad-btn" class="mt-6 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">Застосувати форматування</button>
+               </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-blue-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-blue-100">Що таке умовне форматування?</div><div class="flip-card-back bg-blue-200">Автоматична зміна формату клітинки (колір, шрифт) залежно від її вмісту або певної умови.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-blue-100">Як призначити клітинці умовний формат?</div><div class="flip-card-back bg-blue-200">Виділити діапазон, потім обрати меню Основне → Стилі → Умовне форматування та обрати правило.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-blue-100">Що відбудеться, якщо два правила суперечать одне одному?</div><div class="flip-card-back bg-blue-200">Застосується те правило, яке було встановлено останнім, або те, що має вищий пріоритет у списку правил.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-blue-100">Наведіть приклад умови для форматування.</div><div class="flip-card-back bg-blue-200">"Значення клітинки більше 100", "Текст містить слово 'успішно'", "Значення входить до 10% найбільших".</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 26 (стор. 155-156).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 26 (стор. 157).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/d012Jhiejsw?si=NY1Dujc7VGZ1I6k8" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/d012Jhiejsw</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 26: <a href="https://ua.izzi.digital/DOS/750894/932384.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932384.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 26, стор. 155-157)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 26: <a href="https://ua.izzi.digital/DOS/750894/932384.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932384.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Formatting Lab Logic
+            const labGrid = document.getElementById('lab-grid');
+            // Sample data for the formatting lab. Includes numbers and text to demonstrate different rules.
+            const labData = [5, 2, 'A', 8, 1, 9, 4, 'B', 7, 3, 'C', 6];
+            // Base classes for each cell, used for resetting formatting.
+            const originalClasses = 'lab-cell p-4 border rounded bg-white';
+
+            /**
+             * Renders the initial state of the formatting lab grid.
+             * Populates the grid with cells based on `labData`.
+             */
+            function renderLabGrid() {
+                labGrid.innerHTML = ''; // Clear existing cells
+                labData.forEach(item => {
+                    const cell = document.createElement('div');
+                    cell.className = originalClasses; // Apply base styling
+                    cell.textContent = item; // Set cell content
+                    labGrid.appendChild(cell); // Add cell to the grid
+                });
+            }
+            renderLabGrid(); // Initial render of the lab grid on page load
+
+            // Event listeners for formatting rule buttons in the "Formatting Lab"
+            document.querySelectorAll('[data-rule]').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const rule = e.target.dataset.rule; // Get the rule name from data-rule attribute
+                    const cells = labGrid.children; // Get all cells in the lab grid
+                    
+                    // Step 1: Reset all cells to their original state before applying a new rule.
+                    for (let cell of cells) {
+                        cell.className = originalClasses; // Revert to base styling
+                    }
+
+                    // Step 2: Apply the selected formatting rule.
+                    switch (rule) {
+                        case 'greater_than_5':
+                            for (let cell of cells) {
+                                // Check if content is a number and greater than 5
+                                if (!isNaN(cell.textContent) && parseInt(cell.textContent) > 5) {
+                                    cell.classList.add('bg-blue-200', 'text-blue-800', 'font-bold'); // Apply blue highlight
+                                }
+                            }
+                            break;
+                        case 'less_than_3':
+                            for (let cell of cells) {
+                                // Check if content is a number and less than 3
+                                if (!isNaN(cell.textContent) && parseInt(cell.textContent) < 3) {
+                                    cell.classList.add('bg-red-200', 'text-red-800', 'font-bold'); // Apply red highlight
+                                }
+                            }
+                            break;
+                        case 'text_contains_A':
+                            for (let cell of cells) {
+                                // Check if content is text (not a number) and contains 'A'
+                                if (isNaN(cell.textContent) && cell.textContent.includes('A')) {
+                                    cell.classList.add('bg-yellow-200', 'text-yellow-800', 'font-bold'); // Apply yellow highlight
+                                }
+                            }
+                            break;
+                        case 'color_scale':
+                            // Define a range of colors for the scale (from red to green, 1 to 10)
+                            const colorClasses = ['bg-red-100', 'bg-red-50', 'bg-orange-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-green-100', 'bg-green-200', 'bg-green-300', 'bg-green-400'];
+                            for (let cell of cells) {
+                                if (!isNaN(cell.textContent)) { // Apply only to numeric cells
+                                    const value = parseInt(cell.textContent);
+                                    // Map value (1-10) to a specific color class
+                                    if(value >= 1 && value <= 10) {
+                                        cell.classList.add(colorClasses[value-1]); // value-1 because array is 0-indexed
+                                    }
+                                }
+                            }
+                            break;
+                        case 'reset':
+                            // No action needed here, as reset is handled at the beginning of the function.
+                            break;
+                    }
+                });
+            });
+
+            // Practice Work Logic (Olympiad Table Formatting)
+            const olympiadData = [
+                { year: 2020, results: [2, 4, 3, 4, 1] }, // [Математика, Фізика, Хімія, Біологія, Інформатика]
+                { year: 2021, results: [4, 3, 2, 2, 1] },
+                { year: 2022, results: [2, 3, 1, 7, 1] },
+                { year: 2023, results: [3, 3, 2, 5, 3] },
+            ];
+            const olympiadTableBody = document.querySelector('#olympiad-table tbody');
+
+            // Populate the Olympiad table with initial data
+            olympiadData.forEach(row_data => {
+                const row = document.createElement('tr');
+                // First cell is the year, then map results to cells
+                row.innerHTML = `<td class="border p-2 font-semibold">${row_data.year}</td>` + 
+                                row_data.results.map(res => `<td class="border p-2">${res}</td>`).join('');
+                olympiadTableBody.appendChild(row);
+            });
+            
+            // Event listener for the "Apply Formatting" button in the Practice section
+            document.getElementById('format-olympiad-btn').addEventListener('click', () => {
+                const cells = olympiadTableBody.querySelectorAll('td'); // Get all cells in the table body
+                cells.forEach(cell => {
+                    // Reset any previous formatting before applying new rules
+                    cell.classList.remove('bg-red-300', 'bg-green-300', 'bg-yellow-300', 'font-bold', 'text-blue-700');
+
+                    // Skip the year column (first column in each row, which is text)
+                    if (isNaN(cell.textContent)) return; 
+                    
+                    const value = parseInt(cell.textContent); // Get cell value as integer
+
+                    // Apply specific formatting based on the value (1st, 2nd, 3rd place)
+                    if (value === 1) cell.classList.add('bg-red-300', 'font-bold');        // 1st place (red background, bold text)
+                    else if (value === 2) cell.classList.add('bg-green-300', 'font-bold');     // 2nd place (green background, bold text)
+                    else if (value === 3) cell.classList.add('bg-yellow-300', 'font-bold');    // 3rd place (yellow background, bold text)
+                });
+            });
+
+            // Chart.js for NUШ results visualization (already present and functional)
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

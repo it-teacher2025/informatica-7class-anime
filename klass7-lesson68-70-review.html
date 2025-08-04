@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Підсункові уроки</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #403d39;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .mission-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .mission-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .hidden-section { display: none; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+        .mindmap-node {
+            position: absolute;
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 20px;
+            background-color: white;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .connector {
+            position: absolute;
+            height: 2px;
+            background-color: #cbd5e1;
+            transform-origin: left;
+            width: 0;
+            transition: width 0.7s ease;
+            z-index: -1;
+        }
+
+        .task-card { background-color: #ffffff; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .level-high { background-color: #dcfce7; }
+        .level-low { background-color: #fee2e2; }
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Узагальнення навчального матеріалу з інформатики за навчальний рік. Уроки № 68-70.</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Узагальнення навчального матеріалу з інформатики за навчальний рік</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивні завдання</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Систематизувати та узагальнити теоретичні знання та практичні вміння учнів з усіх ключових тем курсу інформатики 7 класу: "Служби інтернету", "Комп'ютерна анімація", "Моделі та моделювання", "Опрацювання табличних даних", "Алгоритми та програми". Перевірити рівень засвоєння навчального матеріалу та сформованість ключових компетентностей.</li>
+                            <li><b>Розвивальна:</b> Розвивати системне, аналітичне, логічне та алгоритмічне мислення; формувати вміння застосовувати комплексні знання для розв'язання різноманітних практичних задач; розвивати самостійність у прийнятті рішень, пошуку ефективних шляхів розв'язання та вдосконалювати навички самоконтролю та самооцінки.</li>
+                            <li><b>Виховна:</b> Виховувати відповідальність за результати своєї роботи, наполегливість у досягненні мети, уважність та акуратність при роботі з інформацією та програмним кодом; формувати інтерес до подальшого вивчення інформатики та використання ІТ у повсякденному житті.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>З теми <b>"Служби інтернету"</b> Демонструвати навички безпечної роботи в мережі, використовувати електронну пошту та хмарні технології для колективної роботи.</li>
+                            <li>З теми <b>"Комп'ютерна анімація"</b>: Пояснювати принципи анімації та створювати прості анімаційні проєкти.</li>
+                            <li>З теми <b>"Моделі та моделювання"</b>: Розрізняти типи моделей, будувати інформаційні та математичні моделі, створювати карти знань.</li>
+                            <li>З теми <b>"Опрацювання табличних даних"</b>: Самостійно створювати та форматувати електронні таблиці, використовувати формули, вбудовані функції (логічні, статистичні), умовне форматування та будувати діаграми.</li>
+                            <li>З теми <b>"Алгоритми та програми"</b>: Застосовувати знання про етапи розв'язування задач, використовувати різні типи даних, створювати програми з розгалуженнями, циклами, опрацьовувати рядкові дані та списки, використовувати функції користувача та базові елементи GUI.</li>
+                            <li>Загальні: Тестувати, налагоджувати та оцінювати власні інформаційні продукти; робити висновки про застосування інформаційних технологій у різних сферах.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок контролю та корекції знань, умінь і навичок (комплексна підсумкова практична робота).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з встановленим необхідним програмним забезпеченням:
+                                <ul>
+                                    <li>-&#160;&#160;&#160;&#160;Браузер (для роботи зі службами інтернету, хмарними технологіями).</li>
+                                    <li>-&#160;&#160;&#160;&#160;Табличний процесор (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                                    <li>-&#160;&#160;&#160;&#160;Середовище програмування Python (IDLE).</li>
+                                    <li>-&#160;&#160;&#160;&#160;Програма для створення анімації (наприклад, TupiTube, якщо використовувався).</li>
+                                    <li>-&#160;&#160;&#160;&#160;Програма для створення карт знань (якщо використовувалася).</li>
+                                </ul>
+                            </li>
+                            <li>Завдання для підсумкової роботи (роздруковані або виведені на екран).</li>
+                            <li>Проєктор або інтерактивна дошка (для демонстрації критеріїв оцінювання).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика: обчислення, логіка, моделювання, послідовності.</li>
+                            <li>Українська мова: робота з текстом, формулювання, комунікація, загадки.</li>
+                            <li>Природознавство/Біологія/Фізика: моделювання природних процесів, аналіз даних.</li>
+                            <li>Мистецтво: комп'ютерна анімація, графіка, дизайн.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ul>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Тема "Служби інтернету"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>Які основні правила безпечної поведінки в Інтернеті ви пам'ятаєте? Чому їх важливо дотримуватися?</li>
+                                    <li>Наведіть приклади хмарних технологій, якими ви користувалися, і поясніть, для чого вони потрібні.</li>
+                                    <li>Що таке електронна пошта і які її переваги порівняно зі звичайною поштою?</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Тема "Комп'ютерна анімація"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>Поясніть, що таке анімація і який її основний принцип?</li>
+                                    <li>Назвіть два способи створення анімації (наприклад, покадрова, автоматична) та коротко опишіть їх.</li>
+                                    <li>Для чого в програмах для створення анімації використовуються шари?</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Тема "Моделі та моделювання"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>Що таке модель і для чого люди створюють моделі в різних сферах життя?</li>
+                                    <li>Чим відрізняється матеріальна модель від інформаційної? Наведіть приклади.</li>
+                                    <li>Які форми подання інформаційних моделей ви знаєте (наприклад, словесна, графічна, таблична)?</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Тема "Опрацювання табличних даних"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>Які основні елементи електронної таблиці ви знаєте (наприклад, комірка, рядок, стовпець)?</li>
+                                    <li>Для чого в електронних таблицях використовуються формули та вбудовані функції? Наведіть приклад функції.</li>
+                                    <li>Як умовне форматування допомагає візуалізувати та аналізувати дані в таблицях?</li>
+                                </ol>
+                            </li><br>
+                            <li><h3 class="text-xl font-bold mb-3 text-blue-600">✅ Тема "Алгоритми та програми"</h3>
+                                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                                    <li>Назвіть основні алгоритмічні структури, які ми вивчали (слідування, розгалуження, повторення).</li>
+                                    <li>Для чого в програмах використовуються цикли? Наведіть приклад задачі, де потрібен цикл.</li>
+                                    <li>Чим відрізняється рядок від списку в програмуванні на Python?</li>
+                                </ol>
+                            </li>
+                        </ul>
+
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img02.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="space-y-8">
+                    <!-- Task 1: Spreadsheets -->
+                    <div class="task-card">
+                        <h3 class="text-2xl font-bold mb-4 text-indigo-600">Завдання 1: Опрацювання табличних даних</h3>
+                        <p class="text-slate-600 mb-4">Створіть таблицю "Моніторинг екології міста". Додайте дані про рівень забруднення, щоб побачити автоматичні розрахунки та оновлення діаграми.</p>
+                        <div class="grid lg:grid-cols-5 gap-4 mb-4 items-end">
+                            <input type="text" id="district-name" placeholder="Назва району" class="lg:col-span-2 p-2 border rounded-lg">
+                            <input type="number" id="pollution-level" placeholder="Рівень забруднення" class="p-2 border rounded-lg">
+                            <button id="add-district-btn" class="lg:col-span-2 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Додати дані</button>
+                        </div>
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border">
+                                    <thead class="bg-slate-100"><tr><th class="p-2 border-b">Район</th><th class="p-2 border-b">Рівень забруднення</th></tr></thead>
+                                    <tbody id="ecology-table-body"></tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <p class="font-semibold mb-2">Середній рівень забруднення: <span id="avg-pollution" class="font-bold text-indigo-600">0</span></p>
+                                <div class="chart-container relative h-56 w-full">
+                                    <canvas id="pollutionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Task 2: Python -->
+                    <div class="task-card">
+                        <h3 class="text-2xl font-bold mb-4 text-indigo-600">Завдання 2: Алгоритми та програми</h3>
+                        <p class="text-slate-600 mb-4">Напишіть програму, яка запитує улюблений колір та число, а потім виводить колір вказану кількість разів (великими літерами для парних чисел, малими для непарних).</p>
+                        <div class="grid lg:grid-cols-3 gap-4 items-end">
+                            <input type="text" id="fav-color" placeholder="Улюблений колір" class="p-2 border rounded-lg">
+                            <input type="number" id="repeat-count" placeholder="Число" class="p-2 border rounded-lg">
+                            <button id="run-python-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Виконати</button>
+                        </div>
+                        <pre id="python-output" class="w-full mt-4 p-3 border rounded-lg font-mono text-sm h-32 bg-slate-800 text-green-300 overflow-auto whitespace-pre-wrap"></pre>
+                    </div>
+                     <!-- Other Tasks -->
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="task-card">
+                            <h3 class="text-xl font-bold mb-4 text-indigo-600">Завдання 3: Служби Інтернету</h3>
+                            <p class="text-slate-600 mb-2">Напишіть 3 правила безпечного користування електронною поштою.</p>
+                            <textarea id="email-rules" rows="3" class="w-full p-2 border rounded-lg" placeholder="1. ..."></textarea>
+                        </div>
+                        <div class="task-card">
+                            <h3 class="text-xl font-bold mb-4 text-indigo-600">Завдання 4: Комп'ютерна анімація</h3>
+                            <p class="text-slate-600 mb-2">Який принцип анімації (покадрова чи автоматична) краще підходить для створення плавного руху об'єкта між двома точками?</p>
+                            <input type="text" id="animation-answer" class="w-full p-2 border rounded-lg" placeholder="Ваша відповідь...">
+                        </div>
+                        <div class="task-card">
+                            <h3 class="text-xl font-bold mb-4 text-indigo-600">Завдання 5: Моделі та моделювання</h3>
+                            <p class="text-slate-600 mb-2">Назвіть 3 властивості для інформаційної моделі "Учень".</p>
+                            <input type="text" id="model-properties" class="w-full p-2 border rounded-lg" placeholder="1. ..., 2. ..., 3. ...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Що таке хмарні технології?</div><div class="flip-card-back bg-indigo-200 p-4">Це технології, що дозволяють зберігати дані та запускати програми на віддалених серверах в Інтернеті.</div></div></div>
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Назвіть два основних принципи анімації.</div><div class="flip-card-back bg-indigo-200 p-4">Покадрова (малювання кожного кадру) та автоматична (за ключовими кадрами).</div></div></div>
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Що таке математична модель?</div><div class="flip-card-back bg-indigo-200 p-4">Це опис об'єкта або процесу за допомогою математичних формул та співвідношень.</div></div></div>
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Яка функція в електронних таблицях знаходить середнє значення?</div><div class="flip-card-back bg-indigo-200 p-4">`AVERAGE` (СЕРЕДНЄ).</div></div></div>
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Для чого в Python використовується цикл `for`?</div><div class="flip-card-back bg-indigo-200 p-4">Для повторення блоку коду визначену кількість разів, наприклад, для перебору елементів списку.</div></div></div>
+                        <div class="flip-card h-56"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Що робить оператор `if-else` в програмуванні?</div><div class="flip-card-back bg-indigo-200 p-4">Він створює розгалуження: виконує один блок коду, якщо умова істинна, і інший — якщо хибна.</div></div></div>
+                    </div>
+            </div>
+
+<!-- 
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>"Яке завдання було для вас найцікавішим/найскладнішим у сьогоднішній роботі?"</li>
+                            <li>"Які навички, отримані на цих уроках, ви вважаєте найкориснішими для себе в повсякденному житті та навчанні?"</li>
+                            <li>"Чи відчуваєте ви себе більш впевнено в цифровому світі після вивчення цих тем?"</li>
+                        </ol>
+
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema1-1.png" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div> -->
+
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <div>
+                                <p><b>1. Теоретична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Подивитись відеоурок з кібербезпеки: <a href="https://www.youtube.com/live/eVYrBbDpTz0" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/live/eVYrBbDpTz0</a></li>
+                                    <li>Подивитись відеоуроки з кібергігієни "Час захистити свої дані": <a href="https://youtube.com/playlist?list=PLkuYF7Wu1pwIcIEs9MHpFas96-Hp3u0JI&si=zU_IxnC0LYX0ejGQ" target="_blank" class="text-blue-600 hover:underline">https://youtube.com/playlist?list=PLkuYF7Wu1pwIcIEs9MHpFas96-Hp3u0JI&si=zU_IxnC0LYX0ejGQ</a></li>
+                                    <li>Подивитись пам'ятку "Як убезпечити себе від шахраїв": <a href="https://drive.google.com/file/d/1PAXzqbO9zAq_zcXCt3tRRCXr838rrgh4/view" target="_blank" class="text-blue-600 hover:underline">https://drive.google.com/file/d/1PAXzqbO9zAq_zcXCt3tRRCXr838rrgh4/view</a></li>
+                                    <li>Медіатека з інформатики ("Ранок"): <a href="https://mediaranok.com.ua/category/informatyka/" target="_blank" class="text-blue-600 hover:underline">https://mediaranok.com.ua/category/informatyka/</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>2. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Весела гра про Інтернет: <a href="https://spoofy.ee/uk" target="_blank" class="text-blue-600 hover:underline">https://spoofy.ee/uk</a></li>
+                                    <li>Гра "Інтерленд": <a href="https://beinternetawesome.withgoogle.com/uk_ua/interland" target="_blank" class="text-blue-600 hover:underline">https://beinternetawesome.withgoogle.com/uk_ua/interland</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img10.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li><a href="https://mediaranok.com.ua/" target="_blank" class="text-blue-600 hover:underline">Медіатека ("Ранок")</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>  
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // Task 1: Spreadsheets Simulator
+            const addDistrictBtn = document.getElementById('add-district-btn');
+            const ecologyTableBody = document.getElementById('ecology-table-body');
+            const avgPollutionEl = document.getElementById('avg-pollution');
+            const pollutionChartCtx = document.getElementById('pollutionChart').getContext('2d');
+            let districtsData = [];
+            let pollutionChart;
+
+            function updateEcologyUI() {
+                ecologyTableBody.innerHTML = '';
+                let totalPollution = 0;
+                districtsData.forEach(district => {
+                    const row = document.createElement('tr');
+                    if (district.level > 50) row.classList.add('level-low');
+                    if (district.level < 20) row.classList.add('level-high');
+                    row.innerHTML = `<td class="p-2 border-b">${district.name}</td><td class="p-2 border-b">${district.level}</td>`;
+                    ecologyTableBody.appendChild(row);
+                    totalPollution += district.level;
+                });
+
+                const avgPollution = districtsData.length > 0 ? (totalPollution / districtsData.length).toFixed(2) : 0;
+                avgPollutionEl.textContent = avgPollution;
+
+                const chartLabels = districtsData.map(d => d.name);
+                const chartData = districtsData.map(d => d.level);
+
+                if (pollutionChart) {
+                    pollutionChart.data.labels = chartLabels;
+                    pollutionChart.data.datasets[0].data = chartData;
+                    pollutionChart.update();
+                } else {
+                    pollutionChart = new Chart(pollutionChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: chartLabels,
+                            datasets: [{
+                                label: 'Рівень забруднення',
+                                data: chartData,
+                                backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                                borderColor: 'rgba(79, 70, 229, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    });
+                }
+            }
+
+            addDistrictBtn.addEventListener('click', () => {
+                const nameInput = document.getElementById('district-name');
+                const levelInput = document.getElementById('pollution-level');
+                const name = nameInput.value.trim();
+                const level = parseInt(levelInput.value);
+
+                if (name && !isNaN(level)) {
+                    districtsData.push({ name, level });
+                    updateEcologyUI();
+                    nameInput.value = '';
+                    levelInput.value = '';
+                }
+            });
+
+            // Task 2: Python Simulator
+            const runPythonBtn = document.getElementById('run-python-btn');
+            const pythonOutput = document.getElementById('python-output');
+
+            runPythonBtn.addEventListener('click', () => {
+                const color = document.getElementById('fav-color').value.trim();
+                const count = parseInt(document.getElementById('repeat-count').value);
+
+                if (!color || isNaN(count) || count < 0) {
+                    pythonOutput.textContent = 'Помилка: введіть коректні дані (колір та додатне число).';
+                    return;
+                }
+
+                let result = '';
+                const textToRepeat = count % 2 === 0 ? color.toUpperCase() : color.toLowerCase();
+                for (let i = 0; i < count; i++) {
+                    result += textToRepeat + '\n';
+                }
+                pythonOutput.textContent = result;
+            });
+            
+            // Initial UI update
+            updateEcologyUI();
+        });
+    </script>
+</body>
+</html>

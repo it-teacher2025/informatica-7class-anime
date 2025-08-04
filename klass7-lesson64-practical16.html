@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Опрацювання рядкових даних</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Головний заголовок сторінки (Header) -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основний вміст сторінки (Main) -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Практикум з використання інформаційних технологій. Урок № 64. (До ПР16)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 16. «Опрацювання рядкових даних»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивна практична робота для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Навігація по вкладках -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія: Шифр Цезаря</button>
+                <button data-tab="simulator" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Симулятор Python</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Вміст вкладок -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з принципами шифрування Цезаря; навчити опрацьовувати рядкові дані в Python; навчити застосовувати умовні конструкції та цикли для обробки тексту.</li>
+                        <li><b>Розвивальна:</b> Розвивати алгоритмічне та логічне мислення; формувати вміння аналізувати та маніпулювати текстовими даними; розвивати уважність та точність.</li>
+                        <li><b>Виховна:</b> Виховувати самостійність та відповідальність; формувати інтерес до криптографії та обробки тексту в програмуванні.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати принцип шифру Цезаря.</li>
+                        <li>Складати програму для шифрування/розшифрування.</li>
+                        <li>Опрацьовувати символи рядка в циклі.</li>
+                        <li>Використовувати умовні оператори.</li>
+                        <li>Обчислювати індекси символів у рядку.</li>
+                        <li>Аналізувати та перевіряти коректність роботи програми.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок застосування знань, умінь та навичок (практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим середовищем програмування Python (наприклад, IDLE).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Завдання практичної роботи.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (модульна арифметика для обчислення індексів).</li>
+                        <li>Історія (згадка про Юлія Цезаря та його внесок).</li>
+                        <li>Українська мова (робота з текстом, символами).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Як працює Шифр Цезаря?</h3>
+                <p class="text-slate-700 text-center">Шифр Цезаря — це простий метод заміни, де кожна літера тексту замінюється на літеру, що знаходиться на певну кількість позицій далі в алфавіті. Це число називається **зсувом**.</p>
+                <div class="max-w-2xl mx-auto space-y-6">
+                    <div class="p-6 rounded-lg bg-blue-50 border border-blue-200">
+                        <h4 class="text-xl font-semibold mb-4 text-center text-blue-800">Інтерактивний візуалізатор</h4>
+                        <p class="text-center text-slate-600 mb-4">Введіть літеру та змініть зсув, щоб побачити результат шифрування.</p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <input type="text" id="letter-input" maxlength="1" value="а" class="p-4 border rounded-lg text-4xl font-bold text-center w-24">
+                            <span class="text-4xl font-light text-slate-400">+</span>
+                            <div class="text-center">
+                                <p class="font-medium">Зсув: <span id="shift-value-display">3</span></p>
+                                <input type="range" id="shift-slider" min="1" max="33" value="3" class="w-48">
+                            </div>
+                            <span class="text-4xl font-light text-slate-400">=</span>
+                            <div id="result-letter" class="p-4 bg-indigo-600 text-white rounded-lg text-4xl font-bold text-center w-24">г</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Практична робота -->
+        <div id="simulator-content" class="tab-content">
+             <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600 text-center">Симулятор Python: Шифрувальник</h3>
+                <p class="text-slate-600 mb-6 text-center">Введіть текст, оберіть дію та зсув, щоб зашифрувати або розшифрувати повідомлення.</p>
+                
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Input Form -->
+                    <div class="p-4 border rounded-lg space-y-4">
+                        <h4 class="text-xl font-semibold text-slate-800">1. Налаштування</h4>
+                        <div>
+                            <label for="mode-select" class="block text-sm font-medium text-slate-700">Оберіть дію:</label>
+                            <select id="mode-select" class="w-full p-2 border rounded-lg mt-1">
+                                <option value="encrypt">Шифрувати</option>
+                                <option value="decrypt">Розшифрувати</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="text-input" class="block text-sm font-medium text-slate-700">Введіть повідомлення:</label>
+                            <textarea id="text-input" rows="4" class="w-full p-2 border rounded-lg mt-1" placeholder="повідомляю тобі таємницю"></textarea>
+                        </div>
+                         <div>
+                            <label for="shift-input" class="block text-sm font-medium text-slate-700">Введіть значення зсуву (1-33):</label>
+                            <input type="number" id="shift-input" value="3" min="1" max="33" class="w-full p-2 border rounded-lg mt-1">
+                        </div>
+                         <button id="run-cipher-btn" class="bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition w-full font-bold text-lg">▶ Виконати</button>
+                    </div>
+                    
+                    <!-- Output Area -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="text-xl font-semibold mb-2 text-slate-800">2. Результат</h4>
+                        <label for="output-text" class="block text-sm font-medium text-slate-700">Оброблене повідомлення:</label>
+                        <pre id="output-text" class="w-full p-3 mt-1 border rounded-lg font-mono text-sm h-64 bg-slate-800 text-green-300 overflow-auto whitespace-pre-wrap"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">У чому полягає основний принцип шифру Цезаря?</div><div class="flip-card-back bg-indigo-200 p-4">Кожна літера тексту замінюється на іншу, що знаходиться на фіксовану кількість позицій (зсув) далі в алфавіті.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як програма обробляє символи, яких немає в алфавіті (пробіли, цифри)?</div><div class="flip-card-back bg-indigo-200 p-4">Вона залишає їх без змін, додаючи до результату в початковому вигляді.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Для чого використовується оператор `%` (остача від ділення) в алгоритмі?</div><div class="flip-card-back bg-indigo-200 p-4">Щоб "зациклити" алфавіт. Якщо новий індекс виходить за межі довжини алфавіту, `%` повертає його на початок.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Яка функція Python дозволяє знайти позицію (індекс) символу в рядку?</div><div class="flip-card-back bg-indigo-200 p-4">Метод `.find()`. Наприклад, `alphabet.find('а')` поверне 0.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Що таке "конкатенація" рядків?</div><div class="flip-card-back bg-indigo-200 p-4">Це операція об'єднання (додавання) двох або більше рядків в один. У Python це робиться за допомогою оператора `+`.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як відбувається розшифрування повідомлення?</div><div class="flip-card-back bg-indigo-200 p-4">Так само, як і шифрування, але зсув відбувається у зворотному напрямку (віднімається).</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <div>
+                                <p><b>1. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 16 (стор. 259-261).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/ydsN0FN_59w?si=A6RUdHAjzFya7jQm" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/ydsN0FN_59w</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>2. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 16: <a href="https://ua.izzi.digital/DOS/750894/1251297.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251297.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР16, стор. 259-261)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 16: <a href="https://ua.izzi.digital/DOS/750894/1251297.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251297.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер сторінки (Footer) -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript для інтерактивності -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР2: Інфо-продукти', 'ГР1: Інфо, дані, моделі', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 3, 2, 2],
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => ['','','Важлива','Дуже важлива','Найважливіша'][v]
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => ['','','Важлива','Дуже важлива','Найважливіша'][c.parsed.y] || ''
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Theory Visualizer Logic
+            const alphabet = "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'";
+            const letterInput = document.getElementById('letter-input');
+            const shiftSlider = document.getElementById('shift-slider');
+            const shiftValueDisplay = document.getElementById('shift-value-display');
+            const resultLetter = document.getElementById('result-letter');
+
+            function updateVisualizer() {
+                const letter = letterInput.value.toLowerCase();
+                const shift = parseInt(shiftSlider.value);
+                shiftValueDisplay.textContent = shift;
+
+                if (letter && alphabet.includes(letter)) {
+                    const index = alphabet.indexOf(letter);
+                    const newIndex = (index + shift) % alphabet.length;
+                    resultLetter.textContent = alphabet[newIndex];
+                } else {
+                    resultLetter.textContent = '?';
+                }
+            }
+            letterInput.addEventListener('input', updateVisualizer);
+            shiftSlider.addEventListener('input', updateVisualizer);
+            updateVisualizer(); // Initial call to set the visualizer state
+
+            // Simulator Logic
+            const runCipherBtn = document.getElementById('run-cipher-btn');
+            const modeSelect = document.getElementById('mode-select');
+            const textInput = document.getElementById('text-input');
+            const shiftInput = document.getElementById('shift-input');
+            const outputText = document.getElementById('output-text');
+
+            function processText(text, shift, mode) {
+                let result = '';
+                const alphabetLength = alphabet.length;
+                
+                for (let i = 0; i < text.length; i++) {
+                    const char = text[i];
+                    const lowerChar = char.toLowerCase();
+                    const index = alphabet.indexOf(lowerChar);
+
+                    if (index !== -1) {
+                        let newIndex;
+                        if (mode === 'encrypt') {
+                            newIndex = (index + shift) % alphabetLength;
+                        } else { // decrypt
+                            newIndex = (index - shift + alphabetLength) % alphabetLength;
+                        }
+                        // Preserve case
+                        const newChar = alphabet[newIndex];
+                        result += (char === lowerChar) ? newChar : newChar.toUpperCase();
+                    } else {
+                        // Character not in alphabet, add as is
+                        result += char;
+                    }
+                }
+                return result;
+            }
+
+            runCipherBtn.addEventListener('click', () => {
+                const mode = modeSelect.value;
+                const text = textInput.value;
+                let shift = parseInt(shiftInput.value);
+
+                if (isNaN(shift) || shift < 1 || shift > 33) {
+                    alert('Зсув має бути числом від 1 до 33.');
+                    return;
+                }
+
+                const result = processText(text, shift, mode);
+                outputText.textContent = result;
+            });
+        });
+    </script>
+</body>
+</html>

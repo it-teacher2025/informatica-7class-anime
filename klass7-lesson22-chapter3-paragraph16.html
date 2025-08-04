@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfaf6; color: #403d39;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .info-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .flowchart-step {
+            position: relative;
+        }
+        .flowchart-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #38bdf8; /* sky-400 */
+        }
+        .sort-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .sort-item.correct {
+            animation: correct-flash 0.5s ease;
+        }
+        .sort-item.incorrect {
+            animation: incorrect-flash 0.5s ease;
+        }
+        @keyframes correct-flash {
+            50% { background-color: #dcfce7; transform: scale(1.05); }
+        }
+        @keyframes incorrect-flash {
+            50% { background-color: #fee2e2; transform: scale(1.05); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Стилі для Теоретичного блоку */
+        .source { padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 3: «Моделі та моделювання». Урок № 22. (До § 16)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Типи моделей. Форми подання інформаційної моделі</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з різними типами моделей за галуззю використання, фактором часу, предметною галуззю та способом реалізації; навчити розрізняти матеріальні та інформаційні моделі; пояснити різні форми подання інформаційних моделей (словесні, графічні, структурні, алгоритмічні, спеціальні, математичні); ввести поняття комп'ютерної моделі та комп'ютерного експерименту.</li>
+                            <li><b>Розвивальна:</b> Розвивати аналітичне мислення при класифікації моделей та виборі оптимальної форми подання інформації; формувати вміння ідентифікувати різні типи моделей у повсякденному житті та навчанні; розвивати навички роботи з різними формами подання інформації (таблиці, графіки, схеми).</li>
+                            <li><b>Виховна:</b> Виховувати інтерес до використання моделей як інструменту пізнання та розв'язання задач; формувати розуміння важливості правильного вибору типу та форми моделі для ефективного дослідження.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Класифікувати моделі за різними ознаками (галузь використання, фактор часу, предметна галузь, спосіб реалізації).</li>
+                            <li>Розрізняти матеріальні та інформаційні моделі.</li>
+                            <li>Наводити приклади різних форм подання інформаційних моделей.</li>
+                            <li>Пояснювати, що таке комп'ютерна модель та комп'ютерний експеримент.</li>
+                            <li>Визначати, яка форма подання інформаційної моделі є найбільш доцільною для конкретного завдання.</li>
+                            <li>Використовувати прості комп'ютерні моделі (симуляції)/li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня або групи).</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням підручника: Рис. 16.1, Рис. 16.2, Рис. 16.3, Рис. 16.4, Рис. 16.5, Рис. 16.6, Рис. 16.7, Рис. 16.8, Рис. 16.9).</li>
+                            <li>Дошка, крейда/маркер.</li>
+                            <li>Доступ до Інтернету (для демонстрації Google Earth, інтерактивних симуляцій)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Математика (формули, графіки).</li>
+                            <li>Українська мова (словесні описи)</li>
+                            <li>Географія (карти)</li>
+                            <li>Біологія (схеми процесів)</li>
+                            <li>Фізика (моделі руху)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що таке модель? Наведіть приклади моделей об’єктів, явищ.</li>
+                            <li>Навіщо потрібне моделювання?</li>
+                            <li>Наведіть приклади явищ, дослідження яких без моделюван ня неможливе.</li>
+                            <li>Наведіть приклади матеріальних моделей із різних галузей.</li>
+                            <li>Глобус — модель земної кулі. Наведіть приклади явищ (про цесів), у ході моделювання яких використовується глобус.</li>
+                            <li>Чи можна робота-андроїда вважати моделлю людини? Чому?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema3-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 98)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="space-y-16">
+
+                    <!-- Section 1: Classification of Models -->
+                    <section id="classification">
+                        <h2 class="text-3xl font-bold text-sky-700 mb-6 text-center">Як класифікують моделі?</h2>
+                        <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+                            Моделі бувають дуже різними. Щоб розібратися в їхньому різноманітті, їх класифікують за певними ознаками. Оберіть ознаку, щоб побачити відповідні типи моделей.
+                        </p>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <div id="tabs-container" class="flex flex-wrap justify-center gap-2 mb-6">
+                                <button class="tab-btn active py-2 px-4 bg-sky-100 text-sky-700 font-semibold rounded-full transition" data-tab="usage">Галузь використання</button>
+                                <button class="tab-btn py-2 px-4 bg-sky-100 text-sky-700 font-semibold rounded-full transition" data-tab="time">Фактор часу</button>
+                                <button class="tab-btn py-2 px-4 bg-sky-100 text-sky-700 font-semibold rounded-full transition" data-tab="realization">Спосіб реалізації</button>
+                            </div>
+                            <div id="tabs-content" class="p-4 bg-gray-50 rounded-lg min-h-[150px]">
+                                <!-- Content will be injected by JS -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 2: Forms of Information Models -->
+                    <section id="forms">
+                        <h2 class="text-3xl font-bold text-sky-700 mb-6 text-center">Форми подання інформаційних моделей</h2>
+                        <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+                            Інформаційні моделі — це описи об'єктів. Цю інформацію можна подати у різних формах. Натисніть на картку, щоб дізнатися більше про кожну з них.
+                        </p>
+                        <div id="forms-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Cards will be injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Section 3: Computer Experiment -->
+                    <section id="computer-experiment">
+                        <h2 class="text-3xl font-bold text-sky-700 mb-6 text-center">Комп'ютерний експеримент</h2>
+                        <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+                            Комп'ютерна модель дозволяє проводити експерименти, які неможливі в реальності. Це відбувається у три етапи.
+                        </p>
+                        <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row justify-around items-center gap-8">
+                            <div class="flowchart-step text-center">
+                                <div class="text-5xl mb-2">📝</div>
+                                <h3 class="text-xl font-semibold text-sky-800">1. Розробка плану</h3>
+                                <p class="text-gray-500">Визначення мети</p>
+                            </div>
+                            <div class="flowchart-step text-center">
+                                <div class="text-5xl mb-2">💻</div>
+                                <h3 class="text-xl font-semibold text-sky-800">2. Проведення експерименту</h3>
+                                <p class="text-gray-500">Робота з моделлю</p>
+                            </div>
+                            <div class="flowchart-step text-center">
+                                <div class="text-5xl mb-2">📊</div>
+                                <h3 class="text-xl font-semibold text-sky-800">3. Аналіз результатів</h3>
+                                <p class="text-gray-500">Формулювання висновків</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 4: Practice -->
+                    <section id="practice">
+                        <h2 class="text-3xl font-bold text-sky-700 mb-6 text-center">Час для практики!</h2>
+                        <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+                            Давайте перевіримо, як ви зрозуміли тему. Розподіліть приклади моделей за їхньою формою подання, натискаючи на них.
+                        </p>
+                        <div id="practice-pool" class="flex flex-wrap justify-center gap-3 p-4 bg-gray-200 rounded-lg mb-6 min-h-[50px]">
+                            <!-- Practice items will be injected here -->
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-white rounded-lg shadow">
+                                <h3 class="font-bold text-center text-teal-700 mb-2">Графічні</h3>
+                                <div id="target-Графічна" class="space-y-2 min-h-[80px] bg-teal-50 p-2 rounded"></div>
+                            </div>
+                            <div class="p-4 bg-white rounded-lg shadow">
+                                <h3 class="font-bold text-center text-amber-700 mb-2">Структурні</h3>
+                                <div id="target-Структурна" class="space-y-2 min-h-[80px] bg-amber-50 p-2 rounded"></div>
+                            </div>
+                            <div class="p-4 bg-white rounded-lg shadow">
+                                <h3 class="font-bold text-center text-indigo-700 mb-2">Математичні</h3>
+                                <div id="target-Математична" class="space-y-2 min-h-[80px] bg-indigo-50 p-2 rounded"></div>
+                            </div>
+                        </div>
+                        <div id="practice-feedback" class="mt-4 text-center text-lg font-semibold"></div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">1. На які типи поділяють моделі?</div><div class="flip-card-back bg-green-200">Моделі можна поділити за кількома ознаками:<br>- За галузями використання: навчальні, дослідницькі, ігрові.<br>- За фактором часу: статичні та динамічні.<br>- За предметною галуззю: фізичні, біологічні, економічні, соціальні та ін.<br>- За способом реалізації: матеріальні та інформаційні.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">2. Наведіть приклад навчальної моделі; інформаційної моделі.</div><div class="flip-card-back bg-green-200">- Навчальна модель: моделі, що використовуються для пояснення будови певного об’єкта, наприклад, макет України (географія), квітки (біологія).<br><br>- Інформаційна модель: може бути представлена у вигляді малюнків, креслень, таблиць, діаграм, схем, хімічних формул, рівнянь, або словесних описів.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">3. Від чого залежить вибір інформаційної моделі?</div><div class="flip-card-back bg-green-200">Вибір інформаційної моделі залежить від призначення і мети моделювання.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">4. Коли модель стає комп’ютерною?</div><div class="flip-card-back bg-green-200">Модель стає комп’ютерною, коли вона реалізована за допомогою програмного забезпечення. Комп'ютерна модель може бути текстовою, графічною, редактором презентацій або середовищем програмування.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">5. Чи можна створити модель за допомогою різних програм?</div><div class="flip-card-back bg-green-200">Так, можна. Наприклад, для створення комп'ютерних моделей можна використовувати текстові, графічні редактори, редактори презентацій або спеціалізовані середовища програмування.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 105)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 16 (стор. 100-104).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 16 (стор. 105).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/UWVEez_EJ_Y?si=ZsZSlRL0zCiRFTmH" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/UWVEez_EJ_Y</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 16: <a href="https://ua.izzi.digital/DOS/750894/838199.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838199.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 16, стор. 100-105)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 16: <a href="https://ua.izzi.digital/DOS/750894/838199.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/838199.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 1, 1],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            // --- Section 1: Classification ---
+            const tabsData = {
+                usage: {
+                    title: 'За галуззю використання',
+                    items: [
+                        { name: 'Навчальні', desc: 'Для пояснення, вивчення (глобус, макет скелета).' },
+                        { name: 'Дослідницькі', desc: 'Для вивчення властивостей об\'єктів (модель крила літака).' },
+                        { name: 'Ігрові', desc: 'Для тренування та розваг (шахи, комп\'ютерні ігри).' }
+                    ]
+                },
+                time: {
+                    title: 'За фактором часу',
+                    items: [
+                        { name: 'Статичні', desc: 'Відображають стан об\'єкта в один момент часу (фотографія, макет будинку).' },
+                        { name: 'Динамічні', desc: 'Показують зміни об\'єкта з часом (відео, модель погоди).' }
+                    ]
+                },
+                realization: {
+                    title: 'За способом реалізації',
+                    items: [
+                        { name: 'Матеріальні', desc: 'Фізичні об\'єкти, що відтворюють властивості оригіналу (іграшка, манекен).' },
+                        { name: 'Інформаційні', desc: 'Опис об\'єкта у вигляді інформації (карта, формула, текст).' }
+                    ]
+                }
+            };
+
+            const tabsContainer = document.getElementById('tabs-container');
+            const tabsContent = document.getElementById('tabs-content');
+
+            function renderTabContent(tabKey) {
+                const content = tabsData[tabKey];
+                tabsContent.innerHTML = `
+                    <div class="fade-in">
+                        <h3 class="text-2xl font-bold text-sky-800 mb-4 text-center">${content.title}</h3>
+                        <div class="space-y-3">
+                            ${content.items.map(item => `
+                                <div class="p-3 bg-white rounded-lg shadow-sm">
+                                    <p class="font-semibold text-gray-700">${item.name}: <span class="font-normal text-gray-600">${item.desc}</span></p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            tabsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-btn')) {
+                    tabsContainer.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    renderTabContent(e.target.dataset.tab);
+                }
+            });
+
+            renderTabContent('usage');
+
+            // --- Section 2: Forms of Information Models ---
+            const formsData = [
+                { icon: '📝', title: 'Словесні', desc: 'Усні та письмові описи об\'єктів. Приклад: вірш, оповідання, загадка.' },
+                { icon: '🎨', title: 'Графічні', desc: 'Малюнки, карти, креслення, діаграми, що візуально представляють об\'єкт.' },
+                { icon: '📊', title: 'Структурні', desc: 'Таблиці, схеми, графіки, що показують зв\'язки між частинами об\'єкта.' },
+                { icon: '🔢', title: 'Математичні', desc: 'Формули, рівняння та функції, що описують властивості мовою математики.' },
+                { icon: '📜', title: 'Алгоритмічні', desc: 'Інструкції, правила, плани дій, що описують послідовність кроків.' },
+                { icon: '🎵', title: 'Спеціальні', desc: 'Специфічні для певної галузі: хімічні формули, нотні записи тощо.' }
+            ];
+
+            const formsGrid = document.getElementById('forms-grid');
+            formsGrid.innerHTML = formsData.map(form => `
+                <div class="info-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-5xl mb-3 text-center">${form.icon}</div>
+                    <h3 class="text-xl font-bold text-center text-sky-800 mb-2">${form.title}</h3>
+                    <p class="text-gray-600 text-center">${form.desc}</p>
+                </div>
+            `).join('');
+
+            // --- Section 4: Practice ---
+            let practiceItems = [
+                { text: 'Карта скарбів', type: 'Графічна' },
+                { text: 'Формула $S = v \cdot t$', type: 'Математична' },
+                { text: 'Генеалогічне дерево', type: 'Структурна' },
+                { text: 'Діаграма зросту учнів', type: 'Графічна' },
+                { text: 'Таблиця калорійності', type: 'Структурна' },
+                { text: 'Рівняння $x+5=10$', type: 'Математична' }
+            ];
+            practiceItems = practiceItems.sort(() => Math.random() - 0.5); // Shuffle
+
+            const practicePool = document.getElementById('practice-pool');
+            const practiceFeedback = document.getElementById('practice-feedback');
+            let correctAnswers = 0;
+
+            function renderPracticeItems() {
+                practicePool.innerHTML = '';
+                practiceItems.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'sort-item bg-white py-2 px-3 rounded-md shadow-sm font-medium';
+                    itemEl.innerHTML = item.text.replace(/\$/g, ''); // Display without LaTeX delimiters
+                    itemEl.dataset.type = item.type;
+                    itemEl.addEventListener('click', handleSortClick);
+                    practicePool.appendChild(itemEl);
+                });
+            }
+            
+            function handleSortClick(e) {
+                const itemEl = e.target;
+                const correctType = itemEl.dataset.type;
+                const targetContainer = document.getElementById(`target-${correctType}`);
+                
+                if (targetContainer) {
+                    itemEl.classList.add('correct');
+                    itemEl.removeEventListener('click', handleSortClick);
+                    
+                    setTimeout(() => {
+                        const movedEl = document.createElement('div');
+                        movedEl.className = 'bg-gray-200 p-2 rounded text-center text-sm text-gray-800 fade-in';
+                        movedEl.innerHTML = itemEl.innerHTML;
+                        targetContainer.appendChild(movedEl);
+                        itemEl.remove();
+                        correctAnswers++;
+                        if (correctAnswers === practiceItems.length) {
+                            practiceFeedback.textContent = 'Чудово, все правильно!';
+                            practiceFeedback.classList.add('text-green-600');
+                        }
+                    }, 300);
+                }
+            }
+            
+            renderPracticeItems();
+        });
+    </script>
+</body>
+</html>

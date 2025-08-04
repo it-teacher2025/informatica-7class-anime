@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Практична робота «Створення анімаційного проєкту»</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Digital Nature (Greens, Blues, Browns on a dark background) -->
+    <!-- Application Structure Plan: The SPA is a gamified "Project Mission" that guides students through the 15 steps of the practical assignment. Each step is an interactive card. Clicking a button on a card simulates the action (e.g., adding a layer, applying an effect) in a central preview canvas and unlocks the next step. This sequential, interactive checklist breaks down the complex task into manageable parts, building confidence and providing clear visual feedback for each action. -->
+    <!-- Visualization & Content Choices: 1. Animation Steps -> Goal: Guide a complex process -> Viz: Interactive checklist of cards (HTML/Tailwind). 2. Animation Preview -> Goal: Show results of actions -> Viz: A single HTML Canvas. -> Interaction: Buttons on step cards trigger JS functions that update the canvas content (e.g., draw a growing mushroom, start a rain animation loop). This provides instant visual feedback for each step of the practical work. -> Justification: Simulating the results on a canvas makes the instructions tangible and easier to understand than static text. -> All interactions use Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .card {
+            background-color: #334155; /* slate-700 */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #475569; /* slate-600 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #22c55e; /* green-500 */
+            color: #fff;
+            box-shadow: 0 0 20px #22c55e44;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #16a34a; /* green-600 */
+        }
+         .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .mission-step {
+            transition: all 0.3s ease-in-out;
+            opacity: 0.6;
+        }
+        .mission-step.active {
+            opacity: 1;
+            transform: scale(1.03);
+            box-shadow: 0 0 30px #3b82f655;
+            border-color: #3b82f6;
+        }
+        .mission-step.completed {
+            opacity: 1;
+            background-color: #1e3a8a; /* blue-900 */
+        }
+        .mission-step.completed .mission-btn {
+            background-color: #1e40af; /* blue-800 */
+            color: #93c5fd;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson18-chapter2-practical3.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 18. (До ПР3)</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Практична робота № 3. «Створення анімаційного проєкту»</h1>
+                <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>
+
+        <div class="container mx-auto px-4 py-12">        
+            <section id="intro" class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Практична робота №3</h1>
+                <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6">Створення анімаційного проєкту «Грибний дощ»</h2>
+                <p class="text-lg max-w-4xl mx-auto text-slate-400">Виконуйте кроки по черзі, щоб створити свій анімаційний шедевр! Натискайте кнопки, щоб побачити, як ваша сцена оживає на екрані праворуч.</p>
+            </section>
+
+            <!-- Mission Control -->
+            <div class="grid lg:grid-cols-2 gap-8 items-start">
+                <!-- Steps -->
+                <div id="mission-steps" class="space-y-4">
+                    <!-- Mission steps will be injected here -->
+                </div>
+                <!-- Canvas Preview -->
+                <div class="sticky top-8">
+                    <div class="card">
+                        <h3 class="text-xl font-bold text-center mb-4 text-green-400">Екран попереднього перегляду</h3>
+                        <div class="bg-slate-900 rounded-lg border border-slate-600 aspect-video">
+                            <canvas id="main-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div id="mission-complete" class="hidden text-center mt-6 p-6 bg-green-900/50 border-2 border-dashed border-green-500 rounded-xl">
+                        <h3 class="text-2xl font-bold text-green-300">🎉 Проєкт завершено! 🎉</h3>
+                        <p class="text-green-200 mt-2">Ви успішно виконали всі кроки! Не забудьте зробити висновок про свою роботу.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const missionContainer = document.getElementById('mission-steps');
+            const missionCompleteEl = document.getElementById('mission-complete');
+
+            const missionStepsData = [
+                { title: "Крок 1-2: Підготовка сцени", description: "Створюємо статичне тло з травою на блакитному фоні.", buttonText: "Створити тло", action: 'setupScene' },
+                { title: "Крок 3-5: Гриб, що росте", description: "Додаємо маленький гриб, який поступово збільшується та трохи піднімається.", buttonText: "Запустити анімацію росту", action: 'growMushroom' },
+                { title: "Крок 6-7: Передній план", description: "Додаємо кущик трави на передній план, щоб гриб 'виростав' з-за нього.", buttonText: "Додати передній план", action: 'addForeground' },
+                { title: "Крок 8-10: Гриб, що падає", description: "Додаємо ще один гриб, що падає з неба і залишається на землі.", buttonText: "Запустити анімацію падіння", action: 'dropMushroom' },
+                { title: "Крок 11-13: Дощ", description: "Додаємо динамічне тло з краплями дощу, що падають.", buttonText: "Увімкнути дощ", action: 'startRain' }
+            ];
+
+            let state = {
+                currentStep: 0,
+                scene: {
+                    bgColor: '#60a5fa', // blue-400
+                    grass: false,
+                    growingMushroom: { progress: 0, done: false },
+                    foreground: false,
+                    fallingMushroom: { progress: 0, done: false },
+                    rain: { drops: [], active: false }
+                }
+            };
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+
+            function renderMissionSteps() {
+                missionContainer.innerHTML = '';
+                missionStepsData.forEach((step, index) => {
+                    const stepEl = document.createElement('div');
+                    stepEl.id = `step-${index}`;
+                    stepEl.className = 'mission-step card';
+                    stepEl.innerHTML = `
+                        <h3 class="font-bold text-lg text-slate-200">${step.title}</h3>
+                        <p class="text-slate-400 mt-1 mb-4 text-sm">${step.description}</p>
+                        <button class="btn btn-primary mission-btn" data-index="${index}" data-action="${step.action}" disabled>${step.buttonText}</button>
+                    `;
+                    missionContainer.appendChild(stepEl);
+                });
+                
+                missionContainer.querySelectorAll('.mission-btn').forEach(btn => {
+                    btn.addEventListener('click', handleStepCompletion);
+                });
+                
+                updateActiveStep();
+            }
+
+            function updateActiveStep() {
+                document.querySelectorAll('.mission-step').forEach((el, index) => {
+                    el.classList.remove('active', 'completed');
+                    const btn = el.querySelector('.mission-btn');
+                    if (index < state.currentStep) {
+                        el.classList.add('completed');
+                        btn.disabled = true;
+                        btn.innerHTML = `<span>✔️</span> Виконано`;
+                    } else if (index === state.currentStep) {
+                        el.classList.add('active');
+                        btn.disabled = false;
+                    }
+                });
+                if (state.currentStep >= missionStepsData.length) {
+                    missionCompleteEl.classList.remove('hidden');
+                }
+            }
+
+            function handleStepCompletion(event) {
+                const action = event.target.dataset.action;
+                actions[action]();
+                state.currentStep++;
+                updateActiveStep();
+            }
+
+            // --- Drawing and Animation Logic ---
+            const actions = {
+                setupScene: () => { state.scene.grass = true; },
+                growMushroom: () => { animateObject(state.scene.growingMushroom, 3000); },
+                addForeground: () => { state.scene.foreground = true; },
+                dropMushroom: () => { animateObject(state.scene.fallingMushroom, 1500); },
+                startRain: () => { 
+                    state.scene.rain.active = true;
+                    for(let i = 0; i < 50; i++) {
+                        state.scene.rain.drops.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            speed: 2 + Math.random() * 2
+                        });
+                    }
+                }
+            };
+
+            function animateObject(obj, duration) {
+                let startTime = null;
+                function animate(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const elapsed = timestamp - startTime;
+                    obj.progress = Math.min(elapsed / duration, 1);
+                    if (obj.progress >= 1) {
+                        obj.done = true;
+                    } else {
+                        requestAnimationFrame(animate);
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            function draw() {
+                ctx.fillStyle = state.scene.bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Static grass
+                if (state.scene.grass) {
+                    ctx.fillStyle = '#22c55e'; // green-500
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height);
+                    ctx.lineTo(0, canvas.height - 30);
+                    for (let i = 0; i < canvas.width; i += 20) {
+                        ctx.lineTo(i + 10, canvas.height - 30 - Math.random() * 15);
+                    }
+                    ctx.lineTo(canvas.width, canvas.height - 30);
+                    ctx.lineTo(canvas.width, canvas.height);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                // Growing Mushroom
+                if (state.scene.growingMushroom.progress > 0) {
+                    const p = state.scene.growingMushroom.progress;
+                    const scale = 0.1 + p * 0.9;
+                    const yOffset = p * -20;
+                    drawMushroom(canvas.width * 0.3, canvas.height - 40 + yOffset, scale);
+                }
+
+                // Falling Mushroom
+                if (state.scene.fallingMushroom.progress > 0) {
+                    const p = state.scene.fallingMushroom.progress;
+                    const startY = -50;
+                    const endY = canvas.height - 40;
+                    const currentY = startY + (endY - startY) * p;
+                    drawMushroom(canvas.width * 0.7, currentY, 0.8);
+                }
+                
+                // Rain
+                if (state.scene.rain.active) {
+                    ctx.fillStyle = '#1e40af';
+                    state.scene.rain.drops.forEach(drop => {
+                        ctx.fillRect(drop.x, drop.y, 2, 10);
+                        drop.y += drop.speed;
+                        if (drop.y > canvas.height) {
+                            drop.y = -10;
+                            drop.x = Math.random() * canvas.width;
+                        }
+                    });
+                }
+                
+                // Foreground grass
+                if (state.scene.foreground) {
+                    ctx.fillStyle = '#16a34a'; // green-600
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width * 0.2, canvas.height);
+                    ctx.lineTo(canvas.width * 0.2, canvas.height - 20);
+                    for (let i = 0; i < 10; i++) {
+                        ctx.lineTo(canvas.width * 0.2 + i*10 + 5, canvas.height - 20 - Math.random() * 10);
+                    }
+                    ctx.lineTo(canvas.width * 0.2 + 100, canvas.height - 20);
+                    ctx.lineTo(canvas.width * 0.2 + 100, canvas.height);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            function drawMushroom(x, y, scale) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(scale, scale);
+                // Stem
+                ctx.fillStyle = '#f5f5f4'; // stone-100
+                ctx.fillRect(-15, -50, 30, 50);
+                // Cap
+                ctx.fillStyle = '#dc2626'; // red-600
+                ctx.beginPath();
+                ctx.arc(0, -50, 40, Math.PI, 0);
+                ctx.closePath();
+                ctx.fill();
+                // Dots
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(0, -60, 5, 0, Math.PI * 2);
+                ctx.arc(-20, -50, 5, 0, Math.PI * 2);
+                ctx.arc(20, -50, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            renderMissionSteps();
+            draw();
+        });
+    </script>
+</body>
+</html>
+
+<!-- Я створив для вас інтерактивний SPA-додаток, який перетворює практичну роботу на захопливу покрокову місію. Замість сухого переліку завдань, учні отримують:
+
+"Центр управління проєктом": Інтерфейс, що складається з двох основних блоків: зліва – список завдань, справа – екран попереднього перегляду.
+
+Інтерактивне виконання: Кожен крок – це окрема картка з кнопкою. Натискаючи на кнопку, учень "виконує" завдання, і результат миттєво з'являється на екрані праворуч. Наприклад, після натискання "Запустити анімацію росту", на екрані починає рости гриб.
+
+Відчуття прогресу: Виконані етапи візуально змінюються, а наступний крок стає активним. Це мотивує рухатися далі і створює відчуття досягнення.
+
+Чіткість та структурованість: Складне завдання розбите на прості, зрозумілі кроки, що зменшує страх перед великим обсягом роботи і допомагає учням впевнено її виконати.
+
+Такий підхід робить процес навчання більш динамічним, наочним та цікавим, допомагаючи учням краще зрозуміти логіку створення складних анімацій та підготуватися до реального виконання завдання у TupiTube. -->

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Поштові служби Інтернету</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b;}
+        /* Style to tab content */
+        .tab-btn.active { color: #606c38; border-bottom-color: #606c38; background-color: #e9f5db; }
+        .tab-btn { transition: color 0.3s, border-color 0.3s, background-color 0.3s; border-bottom: 2px solid transparent; }
+        /* Style to hide inactive tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Style to "Питання для самоперевірки", поворот карток */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Практичних завдань */
+        .nav-link.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .card { background-color: #fff; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 600; text-align: center; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .btn-primary { background-color: #2563eb; color: #fff; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #eef2ff; color: #4338ca; }
+        .btn-secondary:hover { background-color: #e0e7ff; }
+        .btn-danger { background-color: #fee2e2; color: #b91c1c; }
+        .btn-danger:hover { background-color: #fecaca; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 456; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal.visible { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s; }
+        .modal.visible .modal-content { transform: scale(1); }
+        .email-item { border-left-width: 4px; cursor: pointer; }
+        .email-item.read { background-color: #f1f5f9; }
+        .quiz-option.correct { background-color: #dcfce7; border-color: #22c55e; }
+        .quiz-option.incorrect { background-color: #fee2e2; border-color: #ef4444; }
+
+        /* Стилі для Теоретичного блоку */
+
+        /* Стилі для перевірки знань */
+        .height-learn { height: 780px; }
+        .height280 { height: 280px; }
+        .height380 { height: 380px; }
+        
+        .source { padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 1: «Служби Інтернету». Урок № 6. (До § 5)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Етичне та безпечне користування електронною поштою</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+            <!-- Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання". -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+                <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                    <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                    <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                    <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                    <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Перевірка знань</button>
+                    <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+                </nav>
+            </div>
+
+            <!-- Про урок -->
+            <div id="about-content" class="tab-content active">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lesson Goal -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><b>Освітня:</b> Ознайомити учнів з поняттями "цифровий етикет" (нетикет) та "фішинг"; навчити розпізнавати ознаки спаму та фішингових повідомлень; пояснити правила безпечного користування електронною поштою та наслідки їх недотримання; ознайомити з особливостями написання електронного листа (використання смайликів, наголосів).</li>
+                            <li><b>Розвивальна:</b> Розвивати критичне мислення для оцінки безпечності електронних повідомлень; формувати навички аналізу інформації та прийняття безпечних рішень в Інтернеті; розвивати уважність до деталей (ознаки шахрайства).</li>
+                            <li><b>Виховна:</b> Виховувати відповідальне ставлення до своєї кібербезпеки та кібергігієни; формувати повагу до правил етичного спілкування в мережі; заохочувати до обережності та обачності при роботі з електронною поштою.</li>
+                        </ul>
+                    </div>
+                    <!-- Expected Outcomes -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                        <p class="mb-2 text-gray-600">Після уроку учні зможуть:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Пояснювати поняття "нетикет", "спам", "фішинг".</li>
+                            <li>Називати правила етичного листування.</li>
+                            <li>Розпізнавати ознаки спаму та фішингових листів.</li>
+                            <li>Застосовувати правила безпечного користування електронною поштою.</li>
+                            <li>Пояснювати, чому не варто відкривати підозрілі листи та переходити за посиланнями.</li>
+                            <li>Використовувати смайлики та наголоси в електронних листах доречно.</li>
+                            <li>Додавати зображення до тексту листа.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                        <p class="text-gray-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                        <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Lesson Type & Equipment -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                        <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Комп'ютери (для кожного учня) з доступом до Інтернету.</li>
+                            <li>Проєктор або інтерактивна дошка.</li>
+                            <li>Презентація (з використанням скріншотів з підручника, прикладів спаму/фішингу – заздалегідь підготовлених та безпечних для демонстрації).</li>
+                            <li>Веб-браузери.</li>
+                            <li>Дошка, крейда/маркер.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Українська мова (правила ділового листування, культура мовлення).</li>
+                            <li>Етика (правила поведінки, повага).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Як увійти до свого облікового запису?</li>
+                            <li>Як переглянути адресну книгу; відредагувати контакти?</li>
+                            <li>Що таке список розсилки (мітки)?</li>
+                            <li>Як створити список розсилки (мітки)?</li>
+                            <li>Які ви знаєте способи надсилання листа за списком розсилки (мітками)?</li>
+                            <li>Яке призначення адресної книги?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema1-1.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+
+                    <section>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 28)</a></i></p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+            <div id="practice-content" class="tab-content">
+                <div class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">	
+                    <div class="container mx-auto px-4 flex justify-between items-center py-3">
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">🛡️ Безпека в Пошті</h1>
+                        <nav class="hidden md:flex space-x-6">
+                            <a href="#simulator" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Симулятор</a>
+                            <a href="#netiquette" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Нетикет</a>
+                            <a href="#practice" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Практика</a>
+                            <a href="#quiz" class="nav-link font-medium text-slate-600 border-b-2 border-transparent hover:text-blue-600 transition-colors">Тест</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-12">        
+                    <section id="intro" class="text-center mb-20">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Станьте гуру електронної пошти!</h2>
+                        <p class="text-lg max-w-3xl mx-auto text-slate-600">Навчіться відрізняти безпечні листи від шахрайських, писати ввічливі повідомлення та захищати свої дані. Пройдіть симуляцію та перевірте свої навички!</p>
+                    </section>
+
+                    <!-- Inbox Simulator Section -->
+                    <section id="simulator" class="scroll-mt-24 mb-20">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">Симулятор Вхідних Листів</h2>
+                            <p class="text-md max-w-2xl mx-auto text-slate-600">Ви отримали кілька листів. Ваше завдання — вирішити, що з ними робити. Натисніть на лист, щоб побачити його вміст та обрати дію.</p>
+                        </div>
+                        <div id="inbox-list" class="space-y-4 max-w-4xl mx-auto">
+                            <!-- Emails will be rendered here by JS -->
+                        </div>
+                    </section>
+                    
+                    <!-- Netiquette Section -->
+                    <section id="netiquette" class="scroll-mt-24 mb-20">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">Майстерня Нетикету</h2>
+                            <p class="text-md max-w-2xl mx-auto text-slate-600">Нетикет — це етикет в Інтернеті. Давайте потренуємось писати листи, які приємно читати.</p>
+                        </div>
+                        <div class="card max-w-4xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-1">Чек-лист ідеального листа:</h3>
+                            <p class="text-slate-500 mb-6">Дотримуйтесь цих правил, щоб ваше спілкування було ефективним та ввічливим.</p>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✅</span><span><strong>Тема:</strong> Завжди заповнюйте. Вона має бути чіткою та інформативною.</span></li>
+                                    <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✅</span><span><strong>Привітання:</strong> Починайте лист з ввічливого привітання.</span></li>
+                                    <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✅</span><span><strong>Стислість:</strong> Пишіть по суті, поважайте час співрозмовника.</span></li>
+                                    <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✅</span><span><strong>Грамотність:</strong> Перевіряйте текст на наявність помилок.</span></li>
+                                </ul>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">❌</span><span><strong>ВЕЛИКІ ЛІТЕРИ:</strong> Не пишіть весь текст великими літерами. Це сприймається як КРИК!</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">❌</span><span><strong>Смайлики:</strong> Використовуйте смайлики доречно, у діловому листуванні їх краще уникати.</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">❌</span><span><strong>Конфіденційність:</strong> Ніколи не надсилайте паролі, номери карток чи іншу приватну інформацію.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Practice Section -->
+                    <section id="practice" class="scroll-mt-24 mb-20">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">Творча Практика</h2>
+                            <p class="text-md max-w-2xl mx-auto text-slate-600">Створімо гарний вітальний лист! Це завдання допоможе вам застосувати знання на практиці.</p>
+                        </div>
+                        <div class="card max-w-4xl mx-auto">
+                            <h3 class="text-xl font-semibold mb-4">Вправа 5: Лист-привітання</h3>
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <div>
+                                    <label for="holiday-select" class="block text-sm font-medium text-slate-700 mb-2">1. Виберіть свято:</label>
+                                    <select id="holiday-select" class="w-full p-2 border border-slate-300 rounded-md">
+                                        <option value="ukraine_defender">День захисників і захисниць України</option>
+                                        <option value="new_year">Новий Рік</option>
+                                        <option value="teachers_day">День працівників освіти</option>
+                                    </select>
+                                    <p class="mt-4 text-sm text-slate-600">2. Тепер уявіть, що ви пишете листа другу. В тексті листа можна додати це зображення, щоб зробити його яскравішим.</p>
+                                </div>
+                                <div id="holiday-preview" class="p-4 bg-slate-50 rounded-lg text-center">
+                                    <!-- Preview will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quiz Section -->
+                    <section id="quiz" class="scroll-mt-24">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">Фінальний Тест</h2>
+                            <p class="text-md max-w-2xl mx-auto text-slate-600">Перевірте, наскільки добре ви засвоїли матеріал.</p>
+                        </div>
+                        <div class="card max-w-4xl mx-auto">
+                            <div id="quiz-container" class="space-y-6">
+                                <!-- Quiz will be rendered here -->
+                            </div>
+                            <div id="quiz-results" class="hidden text-center">
+                                <h3 class="text-2xl font-bold mb-4">Ваш результат:</h3>
+                                <p id="quiz-score" class="text-4xl font-bold text-blue-600"></p>
+                                <p id="quiz-feedback" class="mt-2 text-slate-600"></p>
+                                <button id="restart-quiz-btn" class="btn btn-primary mt-6">Спробувати ще раз</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Modal for Email Content -->
+                <div id="email-modal" class="modal">
+                    <div class="modal-content card w-full max-w-2xl">
+                        <div id="modal-header" class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 id="modal-subject" class="text-xl font-bold"></h3>
+                                <p id="modal-sender" class="text-sm text-slate-500"></p>
+                            </div>
+                            <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-600">&times;</button>
+                        </div>
+                        <div id="modal-body" class="prose prose-slate max-w-none mb-6"></div>
+                        <div id="modal-feedback" class="p-4 rounded-md mb-6 hidden"></div>
+                        <div id="modal-actions" class="flex justify-end gap-3">
+                            <!-- Action buttons will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Перевірка знань -->
+            <div id="check-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-green-600">Перевірка знань</h3>
+                    <p class="text-center text-gray-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 height-learn">
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">1. Назвіть правила етикету електронного листування.</div><div class="flip-card-back bg-green-200">Правила етикету, або нетикету, електронного листування вимагають:<br>- Заповнювати всі поля, призначені для службової інформації.<br>- Ураховувати призначення листа, чітко окреслювати тему.<br>- Писати стисло, дотримуватися правил правопису.<br>- Бути ввічливим, стриманим і толерантним.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">2. Назвіть правила безпечного листування. Яких із них ви до тримуєтеся?</div><div class="flip-card-back bg-green-200 height280">Правила безпечного листування:<br>- Не відкривайте листи з невідомих джерел.<br>- Не розголошуйте паролі облікових записів.<br>- Не відповідайте на листи із заманливими пропозиціями чи погрозами.<br>- Не переходьте за посиланнями від незнайомих людей.<br><br>Примітка: У відповіді також потрібно вказати, яких із цих правил ви дотримуєтеся особисто.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height380">3. Що таке спам? Назвіть правила захисту від спаму.</div><div class="flip-card-back bg-green-200 height380">Спам — це небажані листи, переважно рекламного характеру.<br><br>Правила захисту від спаму:<br>- Не оголошувати свою електронну адресу та номер телефону на сайтах, або коли вас просять подавати ці дані у форматах картинок, які розпізнає тільки людина.<br>- Не відповідати на спам (не переходити за посиланнями, не відкривати картинки), адже це збільшить його кількість.<br>- Позначати підозрілі листи як спам (наприклад, у скриньці Gmail це робиться за допомогою значка 🚩), щоб вони переміщувалися до папки «Спам».</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height380">4. Що таке фішинг? Як убезпечити пошту від фішингу?</div><div class="flip-card-back bg-green-200 height380">Фішинг (англ. phishing, за співзвучністю з fishing — риболовля) — це шахрайські методи отримання особистих даних (банківських реквізитів, паролів тощо) за допомогою інтернету.<br><br>Як убезпечити пошту від фішингу:<br>- Бути обережним, коли отримуєте повідомлення від банків, які загрожують блокуванням рахунку, виграшем, спадком тощо.<br>- Якщо виникають підозри, не слід реагувати на такі листи, а краще їх видаляти, не відкриваючи.<br>- Завжди перевіряти, що адреса відправника є справжньою.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100">5. Чому не варто писати текст електронного листа великими літерами?</div><div class="flip-card-back bg-green-200">Текст, написаний великими літерами, зазвичай сприймається як вираження негативних емоцій і прояв роздратованості, агресії. У діловому спілкуванні це вважається неетичним і може бути розцінене як крик або грубість.</div></div></div>
+
+                        <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-100 height280">6. Що таке смайлики і коли їх слід застосовувати?</div><div class="flip-card-back bg-green-200 height280">Смайлики (англ. smile — усмішка) — це схематичне зображення людського обличчя, яке передає емоції, але повернуте набік. Вони допомагають висловити радість, сум, здивування та інші емоції.<br><br>Коли їх застосовувати:<br>- У приватному листуванні, щоб зробити текст більш емоційним і привабливим.<br>- Не варто їх використовувати в діловому листуванні, офіційних документах та в листах, де цінується точність та інформативність.</div></div></div>
+                    </div>
+
+                    <div>
+                        <p class="source"><i>Джерело: <a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу (стор. 32)</a></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домашнє завдання -->
+            <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 5 (стор. 29-31).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 5 (стор. 32).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/30iRGUM7yu4?si=xjmarS0N0KL_eXeJ" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/30iRGUM7yu4</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 5: <a href="https://ua.izzi.digital/DOS/750894/751736.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751736.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-teal-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 5, стор. 29-32)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 5: <a href="https://ua.izzi.digital/DOS/750894/751736.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/751736.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Початок:
+            // Для перемикання меню в секції: "Про урок", "Теоретичний блок", "Практична робота", "Перевірка знань", "Домашнє завдання".
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                // Ensure the click target is a BUTTON (tab button)
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+
+                    // Remove 'active' class from all buttons and add to the clicked one
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Hide all tab contents and show the corresponding one
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        // Use === for strict comparison
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+            // Кінець.
+
+            // Початок:
+            // Групи результатів.
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [2, 1, 2, 4],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Важлива', 'Дуже важлива', 'Найважливіша'];
+                                    return labels[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    const importanceLabels = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива', 1: 'Важлива'};
+                                    label += importanceLabels[value] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // Кінець. Групи результатів.
+
+            // Початок.
+            // Поворот карток "Перевірка знань"
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+            // Кінець.
+
+            // Скрипт для практичного завдання
+            const inboxData = [
+                { id: 1, sender: 'Super Bank', subject: 'Ваш рахунок заблоковано! Терміново оновіть дані!', body: '<p>Шановний клієнт! Ми помітили підозрілу активність. Для вашої безпеки, будь ласка, перейдіть за посиланням та підтвердіть свої дані: <a href="#" class="text-blue-600 underline">super-bank-login.com</a></p>', type: 'phishing', read: false },
+                { id: 2, sender: 'Магазин "МегаЗнижки"', subject: '🔥 Тільки сьогодні! -90% на все!', body: '<p>Ви виграли унікальну можливість придбати будь-який товар зі знижкою 90%! Натисніть тут, щоб отримати свій приз! Поспішайте, пропозиція обмежена!</p>', type: 'spam', read: false },
+                { id: 3, sender: 'Олена Петренко (вчитель)', subject: 'Домашнє завдання з інформатики', body: '<p>Доброго дня! Нагадую, що до п\'ятниці потрібно виконати практичну роботу. Всі деталі в документі. Гарного дня!</p>', type: 'safe', read: false },
+                { id: 4, sender: 'no-reply@lottery.com', subject: 'ВИ ВИГРАЛИ $1,000,000!!!', body: '<p>ВІТАЄМО!!! ВИ ПЕРЕМОЖЕЦЬ НАШОЇ ЛОТЕРЕЇ! ЩОБ ОТРИМАТИ ГРОШІ, ПЕРЕВЕДІТЬ НЕВЕЛИКУ КОМІСІЮ 100$ НА ЦЕЙ РАХУНОК.</p>', type: 'spam', read: false },
+                { id: 5, sender: 'служба підтримки <support@your-service.net>', subject: 'Action Required: Verify Your Email Address', body: '<p>Dear user, someone tried to access your account. To secure it, click this link to verify your identity: <a href="#" class="text-blue-600 underline">very-real-verification-link.com</a>. If you dont do this in 24 hours, your account will be deleted.</p>', type: 'phishing', read: false }
+            ];
+
+            const quizData = [
+                { question: "Що таке 'фішинг'?", options: ["Риболовля в Інтернеті", "Шахрайство з метою викрадення особистих даних", "Офіційна розсилка від банку", "Корисна програма"], answer: 1 },
+                { question: "Лист, написаний ВЕЛИКИМИ ЛІТЕРАМИ, сприймається як:", options: ["Дуже важливий лист", "Крик або агресія", "Звичайний лист", "Лист від робота"], answer: 1 },
+                { question: "Що таке 'спам'?", options: ["Важливі повідомлення", "Небажані рекламні листи", "Листи від друзів", "Нагадування з календаря"], answer: 1 },
+                { question: "Що таке 'нетикет'?", options: ["Назва антивірусу", "Правила етикету в мережі", "Тип комп'ютерного вірусу", "Соціальна мережа"], answer: 1 }
+            ];
+            
+            const holidayData = {
+                ukraine_defender: { text: "Вітаю з Днем захисників і захисниць України!", img: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2g2azB6dmZsc3NqZDU3OGw0dTRpM2FvNnhzcWc3emZqNnBtaHVjZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lmc2SoAMu0F1Rj1s2V/giphy.gif" },
+                new_year: { text: "З Новим роком та Різдвом Христовим!", img: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHk0eWVzYjJzYmFxd2VudTh2bXQ3eHlydXF2dWl2cHpnZDVnZndkZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tOZ42Mg5cJ1rWw0/giphy.gif" },
+                teachers_day: { text: "З Днем працівників освіти! Дякуємо за вашу працю!", img: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazl5M2xudm41NzZ0Z2J1cWZqdGZpcXFzZXVmbDBkYm9hZzdqazF4NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6Zt8z1K62i23S05G/giphy.gif" }
+            };
+
+            const inboxListEl = document.getElementById('inbox-list');
+            const modalEl = document.getElementById('email-modal');
+            let currentEmail = null;
+
+            function renderInbox() {
+                inboxListEl.innerHTML = '';
+                inboxData.forEach(email => {
+                    const emailEl = document.createElement('div');
+                    const isUnread = !email.read;
+                    const typeStyles = {
+                        safe: 'border-l-blue-400',
+                        spam: 'border-l-yellow-400',
+                        phishing: 'border-l-red-500'
+                    };
+                    emailEl.className = `email-item p-4 bg-white rounded-lg shadow-sm flex items-center gap-4 transition-all ${typeStyles[email.type]} ${isUnread ? 'font-bold' : 'read'}`;
+                    emailEl.innerHTML = `
+                        <div class="flex-shrink-0 w-1/4 truncate">${email.sender}</div>
+                        <div class="flex-1 truncate">${email.subject}</div>
+                        <div class="flex-shrink-0 text-sm text-slate-500">${isUnread ? 'Новий' : ''}</div>
+                    `;
+                    emailEl.addEventListener('click', () => openEmailModal(email));
+                    inboxListEl.appendChild(emailEl);
+                });
+            }
+
+            function openEmailModal(email) {
+                currentEmail = email;
+                document.getElementById('modal-subject').textContent = email.subject;
+                document.getElementById('modal-sender').textContent = `Від: ${email.sender}`;
+                document.getElementById('modal-body').innerHTML = email.body;
+                
+                const actionsEl = document.getElementById('modal-actions');
+                actionsEl.innerHTML = `
+                    <button class="btn btn-secondary" onclick="handleEmailAction('reply')">Відповісти</button>
+                    <button class="btn btn-danger" onclick="handleEmailAction('delete')">Видалити</button>
+                    <button class="btn btn-danger" onclick="handleEmailAction('spam')">Позначити як спам</button>
+                `;
+                
+                document.getElementById('modal-feedback').classList.add('hidden');
+                toggleModal(true);
+            }
+
+            window.toggleModal = (show) => {
+                modalEl.classList.toggle('visible', show);
+                if (!show) currentEmail = null;
+            };
+
+            window.handleEmailAction = (action) => {
+                if (!currentEmail) return;
+
+                let feedbackText = '';
+                let feedbackClass = '';
+                let correct = false;
+
+                if (currentEmail.type === 'safe') {
+                    if (action === 'reply') { correct = true; feedbackText = '✅ Правильно! Це безпечний лист від вчителя, на нього можна і треба відповідати.'; } 
+                    else { feedbackText = '🤔 Не найкращий вибір. Це безпечний лист. Його не варто видаляти чи позначати як спам.'; }
+                } else if (currentEmail.type === 'spam') {
+                     if (action === 'spam' || action === 'delete') { correct = true; feedbackText = '✅ Чудово! Це спам. Найкраще рішення — позначити як спам або видалити, не відповідаючи.'; }
+                     else { feedbackText = '❌ Небезпечно! Ніколи не відповідайте на спам. Це лише підтвердить шахраям, що ваша адреса активна.'; }
+                } else if (currentEmail.type === 'phishing') {
+                    if (action === 'spam' || action === 'delete') { correct = true; feedbackText = '✅ Дуже добре! Це фішинг — спроба вкрасти ваші дані. Видалити або позначити як спам, не переходячи за посиланнями, — це єдине правильне рішення.'; }
+                    else { feedbackText = '❌ Дуже небезпечно! Це фішингова атака. Відповідаючи або переходячи за посиланням, ви ризикуєте втратити доступ до акаунту або гроші.'; }
+                }
+
+                const feedbackEl = document.getElementById('modal-feedback');
+                feedbackEl.textContent = feedbackText;
+                feedbackEl.className = `p-4 rounded-md mb-6 ${correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+                feedbackEl.classList.remove('hidden');
+
+                if (correct) {
+                    currentEmail.read = true;
+                    document.getElementById('modal-actions').innerHTML = `<button class="btn btn-secondary" onclick="toggleModal(false)">Закрити</button>`;
+                    renderInbox();
+                }
+            };
+
+            function renderHolidayPreview() {
+                const selected = document.getElementById('holiday-select').value;
+                const data = holidayData[selected];
+                document.getElementById('holiday-preview').innerHTML = `
+                    <p class="font-semibold mb-2">${data.text}</p>
+                    <img src="${data.img}" alt="Вітальна листівка" class="rounded-lg shadow-md mx-auto">
+                `;
+            }
+            document.getElementById('holiday-select').addEventListener('change', renderHolidayPreview);
+
+            const quizContainer = document.getElementById('quiz-container');
+            const quizResultsEl = document.getElementById('quiz-results');
+            let userScore = 0;
+            
+            function renderQuiz() {
+                quizContainer.innerHTML = '';
+                quizResultsEl.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                userScore = 0;
+
+                quizData.forEach((q, index) => {
+                    const questionEl = document.createElement('div');
+                    questionEl.innerHTML = `
+                        <p class="font-semibold mb-3">${index + 1}. ${q.question}</p>
+                        <div class="space-y-2">
+                            ${q.options.map((opt, i) => `
+                                <div class="quiz-option border p-3 rounded-lg cursor-pointer hover:bg-slate-50" data-q="${index}" data-a="${i}">${opt}</div>
+                            `).join('')}
+                        </div>
+                    `;
+                    quizContainer.appendChild(questionEl);
+                });
+                
+                quizContainer.querySelectorAll('.quiz-option').forEach(el => {
+                    el.addEventListener('click', handleQuizAnswer);
+                });
+            }
+
+            function handleQuizAnswer(event) {
+                const target = event.currentTarget;
+                const qIndex = parseInt(target.dataset.q);
+                const aIndex = parseInt(target.dataset.a);
+                const question = quizData[qIndex];
+                
+                const options = quizContainer.querySelectorAll(`[data-q="${qIndex}"]`);
+                options.forEach(opt => opt.removeEventListener('click', handleQuizAnswer));
+
+                if (aIndex === question.answer) {
+                    target.classList.add('correct');
+                    userScore++;
+                } else {
+                    target.classList.add('incorrect');
+                    options[question.answer].classList.add('correct');
+                }
+                
+                const answeredQuestions = quizContainer.querySelectorAll('.correct, .incorrect');
+                if (answeredQuestions.length / quizData[0].options.length === quizData.length) {
+                    showQuizResults();
+                }
+            }
+            
+            function showQuizResults() {
+                quizContainer.classList.add('hidden');
+                quizResultsEl.classList.remove('hidden');
+                document.getElementById('quiz-score').textContent = `${userScore} / ${quizData.length}`;
+                let feedback = '';
+                if(userScore === quizData.length) feedback = 'Відмінно! Ви справжній експерт з кібербезпеки!';
+                else if (userScore >= quizData.length / 2) feedback = 'Добре! Ви знаєте основи безпеки.';
+                else feedback = 'Варто ще раз переглянути матеріал.';
+                document.getElementById('quiz-feedback').textContent = feedback;
+            }
+            document.getElementById('restart-quiz-btn').addEventListener('click', renderQuiz);
+
+
+            // Initial Renders
+            renderInbox();
+            renderHolidayPreview();
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

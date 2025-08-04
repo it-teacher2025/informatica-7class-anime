@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний план-конспект: Логічні функції</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate Gray & Amber -->
+    <!-- Application Structure Plan: A tab-based SPA for a structured, non-linear learning experience. The core interactive element is the "Logic Lab" on the Theory tab. This simulator allows students to input a value (a grade) and see how different logical functions (IF, AND, Nested IF) evaluate it in real-time. This active learning approach is more effective for understanding conditional logic than static examples. The practical work is also interactive, allowing students to apply these functions to a dataset with a button click. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata (Goals, Outcomes): Goal: Inform. Method: Styled cards with Unicode icons. Justification: Provides a quick, scannable overview.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Visually communicates the priority of each learning group.
+        - Logical Concepts: Goal: Explore/Understand. Method: "Logic Lab" simulator. Interaction: User inputs a number and selects a logical function type from a dropdown. The UI dynamically updates to show the correct syntax and the calculated result (e.g., "Добре", "Задовільно", or a specific level). Justification: Makes abstract conditional logic tangible and easy to experiment with.
+        - Practical Work (Exercise 25): Goal: Apply. Method: An interactive HTML table. Interaction: A "Classify" button that uses JS to apply IF and Nested IF logic to a list of student grades, filling in the results columns. Justification: Focuses on the application of functions to a dataset, demonstrating their power for automated classification.
+        - Knowledge Check: Goal: Assess. Method: Interactive flip-cards. Justification: A simple and engaging self-assessment tool.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #f59e0b; background-color: #f59e0b; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Flip card styling for 3D effect */
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+
+        /* Стилі для Теоретичного блоку */
+        .margin-bottom { margin-bottom: 16px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 35. (До § 25)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Логічні функції</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теорія</button>
+                <button data-tab="practice" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практика</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Ознайомити з поняттям логічних виразів та функцій IF, AND, OR, NOT.</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне мислення, вміння аналізувати умови та будувати алгоритми.</li>
+                        <li><b>Виховна:</b> Формувати інтерес до автоматизації прийняття рішень та аналізу даних.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Пояснювати, що таке логічний вираз.</li>
+                        <li>Використовувати функцію IF для розгалужень.</li>
+                        <li>Використовувати AND, OR для комбінованих умов.</li>
+                        <li>Розв'язувати задачі, що вимагають логічного аналізу.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок засвоєння нових знань та формування вмінь.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Презентація (для пояснення логічних виразів, функцій та демонстрації прикладів).</li>
+                        <li>Дошка, крейда/маркер.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-amber-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (порівняння чисел, логіка).</li>
+                        <li>Алгоритмізація та програмування (умовні оператори).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 margin-bottom">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Що таке функція в електронній таблиці?</li>
+                            <li>Що таке аргументи функції?</li>
+                            <li>Яка функція знайде найбільше значення?</li>
+                            <li>Яка функція порахує кількість клітинок з числами?</li>
+                            <li>Як округлити число до цілого?</li>
+                            <li>Чим відрізняється COUNT від COUNTA?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-2.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-2 text-center text-amber-600">Лабораторія логіки</h3>
+                <p class="text-center text-slate-600 mb-6">Введіть оцінку та подивіться, як різні логічні функції її аналізують.</p>
+                <div class="max-w-3xl mx-auto p-6 bg-slate-50 rounded-lg border">
+                    <div class="mb-4">
+                        <label for="logic-input" class="block text-sm font-medium text-slate-700">Введіть оцінку (від 1 до 12)</label>
+                        <input type="number" id="logic-input" value="8" min="1" max="12" class="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4">
+                           <label for="logic-select" class="block text-sm font-medium text-slate-700">Оберіть тип перевірки</label>
+                           <select id="logic-select" class="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm">
+                               <option value="IF">Проста умова (IF)</option>
+                               <option value="AND">Складна умова (AND)</option>
+                               <option value="NESTED_IF">Вкладена умова (Nested IF)</option>
+                           </select>
+                    </div>
+                    <div class="bg-white p-4 rounded-md border border-amber-200">
+                        <p class="text-sm text-slate-600">Синтаксис:</p>
+                        <p class="font-mono text-amber-800 bg-amber-50 p-2 rounded" id="logic-syntax"></p>
+                        <p class="text-sm text-slate-600 mt-3">Результат:</p>
+                        <p class="font-bold text-2xl" id="logic-result"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="practice-content" class="tab-content">
+               <div class="bg-white p-6 rounded-xl shadow-md">
+                   <h3 class="text-2xl font-bold mb-4 text-amber-600">Практична робота: Вправа 25</h3>
+                   <p class="text-slate-600 mb-6">Завдання: Створити таблицю та класифікувати навчальні досягнення учнів за допомогою логічних функцій.</p>
+                   <div class="overflow-x-auto">
+                       <table id="class-table" class="min-w-full border-collapse text-sm text-center">
+                             <thead>
+                                 <tr class="bg-slate-100">
+                                     <th class="border p-2">Прізвище</th>
+                                     <th class="border p-2">Оцінка</th>
+                                     <th class="border p-2 font-semibold">Рівень (простий)</th>
+                                     <th class="border p-2 font-semibold">Рівень (складний)</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <!-- Student data will be injected here by JS -->
+                             </tbody>
+                       </table>
+                   </div>
+                   <button id="classify-btn" class="mt-6 bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition">Класифікувати</button>
+               </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-amber-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Чим логічні функції відрізняються від математичних?</div><div class="flip-card-back bg-amber-200">Вони повертають результат на основі істинності або хибності умови, а не просто обчислюють число.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Що робить функція IF?</div><div class="flip-card-back bg-amber-200">Перевіряє умову і повертає одне значення, якщо вона істинна, і інше - якщо хибна.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Коли функція AND повертає TRUE (ІСТИНА)?</div><div class="flip-card-back bg-amber-200">Тільки тоді, коли ВСІ її аргументи (умови) є істинними.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Коли функція OR повертає TRUE (ІСТИНА)?</div><div class="flip-card-back bg-amber-200">Коли хоча б ОДИН з її аргументів (умов) є істинним.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Наведіть приклад складного логічного виразу.</div><div class="flip-card-back bg-amber-200">AND(A1>10; B1="Так"). Умова істинна, якщо значення в А1 більше 10 І в B1 записано "Так".</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-100">Що таке вкладена функція IF?</div><div class="flip-card-back bg-amber-200">Це функція IF, яка знаходиться всередині іншої функції IF (зазвичай як один з результатів).</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-amber-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Опрацювати § 25 (стор. 152-154).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати вправу № 25 (стор. 155).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/yk3Ki4L0lfQ?si=mcVFNTSerSHn6pKp" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/yk3Ki4L0lfQ</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до § 25: <a href="https://ua.izzi.digital/DOS/750894/932387.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932387.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-amber-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (§ 25, стор. 152-155)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до § 25: <a href="https://ua.izzi.digital/DOS/750894/932387.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/932387.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Logic Lab Simulator
+            const logicInput = document.getElementById('logic-input');
+            const logicSelect = document.getElementById('logic-select');
+            const logicSyntax = document.getElementById('logic-syntax');
+            const logicResult = document.getElementById('logic-result');
+
+            /**
+             * Updates the Logic Lab simulator based on user input and selected logic type.
+             * Displays the Excel-like syntax and the calculated result.
+             */
+            function updateLogicSimulator() {
+                const grade = parseInt(logicInput.value); // Get the grade as an integer
+                const type = logicSelect.value; // Get the selected logic type
+                
+                // Input validation for grade
+                if (isNaN(grade)) {
+                    logicSyntax.textContent = 'Введіть числову оцінку';
+                    logicResult.textContent = '-';
+                    return;
+                }
+
+                let syntax = ''; // Variable to store the displayed syntax
+                let result = ''; // Variable to store the calculated result
+
+                // Apply different logic based on the selected type
+                switch (type) {
+                    case 'IF':
+                        // Simple IF function: "If grade is greater than 6, then 'Добре', otherwise 'Задовільно'"
+                        syntax = `IF(${grade} > 6; "Добре"; "Задовільно")`;
+                        result = grade > 6 ? "Добре" : "Задовільно";
+                        break;
+                    case 'AND':
+                        // AND function: "If grade is greater than 6 AND less than 10, then 'ІСТИНА', otherwise 'ХИБНІСТЬ'"
+                        syntax = `AND(${grade} > 6; ${grade} < 10)`;
+                        result = (grade > 6 && grade < 10) ? "ІСТИНА" : "ХИБНІСТЬ";
+                        break;
+                    case 'NESTED_IF':
+                        // Nested IF function: "If grade < 5, then 'Початковий'; else if grade < 9, then 'Середній'; else 'Високий'"
+                        syntax = `IF(${grade} < 5; "Початковий"; IF(${grade} < 9; "Середній"; "Високий"))`;
+                        if (grade < 5) {
+                            result = "Початковий";
+                        } else if (grade < 9) {
+                            result = "Середній";
+                        } else {
+                            result = "Високий";
+                        }
+                        break;
+                }
+                // Update the UI with the generated syntax and result
+                logicSyntax.textContent = syntax;
+                logicResult.textContent = result;
+            }
+
+            // Event listeners for input changes to trigger simulator update
+            logicInput.addEventListener('input', updateLogicSimulator);
+            logicSelect.addEventListener('change', updateLogicSimulator);
+            updateLogicSimulator(); // Initial update when the page loads
+
+            // Practice Work Logic (Class Table Classification)
+            const classData = [
+                { name: 'Петренко', grade: 10 },
+                { name: 'Сидорова', grade: 4 },
+                { name: 'Іваненко', grade: 8 },
+                { name: 'Коваль', grade: 12 }
+            ];
+            const classTableBody = document.querySelector('#class-table tbody');
+
+            // Populate the class table with student data
+            classData.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border p-2 text-left">${student.name}</td>
+                    <td class="border p-2">${student.grade}</td>
+                    <td class="border p-2 font-semibold" id="level-simple-${index}"></td>
+                    <td class="border p-2 font-semibold" id="level-complex-${index}"></td>
+                `;
+                classTableBody.appendChild(row);
+            });
+
+            const classifyBtn = document.getElementById('classify-btn');
+
+            // Event listener for the "Classify" button in the Practice section
+            classifyBtn.addEventListener('click', () => {
+                classData.forEach((student, index) => {
+                    const grade = student.grade;
+                    
+                    // Simple classification (similar to IF function)
+                    const simpleLevel = grade < 5 ? "Початковий" : "Високий";
+                    document.getElementById(`level-simple-${index}`).textContent = simpleLevel;
+
+                    // Complex classification (similar to Nested IF logic)
+                    let complexLevel = '';
+                    if (grade >= 1 && grade <= 4) {
+                        complexLevel = "Юніор";
+                    } else if (grade >= 5 && grade <= 8) {
+                        complexLevel = "Аматор";
+                    } else if (grade >= 9 && grade <= 12) {
+                        complexLevel = "Експерт";
+                    }
+                    document.getElementById(`level-complex-${index}`).textContent = complexLevel;
+                });
+            });
+
+            // Chart.js for NUШ results visualization (already present and functional)
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2], // Importance levels: 4: Найважливіша, 3: Дуже важлива, 2: Важлива
+                        backgroundColor: ['rgba(245, 158, 11, 0.7)', 'rgba(252, 211, 77, 0.7)', 'rgba(251, 191, 36, 0.7)', 'rgba(252, 211, 77, 0.7)'],
+                        borderColor: ['rgba(245, 158, 11, 1)', 'rgba(252, 211, 77, 1)', 'rgba(251, 191, 36, 1)', 'rgba(252, 211, 77, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

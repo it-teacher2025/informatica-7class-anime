@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний урок: Покадрова анімація</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Creative Studio Dark -->
+    <!-- Application Structure Plan: The SPA is a "Virtual Animation Desk" that simulates the core concepts of frame-by-frame animation. It features a central "Drawing Board" (a canvas with onion skinning), a "Timeline Control" panel for frame manipulation, and a "Sound Booth" to practice adding audio. The final section is a "Project Brief" checklist for the practical assignment (Вправа 14). This task-oriented, hands-on structure is chosen to make the manual process of animation tangible and engaging for 7th graders. -->
+    <!-- Visualization & Content Choices: 1. Onion Skinning -> Goal: Explain frame-by-frame tracing -> Viz: Two stacked canvas elements -> Interaction: Users draw on the top canvas while seeing the previous frame on the bottom canvas with low opacity. A "New Frame" button saves the current drawing and prepares the next. 2. Frame Management -> Goal: Teach timeline control -> Viz: A horizontal list of frame thumbnails -> Interaction: Buttons allow adding, duplicating, and deleting frames, with the list updating dynamically. 3. Sound Syncing -> Goal: Explain adding audio -> Viz: A simple timeline with a sound icon -> Interaction: A button simulates adding a sound effect at a specific frame. 4. Practical Task -> Goal: Guide Вправа 14 -> Viz: Interactive checklist. All interactions use Vanilla JS and HTML Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .card {
+            background-color: #1f2937; /* gray-800 */
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #374151; /* gray-700 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #059669; /* emerald-600 */
+            color: #fff;
+            box-shadow: 0 0 20px #05966944;
+        }
+        .btn-primary:hover {
+            background-color: #047857; /* emerald-700 */
+        }
+        .btn-secondary {
+             background-color: #374151; /* gray-700 */
+             color: #e5e7eb; /* gray-200 */
+        }
+        .btn-secondary:hover:not(:disabled) {
+             background-color: #4b5563; /* gray-600 */
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #drawing-board {
+            position: relative;
+            cursor: crosshair;
+        }
+        #drawing-canvas, #onion-skin-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .timeline-frame {
+            border: 2px solid #4b5563;
+            background-color: #374151;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .timeline-frame.active {
+            border-color: #10b981; /* emerald-500 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+                <a href="./klass7-lesson19-chapter2-paragraph14.html" class="hover:text-slate-300 transition-colors duration-200">Назад</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Main Content Area: Contains page-specific content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+            <!-- Page-specific Header (moved inside main) -->
+            <section class="text-center mb-8">
+                <h1 class="text-lg text-aqua-600 mt-2">Тема 2: «Комп’ютерна анімація». Урок № 19. (До § 14)</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-aqua-900">Покадрова анімація</h1>
+                <h2 class="text-lg text-aqua-600 mt-2">Інтерактивний план-конспект уроку для 7 класу НУШ</h2>
+            </section>
+        </div>
+
+        <div class="container mx-auto px-4 py-12">
+            <section id="intro" class="text-center mb-24">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Студія Покадрової Анімації</h1>
+                <p class="text-lg max-w-3xl mx-auto text-gray-400">Відкрийте для себе класичний метод створення анімації, малюючи кожен кадр вручну. Навчіться керувати часом, звуком та шарами, щоб втілити свої ідеї в життя.</p>
+            </section>
+
+            <!-- Animation Workshop -->
+            <section id="animation-workshop" class="scroll-mt-24 mb-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Анімаційний стіл</h2>
+                    <p class="text-md max-w-3xl mx-auto text-gray-400 mt-2">Створіть свою першу покадрову анімацію! Малюйте на полотні, додавайте кадри та дивіться, як ваш малюнок оживає.</p>
+                </div>
+                <div class="card max-w-6xl mx-auto">
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <!-- Canvas -->
+                        <div id="drawing-board" class="lg:col-span-2 bg-gray-900 rounded-lg border border-gray-700 aspect-video">
+                            <canvas id="onion-skin-canvas"></canvas>
+                            <canvas id="drawing-canvas"></canvas>
+                        </div>
+                        <!-- Controls -->
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-bold text-emerald-400">Панель керування</h3>
+                            <div class="control-group space-y-2">
+                                <button id="new-frame-btn" class="btn btn-secondary w-full">Новий кадр</button>
+                                <button id="duplicate-frame-btn" class="btn btn-secondary w-full">Дублювати кадр</button>
+                                <button id="delete-frame-btn" class="btn btn-secondary w-full">Видалити кадр</button>
+                            </div>
+                            <div class="control-group space-y-2 pt-4 border-t border-gray-700">
+                                <label class="flex items-center gap-3 font-semibold cursor-pointer">
+                                    <input type="checkbox" id="onion-skin-toggle" class="h-5 w-5 rounded border-gray-500 text-emerald-600 focus:ring-emerald-500" checked>
+                                    Калькування (Onion Skin)
+                                </label>
+                                <div>
+                                    <label for="opacity-slider" class="text-sm">Прозорість: <span id="opacity-value">50</span>%</label>
+                                    <input id="opacity-slider" type="range" min="10" max="90" value="50" class="w-full mt-1">
+                                </div>
+                            </div>
+                            <div class="control-group space-y-2 pt-4 border-t border-gray-700">
+                                <button id="add-sound-btn" class="btn btn-secondary w-full">Додати звук 🎵</button>
+                            </div>
+                            <button id="play-animation-btn" class="btn btn-primary w-full mt-4">Відтворити</button>
+                        </div>
+                    </div>
+                    <!-- Timeline -->
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2">Часова шкала</h4>
+                        <div id="timeline" class="flex gap-2 overflow-x-auto p-2 bg-gray-900/50 rounded-lg min-h-[80px]">
+                            <!-- Frames will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Project -->
+            <section id="final-project" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Фінальний проєкт</h2>
+                    <p class="text-md max-w-3xl mx-auto text-gray-400 mt-2">Тепер ви готові до виконання практичної роботи у TupiTube. Використовуйте цей план як інструкцію.</p>
+                </div>
+                <div class="card max-w-3xl mx-auto">
+                    <h3 class="text-xl font-semibold mb-6 text-emerald-400">Вправа 14: План дій</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                            <h4 class="font-bold">1. Анімація "Стрілка"</h4>
+                            <p class="text-sm text-gray-400 mt-1">Створіть покадрову анімацію рухомої стрілки, використовуючи техніку калькування для плавного руху.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                            <h4 class="font-bold">2. Анімація "Ім'я"</h4>
+                            <p class="text-sm text-gray-400 mt-1">Створіть анімацію, в якій ваше ім'я з'являється на екрані, ніби його пишуть від руки.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                            <h4 class="font-bold">3. Звуковий супровід</h4>
+                            <p class="text-sm text-gray-400 mt-1">Додайте до проєкту "Грибний дощ" звуки дощу та падіння крапель.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                            <h4 class="font-bold">4. Експорт та обговорення</h4>
+                            <p class="text-sm text-gray-400 mt-1">Експортуйте одну зі створених анімацій у формат MP4 та обговоріть результат з однокласниками.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const drawingBoard = document.getElementById('drawing-board');
+            const onionSkinCanvas = document.getElementById('onion-skin-canvas');
+            const drawingCanvas = document.getElementById('drawing-canvas');
+            const oCtx = onionSkinCanvas.getContext('2d');
+            const dCtx = drawingCanvas.getContext('2d');
+
+            const newFrameBtn = document.getElementById('new-frame-btn');
+            const duplicateFrameBtn = document.getElementById('duplicate-frame-btn');
+            const deleteFrameBtn = document.getElementById('delete-frame-btn');
+            const onionSkinToggle = document.getElementById('onion-skin-toggle');
+            const opacitySlider = document.getElementById('opacity-slider');
+            const addSoundBtn = document.getElementById('add-sound-btn');
+            const playBtn = document.getElementById('play-animation-btn');
+            const timelineEl = document.getElementById('timeline');
+
+            let frames = [];
+            let currentFrameIndex = -1;
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            function resizeCanvases() {
+                const { clientWidth, clientHeight } = drawingBoard;
+                [onionSkinCanvas, drawingCanvas].forEach(canvas => {
+                    canvas.width = clientWidth;
+                    canvas.height = clientHeight;
+                });
+                redrawCurrentFrame();
+            }
+
+            function redrawCurrentFrame() {
+                clearCanvas(dCtx);
+                if (currentFrameIndex !== -1 && frames[currentFrameIndex]) {
+                    dCtx.drawImage(frames[currentFrameIndex].canvas, 0, 0);
+                }
+                updateOnionSkin();
+            }
+
+            function updateOnionSkin() {
+                clearCanvas(oCtx);
+                if (onionSkinToggle.checked && currentFrameIndex > 0 && frames[currentFrameIndex - 1]) {
+                    oCtx.globalAlpha = opacitySlider.value / 100;
+                    oCtx.drawImage(frames[currentFrameIndex - 1].canvas, 0, 0);
+                    oCtx.globalAlpha = 1.0;
+                }
+            }
+
+            function clearCanvas(ctx) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            }
+
+            function saveCurrentFrame() {
+                if (currentFrameIndex !== -1) {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = drawingCanvas.width;
+                    tempCanvas.height = drawingCanvas.height;
+                    tempCanvas.getContext('2d').drawImage(drawingCanvas, 0, 0);
+                    frames[currentFrameIndex].canvas = tempCanvas;
+                }
+            }
+            
+            function addNewFrame() {
+                saveCurrentFrame();
+                const newCanvas = document.createElement('canvas');
+                newCanvas.width = drawingCanvas.width;
+                newCanvas.height = drawingCanvas.height;
+                frames.splice(currentFrameIndex + 1, 0, { canvas: newCanvas, sound: false });
+                currentFrameIndex++;
+                redrawCurrentFrame();
+                renderTimeline();
+            }
+            
+            function duplicateFrame() {
+                if (currentFrameIndex === -1) return;
+                saveCurrentFrame();
+                const newCanvas = document.createElement('canvas');
+                newCanvas.width = drawingCanvas.width;
+                newCanvas.height = drawingCanvas.height;
+                newCanvas.getContext('2d').drawImage(frames[currentFrameIndex].canvas, 0, 0);
+                frames.splice(currentFrameIndex + 1, 0, { canvas: newCanvas, sound: false });
+                currentFrameIndex++;
+                redrawCurrentFrame();
+                renderTimeline();
+            }
+
+            function deleteFrame() {
+                if (frames.length <= 1 || currentFrameIndex === -1) return;
+                frames.splice(currentFrameIndex, 1);
+                if (currentFrameIndex >= frames.length) {
+                    currentFrameIndex = frames.length - 1;
+                }
+                redrawCurrentFrame();
+                renderTimeline();
+            }
+
+            function renderTimeline() {
+                timelineEl.innerHTML = '';
+                frames.forEach((frame, index) => {
+                    const frameEl = document.createElement('div');
+                    frameEl.className = 'timeline-frame w-16 h-12 relative';
+                    if (index === currentFrameIndex) {
+                        frameEl.classList.add('active');
+                    }
+                    const img = new Image();
+                    img.src = frame.canvas.toDataURL();
+                    img.className = 'w-full h-full object-contain';
+                    frameEl.appendChild(img);
+                    if (frame.sound) {
+                        const soundIcon = document.createElement('span');
+                        soundIcon.textContent = '🎵';
+                        soundIcon.className = 'absolute bottom-0 right-0 text-xs';
+                        frameEl.appendChild(soundIcon);
+                    }
+                    frameEl.addEventListener('click', () => {
+                        saveCurrentFrame();
+                        currentFrameIndex = index;
+                        redrawCurrentFrame();
+                        renderTimeline();
+                    });
+                    timelineEl.appendChild(frameEl);
+                });
+            }
+
+            function playAnimation() {
+                saveCurrentFrame();
+                let frameToPlay = 0;
+                playBtn.disabled = true;
+                const interval = setInterval(() => {
+                    if (frameToPlay >= frames.length) {
+                        clearInterval(interval);
+                        redrawCurrentFrame();
+                        playBtn.disabled = false;
+                        return;
+                    }
+                    clearCanvas(dCtx);
+                    dCtx.drawImage(frames[frameToPlay].canvas, 0, 0);
+                    if (frames[frameToPlay].sound) {
+                        // In a real app, play sound here. We'll just visualize it.
+                        const soundIndicator = document.createElement('div');
+                        soundIndicator.textContent = '🎵';
+                        soundIndicator.className = 'absolute top-2 left-2 text-2xl animate-ping';
+                        drawingBoard.appendChild(soundIndicator);
+                        setTimeout(() => soundIndicator.remove(), 500);
+                    }
+                    frameToPlay++;
+                }, 1000 / 12); // 12 FPS
+            }
+
+            // Event Listeners
+            newFrameBtn.addEventListener('click', addNewFrame);
+            duplicateFrameBtn.addEventListener('click', duplicateFrame);
+            deleteFrameBtn.addEventListener('click', deleteFrame);
+            playBtn.addEventListener('click', playAnimation);
+            onionSkinToggle.addEventListener('change', updateOnionSkin);
+            opacitySlider.addEventListener('input', () => {
+                document.getElementById('opacity-value').textContent = opacitySlider.value;
+                updateOnionSkin();
+            });
+            addSoundBtn.addEventListener('click', () => {
+                if (currentFrameIndex !== -1) {
+                    frames[currentFrameIndex].sound = !frames[currentFrameIndex].sound;
+                    renderTimeline();
+                }
+            });
+
+            // Drawing logic
+            function draw(e) {
+                if (!isDrawing) return;
+                dCtx.strokeStyle = '#e5e7eb';
+                dCtx.lineWidth = 3;
+                dCtx.lineCap = 'round';
+                dCtx.lineTo(e.offsetX, e.offsetY);
+                dCtx.stroke();
+                dCtx.beginPath();
+                dCtx.moveTo(e.offsetX, e.offsetY);
+            }
+            drawingCanvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            });
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', () => isDrawing = false);
+            drawingCanvas.addEventListener('mouseout', () => isDrawing = false);
+
+            // Initial setup
+            window.addEventListener('resize', resizeCanvases);
+            resizeCanvases();
+            addNewFrame();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивна практична робота: Розв’язування задач на обчислення</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Blue -->
+    <!-- Application Structure Plan: A tab-based SPA focusing on the practical application of spreadsheet concepts. The structure (About, Workspace, Conclusions) guides the user through the lesson. The core is the "Workspace" tab, which features an interactive salary calculator. This transforms the static exercise into a dynamic tool where students can change inputs (like the Euro rate) and see immediate results. This hands-on approach is more effective for understanding formulas and referencing than manual calculation. -->
+    <!-- Visualization & Content Choices: 
+        - Lesson Metadata: Goal: Inform. Method: Styled cards with Unicode icons. Justification: Quick, scannable overview of the lesson's purpose.
+        - Learning Outcomes (ГР): Goal: Compare. Method: Bar chart (Chart.js/Canvas). Justification: Visually represents the priority of each learning group.
+        - Salary Calculator: Goal: Apply/Synthesize. Method: An interactive HTML table. Interaction: Users can input the Euro exchange rate. A "Calculate" button triggers all calculations. Hovering over result cells reveals tooltips showing the exact formulas used (e.g., `=D4/C$2*C4` for relative and `=E4/$E$2` for absolute references). Justification: This is the key learning tool. It makes the abstract concept of reference types tangible and demonstrates their practical importance.
+        - Conclusions: Goal: Reflect/Assess. Method: An interactive Q&A section where clicking a question reveals a detailed answer, directly addressing the core learning objective of the practical work. Justification: Reinforces the main lesson point and encourages critical thinking.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General body font */
+        body { font-family: 'Inter', sans-serif; }
+        /* Active state for tab buttons */
+        .tab-btn.active { border-color: #3b82f6; background-color: #3b82f6; color: white; }
+        /* Hidden tab content by default */
+        .tab-content { display: none; }
+        /* Active tab content */
+        .tab-content.active { display: block; }
+        /* Tooltip styles */
+        .tooltip { 
+            position: relative; 
+            display: inline-block; /* Allows it to sit within the table cell naturally */
+        }
+        .tooltip .tooltiptext { 
+            visibility: hidden; 
+            width: 160px; 
+            background-color: #555; 
+            color: #fff; 
+            text-align: center; 
+            border-radius: 6px; 
+            padding: 5px; 
+            position: absolute; 
+            z-index: 1; 
+            bottom: 125%; /* Position above the element */
+            left: 50%; 
+            margin-left: -80px; /* Center the tooltip */
+            opacity: 0; 
+            transition: opacity 0.3s; 
+            font-family: monospace; 
+            font-size: 12px; 
+        }
+        .tooltip:hover .tooltiptext { 
+            visibility: visible; 
+            opacity: 1; 
+        }
+        /* Cell value display */
+        .cell-value {
+            display: block; /* Ensures the value takes its own line within the tooltip div */
+            text-align: right; /* Align text to the right within the cell */
+        }
+        
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Global Header: Contains site title and main navigation -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Contains page-specific content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <!-- Page-specific Header (moved inside main) -->
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Тема 4: «Опрацювання табличних даних». Урок № 33. (До ПР6)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 6. «Розв’язування задач на обчислення»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Розв’язування задач на обчислення</h2>
+        </section>
+
+        <section>
+                    <!-- Tab Navigation for the page content -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="theory" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретичний блок</button>
+                <button data-tab="workspace" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Практична робота</button>
+                <button data-tab="conclusions" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Висновки</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Закріпити навички використання формул.</li>
+                        <li>Навчитись застосовувати відносні та абсолютні посилання.</li>
+                        <li>Практикуватись у форматуванні даних.</li>
+                        <li>Розвивати логічне мислення для розв'язання задач.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Створювати таблиці та вводити дані.</li>
+                        <li>Правильно використовувати відносні та абсолютні посилання.</li>
+                        <li>Форматувати клітинки у грошовий формат.</li>
+                        <li>Розраховувати суми та середні значення.</li>
+                        <li>Робити висновки про типи посилань.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок формування вмінь та навичок (практичне застосування знань).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>З'єднання з інтернетом (для пошуку курсу валют, якщо це потрібно).</li>
+                        <li>Проєктор або інтерактивна дошка (для демонстрації завдання та висновків).</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-blue-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (арифметичні обчислення, відсотки).</li>
+                        <li>Економіка/Фінансова грамотність (розрахунок зарплати, конвертація валют).</li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+
+            <!-- Теоретичний блок -->
+            <div id="theory-content" class="tab-content">
+                <div class="container mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-extrabold text-blue-500 mb-4 heading-underline">ПОВТОРЮЄМО</h2>
+                    </div>
+
+                    <section class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+                        <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                            <li>Чим відрізняється відносне посилання від абсолютного?</li>
+                            <li>Що таке діапазон?</li>
+                            <li>Як заповнити стовпець числами 10, 8, 6...?</li>
+                            <li>Які три основні типи даних ви знаєте?</li>
+                            <li>Для чого потрібен грошовий формат?</li>
+                            <li>Що робить функція автозавершення?</li>
+                        </ol>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800"></h2>
+                            <img src="./images/img-tema4-3.webp" alt="Знак питання" class="rounded-lg shadow-md" width="200px">
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Практична робота -->
+        <div id="workspace-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Інтерактивний калькулятор зарплати</h3>
+                <p class="text-slate-600 mb-6">Заповніть початкові дані та натисніть "Розрахувати", щоб побачити результати. Наведіть курсор на розраховані клітинки, щоб побачити формулу.</p>
+                <div id="message-area" class="text-red-600 text-center mt-4 mb-4 hidden"></div>
+                <div class="overflow-x-auto">
+                    <table id="salary-table" class="min-w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100">
+                                <th class="border p-2">A</th><th class="border p-2">B</th><th class="border p-2">C</th><th class="border p-2">D</th><th class="border p-2">E</th><th class="border p-2">F</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2 font-bold text-center">1</td><td class="border p-2"></td><td class="border p-2"></td><td class="border p-2"></td><td class="border p-2"></td><td class="border p-2"></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2 font-bold text-center">2</td>
+                                <td class="border p-2">Робочих днів у місяці</td>
+                                <td class="border p-2 font-bold text-center" id="working-days">22</td>
+                                <td class="border p-2 text-right">Курс €</td>
+                                <td class="border p-2"><input type="number" id="euro-rate" value="43.5" class="w-full text-center font-bold p-1 border rounded"></td>
+                                <td class="border p-2"></td>
+                            </tr>
+                            <tr class="bg-slate-100">
+                                <td class="border p-2 font-bold text-center">3</td>
+                                <td class="border p-2 font-semibold">Прізвище</td>
+                                <td class="border p-2 font-semibold">Відпрацьовано днів</td>
+                                <td class="border p-2 font-semibold">Оклад, грн</td>
+                                <td class="border p-2 font-semibold">Зарплата, грн</td>
+                                <td class="border p-2 font-semibold">Зарплата, євро</td>
+                            </tr>
+                            <!-- Employee data will be injected here by JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-100 font-bold">
+                                <td class="border p-2 font-bold text-center">8</td>
+                                <td class="border p-2" colspan="2">Підсумок:</td>
+                                <td class="border p-2 text-center">
+                                    <div class="tooltip" id="avg-salary-cell">
+                                        <span class="cell-value"></span>
+                                        <span class="tooltiptext">AVERAGE(D4:D7)</span>
+                                    </div>
+                                </td>
+                                <td class="border p-2 text-center">
+                                    <div class="tooltip" id="total-uah-cell">
+                                        <span class="cell-value"></span>
+                                        <span class="tooltiptext">SUM(E4:E7)</span>
+                                    </div>
+                                </td>
+                                <td class="border p-2 text-center">
+                                    <div class="tooltip" id="total-eur-cell">
+                                        <span class="cell-value"></span>
+                                        <span class="tooltiptext">SUM(F4:F7)</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <button id="calculate-btn" class="mt-6 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">Розрахувати</button>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="conclusions-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-blue-600">Висновки за результатами роботи</h3>
+                <div class="space-y-4 max-w-3xl mx-auto">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-semibold text-lg">Від чого залежить правильність обчислень за скопійованими формулами?</h4>
+                        <p class="text-slate-700 mt-1">Правильність обчислень залежить від правильного вибору типу посилання. Якщо при копіюванні формули потрібно, щоб посилання на певну клітинку змінювалось (наприклад, на оклад або кількість днів кожного працівника), використовують **відносні посилання**.</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-semibold text-lg">Коли посилання у формулах повинні бути абсолютними і чому?</h4>
+                        <p class="text-slate-700 mt-1">Посилання повинні бути абсолютними, коли при копіюванні формули потрібно, щоб посилання на певну клітинку **не змінювалось**. У нашому завданні це курс євро (клітинка E2). Якби ми не використали абсолютне посилання (`$E$2`), то при копіюванні формули вниз, посилання зсунулося б на E3, E4 і т.d., що призвело б до помилки в розрахунках.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">Домашнє завдання</h3>
+                    
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <p><b>1. Теоретична частина:</b> Повторити §§ 20-23 (стор. 125-145).</p>
+                            <div>
+                                <p><b>2. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 6 (стор. 147-148).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/TCUz8PyRPs4?si=oTXCjUuOqU-I6pD2" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/TCUz8PyRPs4</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>3. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 6: <a href="https://ua.izzi.digital/DOS/750894/1075985.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075985.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+        </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР6, стор. 147-148)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 6: <a href="https://ua.izzi.digital/DOS/750894/1075985.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1075985.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer: Contains copyright and legal links -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    // Remove 'active' class from all tab buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add 'active' class to the clicked tab button and its corresponding content
+                    e.target.classList.add('active');
+                    document.getElementById(`${tab}-content`).classList.add('active');
+                }
+            });
+
+            // Workspace Logic (Salary Calculator)
+            const employeeData = [
+                { name: 'Петренко', days: 20, salary: 15900.00 },
+                { name: 'Сидоренко', days: 13, salary: 14880.00 },
+                { name: 'Івановська', days: 12, salary: 16175.00 },
+                { name: 'Петрова', days: 17, salary: 16266.00 }
+            ];
+
+            const tableBody = document.querySelector('#salary-table tbody');
+            const messageArea = document.getElementById('message-area'); // Get message area element
+
+            /**
+             * Formats a number as currency in UAH or EUR.
+             * @param {number} num - The number to format.
+             * @param {string} currency - 'UAH' or 'EUR'.
+             * @returns {string} Formatted currency string or 'N/A' if invalid number.
+             */
+            const formatCurrency = (num, currency) => {
+                if (isNaN(num) || !isFinite(num)) {
+                    return 'N/A'; // Return 'N/A' for invalid numbers
+                }
+                // Use Intl.NumberFormat for locale-specific currency formatting
+                return new Intl.NumberFormat('uk-UA', { style: 'currency', currency: currency, minimumFractionDigits: 2 }).format(num);
+            };
+
+            /**
+             * Renders the initial structure of the salary table with employee data.
+             */
+            function renderTable() {
+                // Clear existing employee rows to prevent duplicates on re-render
+                const existingEmployeeRows = tableBody.querySelectorAll('.employee-row');
+                existingEmployeeRows.forEach(row => row.remove());
+
+                // Iterate through employee data and create table rows
+                employeeData.forEach((emp, index) => {
+                    // Row numbers in the spreadsheet start from 4 for employee data
+                    const rowNum = 4 + index; 
+                    const row = document.createElement('tr');
+                    row.className = 'employee-row'; // Add a class for easy selection/removal
+
+                    // Populate row with employee data and placeholders for calculated values
+                    row.innerHTML = `
+                        <td class="border p-2 font-bold text-center">${rowNum}</td>
+                        <td class="border p-2">${emp.name}</td>
+                        <td class="border p-2 text-center">${emp.days}</td>
+                        <td class="border p-2 text-right">${formatCurrency(emp.salary, 'UAH')}</td>
+                        <td class="border p-2 text-right">
+                            <div class="tooltip" id="uah-salary-cell-${index}">
+                                <span class="cell-value"></span>
+                                <span class="tooltiptext">=D${rowNum}/C$2*C${rowNum}</span>
+                            </div>
+                        </td>
+                        <td class="border p-2 text-right">
+                            <div class="tooltip" id="eur-salary-cell-${index}">
+                                <span class="cell-value"></span>
+                                <span class="tooltiptext">=E${rowNum}/$E$2</span>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row); // Append the new row to the table body
+                });
+            }
+            
+            const calculateBtn = document.getElementById('calculate-btn');
+
+            /**
+             * Handles the calculation logic when the "Calculate" button is clicked.
+             * Reads input values, performs calculations, and updates the table cells.
+             * Also displays error messages if inputs are invalid.
+             */
+            calculateBtn.addEventListener('click', () => {
+                // Get the number of working days from the static cell (C2)
+                const workingDaysElement = document.getElementById('working-days');
+                const workingDays = parseFloat(workingDaysElement.textContent.trim());
+
+                // Get the Euro exchange rate from the input field (E2)
+                const euroRateInput = document.getElementById('euro-rate');
+                const euroRate = parseFloat(euroRateInput.value.trim());
+
+                // Input validation for Euro rate
+                if (isNaN(euroRate) || euroRate <= 0) {
+                    messageArea.textContent = 'Будь ласка, введіть коректний курс євро (число більше 0).';
+                    messageArea.classList.remove('hidden'); // Show error message
+                    return; // Stop execution
+                } else {
+                    messageArea.classList.add('hidden'); // Hide error message if valid
+                }
+
+                // Input validation for working days (though it's static in this example)
+                if (isNaN(workingDays) || workingDays <= 0) {
+                    messageArea.textContent = 'Кількість робочих днів недійсна. Будь ласка, перевірте дані.';
+                    messageArea.classList.remove('hidden'); // Show error message
+                    return; // Stop execution
+                }
+                
+                let totalUah = 0; // Accumulator for total salary in UAH
+                let totalEur = 0; // Accumulator for total salary in EUR
+                let totalBaseSalary = 0; // Accumulator for total base salary (for average in footer)
+
+                // Loop through each employee to calculate their specific salaries
+                employeeData.forEach((emp, index) => {
+                    // Calculate UAH salary for current employee (formula: D4/C$2*C4, where D4 is emp.salary, C$2 is workingDays, C4 is emp.days)
+                    const uahSalary = (emp.salary / workingDays) * emp.days;
+                    
+                    // Calculate EUR salary for current employee (formula: E4/$E$2, where E4 is uahSalary, $E$2 is euroRate)
+                    const eurSalary = uahSalary / euroRate;
+
+                    // Update the displayed UAH salary in the table cell
+                    const uahCellSpan = document.getElementById(`uah-salary-cell-${index}`).querySelector('.cell-value');
+                    if (uahCellSpan) {
+                        uahCellSpan.textContent = formatCurrency(uahSalary, 'UAH');
+                    } else {
+                        console.error(`Element with id uah-salary-cell-${index} or its .cell-value span not found.`);
+                    }
+
+                    // Update the displayed EUR salary in the table cell
+                    const eurCellSpan = document.getElementById(`eur-salary-cell-${index}`).querySelector('.cell-value');
+                    if (eurCellSpan) {
+                        eurCellSpan.textContent = formatCurrency(eurSalary, 'EUR');
+                    } else {
+                        console.error(`Element with id eur-salary-cell-${index} or its .cell-value span not found.`);
+                    }
+                    
+                    // Accumulate totals for the footer summary
+                    totalUah += uahSalary;
+                    totalEur += eurSalary;
+                    totalBaseSalary += emp.salary; // Sum of base salaries for average calculation in footer
+                });
+
+                // Calculate and update footer cells for averages and totals
+                const avgSalary = totalBaseSalary / employeeData.length; // Average base salary
+                
+                // Update average base salary cell in footer
+                const avgSalaryCellSpan = document.getElementById('avg-salary-cell').querySelector('.cell-value');
+                if (avgSalaryCellSpan) avgSalaryCellSpan.textContent = formatCurrency(avgSalary, 'UAH');
+
+                // Update total UAH salary cell in footer
+                const totalUahCellSpan = document.getElementById('total-uah-cell').querySelector('.cell-value');
+                if (totalUahCellSpan) totalUahCellSpan.textContent = formatCurrency(totalUah, 'UAH');
+
+                // Update total EUR salary cell in footer
+                const totalEurCellSpan = document.getElementById('total-eur-cell').querySelector('.cell-value');
+                if (totalEurCellSpan) totalEurCellSpan.textContent = formatCurrency(totalEur, 'EUR');
+            });
+            
+            renderTable(); // Render the initial table structure on page load
+
+            // Chart.js for NUШ results visualization (already present and functional)
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР2: Інфо-продукти', 'ГР3: Цифрове середовище', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 2, 3, 2], // Importance levels: 4: Найважливіша, 3: Дуже важлива, 2: Важлива
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(165, 209, 255, 0.7)', 'rgba(96, 165, 250, 0.7)', 'rgba(165, 209, 255, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(165, 209, 255, 1)', 'rgba(96, 165, 250, 1)', 'rgba(165, 209, 255, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 4, 
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: v => ['', 'Важлива', 'Дуже важлива', 'Найважливіша'][v] || '' 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: c => { 
+                                    const l = {4: 'Найважливіша', 3: 'Дуже важлива', 2: 'Важлива'}; 
+                                    return l[c.parsed.y] || ''; 
+                                } 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

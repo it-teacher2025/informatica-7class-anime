@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивний конспект: Моделювання роботи АЗС</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-color: #4f46e5; background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .error-insufficient-funds { background-color: #fecaca; } /* Red background for insufficient funds */
+        .error-insufficient-fuel { background-color: #fecaca; } /* Red background for insufficient fuel */
+        
+        /* Стилі для Теоретичного блоку */
+        
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Головний заголовок сторінки (Header) -->
+    <header class="bg-slate-800 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Інформатика 7 клас</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-slate-300 transition-colors duration-200">Основна сторінка</a>
+                <a href="./index.html" class="hover:text-slate-300 transition-colors duration-200">7 клас</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основний вміст сторінки (Main) -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <section class="text-center mb-8">
+            <h1 class="text-lg text-slate-600 mt-2">Практикум з використання інформаційних технологій. Урок № 61. (До ПР13)</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Практична робота № 13. «Моделювання роботи автозаправної станції»</h1>
+            <h2 class="text-lg text-slate-600 mt-2">Інтерактивна практична робота для 7 класу НУШ</h2>
+        </section>
+
+        <section>
+                    <!-- Навігація по вкладках -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-8">
+            <nav id="tabs" class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="about" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Про урок</button>
+                <button data-tab="model" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Теоретична модель</button>
+                <button data-tab="simulator" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Інтерактивний симулятор</button>
+                <button data-tab="check" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Самоперевірка</button>
+                <button data-tab="homework" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg border-2 border-transparent transition-colors duration-300">Домашнє завдання</button>
+            </nav>
+        </div>
+
+        <!-- Вміст вкладок -->
+         <!-- Про урок -->
+        <div id="about-content" class="tab-content active">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lesson Goal -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🎯 Мета уроку</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><b>Освітня:</b> Навчити створювати комп'ютерні моделі простих систем за допомогою електронних таблиць; закріпити навички введення формул, зокрема з умовними операторами; навчити застосовувати умовне форматування для візуалізації та контролю даних.</li>
+                        <li><b>Розвивальна:</b> Розвивати логічне, аналітичне та системне мислення при побудові моделі та аналізі її поведінки; формувати вміння застосовувати отримані знання для вирішення практичних задач.</li>
+                        <li><b>Виховна:</b> Виховувати відповідальність за точність отриманих даних; формувати інтерес до моделювання та автоматизації розрахунків.</li>
+                    </ul>
+                </div>
+                <!-- Expected Outcomes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">✅ Очікувані результати</h3>
+                    <p class="mb-2 text-slate-600">Після уроку учні зможуть:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>Створювати електронну таблицю для моделювання.</li>
+                        <li>Вводити початкові дані та формули.</li>
+                        <li>Використовувати функцію `IF` (або її аналог) для розрахунків.</li>
+                        <li>Застосовувати умовне форматування для контролю даних.</li>
+                        <li>Перевіряти коректність роботи моделі.</li>
+                        <li>Пояснювати роль електронних таблиць у моделюванні.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📊 Групи результатів (НУШ)</h3>
+                    <p class="text-slate-600 mb-4">Візуалізація важливості груп результатів для цього уроку.</p>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <!-- Lesson Type & Equipment -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">📚 Тип уроку</h3>
+                    <p class="text-gray-700">Урок застосування знань, умінь та навичок (практична робота).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">💻 Обладнання та ПЗ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Комп'ютери (для кожного учня) з встановленим табличним процесором (наприклад, Microsoft Excel або LibreOffice Calc).</li>
+                        <li>Проєктор або інтерактивна дошка.</li>
+                        <li>Завдання практичної роботи (може бути виведене на екран або роздане).</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-600">🔗 Міжпредметні зв'язки</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>Математика (формули, обчислення, умовні оператори).</li>
+                        <li>Економіка / Підприємництво (облік, витрати, прибутки, торговельні процеси).</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Теоретичний блок -->
+        <div id="model-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Математична модель АЗС</h3>
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="p-4 border rounded-lg bg-slate-50">
+                        <h4 class="font-semibold text-lg text-slate-800">Основні змінні:</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li><code class="bg-slate-200 px-1 rounded">S0</code> - Початкова сума грошей в касі.</li>
+                            <li><code class="bg-slate-200 px-1 rounded">V0</code> - Початковий об'єм пального на АЗС.</li>
+                            <li><code class="bg-slate-200 px-1 rounded">S</code> - Кінцева сума в касі після операції.</li>
+                            <li><code class="bg-slate-200 px-1 rounded">V</code> - Кінцевий об'єм пального після операції.</li>
+                        </ul>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-4 border rounded-lg bg-green-50">
+                            <h4 class="font-semibold text-lg text-green-800">Операція "Продаж" (П)</h4>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><code class="bg-green-200 px-1 rounded">Vп</code> - Об'єм проданого пального (л).</li>
+                                <li><code class="bg-green-200 px-1 rounded">Рп</code> - Ціна продажу (грн/л).</li>
+                                <li class="mt-4 font-mono text-sm"><b>Каса:</b> S = S0 + Vп ∙ Рп</li>
+                                <li class="font-mono text-sm"><b>Пальне:</b> V = V0 - Vп</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 border rounded-lg bg-yellow-50">
+                            <h4 class="font-semibold text-lg text-yellow-800">Операція "Купівля" (К)</h4>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><code class="bg-yellow-200 px-1 rounded">Vк</code> - Об'єм купленого пального (л).</li>
+                                <li><code class="bg-yellow-200 px-1 rounded">Рк</code> - Ціна купівлі (грн/л).</li>
+                                <li class="mt-4 font-mono text-sm"><b>Каса:</b> S = S0 - Vк ∙ Рк</li>
+                                <li class="font-mono text-sm"><b>Пальне:</b> V = V0 + Vк</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-4 border rounded-lg bg-red-50">
+                        <h4 class="font-semibold text-lg text-red-800">Обмеження (Правила моделі):</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>При продажу, об'єм пального для продажу не може перевищувати наявний залишок: <br>Vп ≤ V0.</li>
+                            <li>При купівлі, вартість пального не може перевищувати суму грошей в касі: <br>Vк ∙ Рк ≤ S0.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Практична робота -->
+        <div id="simulator-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-2 text-center text-indigo-600">Симулятор роботи АЗС "Автомото-плюс"</h3>
+                <p class="text-center text-slate-600 mb-6">Додайте нові операції та спостерігайте за змінами в касі та залишку пального.</p>
+
+                <div class="grid lg:grid-cols-3 gap-6 mb-6">
+                    <div class="p-4 rounded-lg bg-blue-100 text-center">
+                        <p class="text-sm font-medium text-blue-800">Поточна сума в касі</p>
+                        <p id="current-cash" class="text-2xl font-bold text-blue-900">50000.00 грн</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-green-100 text-center">
+                        <p class="text-sm font-medium text-green-800">Поточний залишок пального</p>
+                        <p id="current-fuel" class="text-2xl font-bold text-green-900">5000.00 л</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-100">
+                        <form id="transaction-form" class="flex flex-col sm:flex-row items-center gap-2 h-full">
+                            <select id="op-type" class="p-2 border rounded-lg w-full sm:w-1/4">
+                                <option value="П">Продаж (П)</option>
+                                <option value="К">Купівля (К)</option>
+                            </select>
+                            <input type="number" id="op-price" placeholder="Ціна, грн/л" class="p-2 border rounded-lg w-full sm:w-1/4" value="50">
+                            <input type="number" id="op-volume" placeholder="Об'єм, л" class="p-2 border rounded-lg w-full sm:w-1/4" value="10">
+                            <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto">Додати</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Каса</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Час</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Операція</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Ціна, грн/л</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Об'єм, л</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Сума, грн</th>
+                                <th class="py-2 px-3 border-b text-left text-sm font-semibold text-slate-600">Залишок, л</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-log">
+                            <!-- Transaction rows will be added here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Перевірка знань -->
+        <div id="check-content" class="tab-content">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center text-indigo-600">Питання для самоперевірки</h3>
+                <p class="text-center text-slate-600 mb-8">Натисніть на картку, щоб побачити відповідь.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Що таке комп'ютерна модель?</div><div class="flip-card-back bg-indigo-200 p-4">Це спрощене представлення реального об'єкта або процесу, створене за допомогою комп'ютера для його вивчення.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Яка функція в електронних таблицях допомагає виконувати різні розрахунки залежно від умови?</div><div class="flip-card-back bg-indigo-200 p-4">Функція `IF` (ЯКЩО).</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Для чого в моделі АЗС використовується умовне форматування?</div><div class="flip-card-back bg-indigo-200 p-4">Для візуального попередження про помилки: неможливість продати більше пального, ніж є, або витратити більше грошей, ніж є в касі.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як змінюється сума в касі при операції "Купівля"?</div><div class="flip-card-back bg-indigo-200 p-4">Сума в касі зменшується на вартість купленого пального.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Як змінюється залишок пального при операції "Продаж"?</div><div class="flip-card-back bg-indigo-200 p-4">Залишок пального зменшується на проданий об'єм.</div></div></div>
+                    <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-indigo-100 p-4">Назвіть два обмеження, які були в моделі АЗС.</div><div class="flip-card-back bg-indigo-200 p-4">1. Не можна продати більше пального, ніж є. 2. Не можна витратити більше грошей з каси, ніж є.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Домашнє завдання -->
+        <div id="homework-content" class="tab-content">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-600">Домашнє завдання</h3>
+
+                    <!--  -->
+                    <div class="flex flex-col md:flex-row items-start md:space-x-8 mb-12">
+
+                        <div class="space-y-4 text-gray-700">
+                            <div>
+                                <p><b>1. Практична частина:</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Виконати практичну роботу № 13 (стор. 252-254).</li>
+                                    <li>Приклад виконання: <a href="https://youtu.be/wT6Myt1Xe54?si=JWPj7NsqWyMbFJAM" target="_blank" class="text-blue-600 hover:underline">https://youtu.be/wT6Myt1Xe54</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><b>2. Завдання за бажанням (для закріплення):</b></p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 13: <a href="https://ua.izzi.digital/DOS/750894/1251306.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251306.html</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="./images/img07.webp" alt="Учні з книгами або комп'ютерами" class="rounded-lg shadow-md" width="200px" height="auto">
+                    </div>
+                    <!--  -->
+                    
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <!-- Additional Materials Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-600">Додаткові матеріали</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><a href="https://sites.google.com/view/lga84-9/tehnika_bezpeky" target="_blank" class="text-blue-600 hover:underline">Техніка безпеки</a></li>
+                    <li><a href="https://drive.google.com/file/d/1C9_KEF981LvokY0GWNOhUXb7rJKJUUbM/view" target="_blank" class="text-blue-600 hover:underline">Оцінювання учнів та учениць на уроках інформатики</a></li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-600 hover:underline">Підручник з інформатики для 7 класу</a> (ПР13, стор. 252-254)</li>
+                    <li><a href="https://ua.izzi.digital/DOS/750894/750899.html" target="_blank" class="text-blue-600 hover:underline">Інтерактивна платформа IZZI (7 клас)</a></li>
+                    <li>Інтерактивна платформа IZZI (7 клас) до практичної роботи № 13: <a href="https://ua.izzi.digital/DOS/750894/1251306.html" target="_blank" class="text-blue-600 hover:underline">https://ua.izzi.digital/DOS/750894/1251306.html</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер сторінки (Footer) -->
+    <footer class="bg-gray-800 text-white p-4 mt-8 shadow-inner">
+        <div class="container mx-auto text-center text-sm">
+            <ul>
+                <li><p class="mt-1">Інформатика 7 клас (Нова Українська Школа). (2 години/тиждень, 70 годин/рік).</p></li>
+                <li><p class="mt-1"><a href="https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Navchalni.prohramy/2023/Model.navch.prohr.5-9.klas/Inform.osv.haluz.2023/Informatyka.7-9.kl.Bondarenko.ta.in.25.09.2023.pdf" target="_blank" class="text-blue-300 hover:underline">Модельна навчальна програма «Інформатика. 7-9 класи» для закладів загальної середньої освіти (автори Бондаренко О. О., Ластовецький В. В., Пилипчук О. П., Шестопалов Є. А.). Рекомендовано Міністерством освіти і науки України (наказ Міністерства освіти і науки України від 06.09.2023 № 1090).</a></p></li><br>
+                <li><p class="mt-1"><a href="https://ua.izzi.digital/DOS/750894/1041962.html" target="_blank" class="text-blue-300 hover:underline">Навчальний посібник: Інформатика : підруч. для 7 кл. закл. загал. серед. освіти / [О. О. Бондаренко, В. В. Ластовецький, О. П. Пилипчук, Є. А. Шестопалов]. – Харків : Вид-во «Ранок», 2024. – 272 с. : іл.</a></p></li>
+                <li><p class="mt-1">Автор сайту: Лисенко Галина Олександрівна, 2025 рік.</p></li>           
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript для інтерактивності -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab logic
+            const tabs = document.getElementById('tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const tab = e.target.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Flip card logic
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('active')));
+
+            // Chart for NUШ results
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ГР1: Інфо, дані, моделі', 'ГР3: Цифрове середовище', 'ГР2: Інфо-продукти', 'ГР4: Безпека'],
+                    datasets: [{
+                        label: 'Важливість',
+                        data: [4, 3, 2, 2],
+                        backgroundColor: ['rgba(79, 70, 229, 0.7)', 'rgba(129, 140, 248, 0.7)', 'rgba(165, 180, 252, 0.7)', 'rgba(199, 210, 254, 0.7)'],
+                        borderColor: ['rgba(79, 70, 229, 1)', 'rgba(129, 140, 248, 1)', 'rgba(165, 180, 252, 1)', 'rgba(199, 210, 254, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: v => ['','','Важлива','Дуже важлива','Найважливіша'][v]
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => ['','','Важлива','Дуже важлива','Найважливіша'][c.parsed.y] || ''
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Simulator Logic
+            const transactionForm = document.getElementById('transaction-form');
+            const transactionLog = document.getElementById('transaction-log');
+            const currentCashEl = document.getElementById('current-cash');
+            const currentFuelEl = document.getElementById('current-fuel');
+
+            let currentCash = 50000;
+            let currentFuel = 5000;
+
+            transactionForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const opType = document.getElementById('op-type').value;
+                const opPrice = parseFloat(document.getElementById('op-price').value);
+                const opVolume = parseFloat(document.getElementById('op-volume').value);
+
+                if (isNaN(opPrice) || opPrice <= 0 || isNaN(opVolume) || opVolume <= 0) {
+                    // Use a custom message box instead of alert()
+                    displayMessage('Будь ласка, введіть коректні додатні значення для ціни та об\'єму.', 'Помилка введення');
+                    return;
+                }
+
+                const time = new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+                let transactionAmount = 0;
+                let cashAfter = currentCash;
+                let fuelAfter = currentFuel;
+                let fundsError = false;
+                let fuelError = false;
+
+                if (opType === 'П') { // Продаж
+                    transactionAmount = opPrice * opVolume;
+                    if (opVolume > currentFuel) {
+                        fuelError = true;
+                        displayMessage('Помилка: недостатньо пального для продажу!', 'Помилка операції');
+                    } else {
+                        cashAfter = currentCash + transactionAmount;
+                        fuelAfter = currentFuel - opVolume;
+                    }
+                } else { // Купівля
+                    transactionAmount = -1 * opPrice * opVolume; // Use negative for purchase to subtract from cash
+                    if (Math.abs(transactionAmount) > currentCash) {
+                        fundsError = true;
+                        displayMessage('Помилка: недостатньо коштів в касі для купівлі!', 'Помилка операції');
+                    } else {
+                        cashAfter = currentCash + transactionAmount;
+                        fuelAfter = currentFuel + opVolume;
+                    }
+                }
+
+                const newRow = document.createElement('tr');
+                
+                // Cells are created for display, not for state updates if errors occur
+                const cellCash = document.createElement('td');
+                cellCash.className = 'py-2 px-3 border-b';
+                cellCash.textContent = cashAfter.toFixed(2);
+                
+                const cellTime = document.createElement('td');
+                cellTime.className = 'py-2 px-3 border-b';
+                cellTime.textContent = time;
+
+                const cellOpType = document.createElement('td');
+                cellOpType.className = 'py-2 px-3 border-b';
+                cellOpType.textContent = opType;
+                
+                const cellPrice = document.createElement('td');
+                cellPrice.className = 'py-2 px-3 border-b';
+                cellPrice.textContent = opPrice.toFixed(2);
+
+                const cellVolume = document.createElement('td');
+                cellVolume.className = 'py-2 px-3 border-b';
+                cellVolume.textContent = opVolume.toFixed(2);
+                // Apply conditional formatting class if error
+                if (fuelError) cellVolume.classList.add('error-insufficient-fuel');
+
+                const cellAmount = document.createElement('td');
+                cellAmount.className = 'py-2 px-3 border-b';
+                cellAmount.textContent = Math.abs(transactionAmount).toFixed(2); // Display absolute value for amount
+                // Apply conditional formatting class if error
+                if (fundsError) cellAmount.classList.add('error-insufficient-funds');
+
+                const cellFuel = document.createElement('td');
+                cellFuel.className = 'py-2 px-3 border-b';
+                cellFuel.textContent = fuelAfter.toFixed(2);
+
+                newRow.append(cellCash, cellTime, cellOpType, cellPrice, cellVolume, cellAmount, cellFuel);
+                transactionLog.prepend(newRow); // Add new rows to the top
+
+                // Update state only if transaction was successful
+                if (!fundsError && !fuelError) {
+                    currentCash = cashAfter;
+                    currentFuel = fuelAfter;
+                    currentCashEl.textContent = `${currentCash.toFixed(2)} грн`;
+                    currentFuelEl.textContent = `${currentFuel.toFixed(2)} л`;
+                }
+
+                // Clear form inputs
+                document.getElementById('op-price').value = '50';
+                document.getElementById('op-volume').value = '10';
+            });
+
+            // --- Custom Message Box Implementation (replaces alert/confirm) ---
+            function displayMessage(message, title = 'Повідомлення') {
+                const modalOverlay = document.createElement('div');
+                modalOverlay.className = 'modal-overlay';
+                modalOverlay.innerHTML = `
+                    <div class="modal-content">
+                        <h4 class="text-xl font-bold mb-4">${title}</h4>
+                        <p class="text-lg mb-6">${message}</p>
+                        <button id="modal-close-btn" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition">Закрити</button>
+                    </div>
+                `;
+                document.body.appendChild(modalOverlay);
+
+                document.getElementById('modal-close-btn').addEventListener('click', () => {
+                    document.body.removeChild(modalOverlay);
+                });
+            }
+
+            // Initial display of current cash and fuel
+            currentCashEl.textContent = `${currentCash.toFixed(2)} грн`;
+            currentFuelEl.textContent = `${currentFuel.toFixed(2)} л`;
+        });
+    </script>
+</body>
+</html>
