@@ -92,6 +92,38 @@
 
         /* Стилі для Теоретичного блоку */
         .source { padding: 16px; color: #334155; }
+                /* --- УЛУЧШЕННЫЕ СТИЛИ КНОПОК ВКЛАДОК (.tab-btn) --- */
+        .tab-btn { 
+            /* Базовый вид: светлый фон, тонкая граница, чтобы выглядеть как кнопка */
+            background-color: #4f42e8; 
+            border: 1px solid #08427c; 
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Легкая тень */
+            
+            /* Обеспечиваем плавный переход */
+            transition: all 0.3s ease; 
+            border-bottom: 2px solid transparent; /* Сохраняем место для активного индикатора */
+            user-select: none; /* Предотвращаем выделение текста */
+        }
+
+        /* Стиль при наведении на НЕАКТИВНУЮ кнопку */
+        .tab-btn:hover:not(.active) {
+            background-color: #1c7ad7; /* Слегка темнее */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Более заметная тень */
+            border-color: #ced4da;
+            transform: translateY(-1px); /* Небольшой подъем для эффекта нажатия */
+        }
+
+        /* Стиль для АКТИВНОЙ кнопки (доработан для перекрытия теней) */
+        .tab-btn.active { 
+            /* Убираем тени и фиксируем границы, чтобы вкладка "прилипла" к контенту */
+            border-top-color: fef3c7;
+            border-left-color: fef3c7;
+            border-right-color: fef3c7;
+            box-shadow: 0 0 0 transparent; /* Убираем тени */
+            transform: none; /* Убираем эффект подъема */
+        }
+        /* --- КОНЕЦ УЛУЧШЕННЫХ СТИЛЕЙ КНОПОК --- */
     </style>
 </head>
 <body>

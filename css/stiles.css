@@ -1,0 +1,36 @@
+/* --- УЛУЧШЕННЫЕ СТИЛИ КНОПОК ВКЛАДОК (.tab-btn) --- */
+.tab-btn { 
+    /* Базовый вид: светлый фон, тонкая граница, чтобы выглядеть как кнопка */
+    background-color: #f0f0f0; 
+    border: 1px solid #dee2e6; 
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Легкая тень */
+    
+    /* Обеспечиваем плавный переход */
+    transition: all 0.3s ease; 
+    border-bottom: 2px solid transparent; /* Сохраняем место для активного индикатора */
+    user-select: none; /* Предотвращаем выделение текста */
+}
+
+/* Стиль при наведении на НЕАКТИВНУЮ кнопку */
+.tab-btn:hover:not(.active) {
+    background-color: #e9ecef; /* Слегка темнее */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Более заметная тень */
+    border-color: #ced4da;
+    transform: translateY(-1px); /* Небольшой подъем для эффекта нажатия */
+}
+
+/* Стиль для АКТИВНОЙ кнопки (доработан для перекрытия теней) */
+.tab-btn.active { 
+    /*color: #d97706;*/        /* text-amber-600 */
+    /*border-bottom-color: #d97706;*/  /* text-amber-600 */
+    /*background-color: #fef3c7;*/     /* text-amber-100 */
+    
+    /* Убираем тени и фиксируем границы, чтобы вкладка "прилипла" к контенту */
+    border-top-color: fef3c7;
+    border-left-color: fef3c7;
+    border-right-color: fef3c7;
+    box-shadow: 0 0 0 transparent; /* Убираем тени */
+    transform: none; /* Убираем эффект подъема */
+}
+/* --- КОНЕЦ УЛУЧШЕННЫХ СТИЛЕЙ КНОПОК --- */
